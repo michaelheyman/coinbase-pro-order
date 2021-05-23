@@ -21,10 +21,10 @@ def coinbase_api_dict():
     }
 
 
-class SettingsTests(TestCase):
+class SettingsCoinbaseConfigTests(TestCase):
     @patch.dict(os.environ, coinbase_api_dict(), clear=True)
     def test_read_coinbase_environment_variables(self):
-        config = settings.Config()
+        config = settings.CoinbaseConfig()
 
         self.assertEqual(CoinbaseAPI.key, config.API_KEY)
         self.assertEqual(CoinbaseAPI.passphrase, config.API_PASSPHRASE)
@@ -40,7 +40,7 @@ class SettingsTests(TestCase):
     )
     def test_throws_exception_when_api_key_is_missing(self):
         try:
-            settings.Config()
+            settings.CoinbaseConfig()
             self.fail("Should have thrown exception")
         except EnvironmentError as e:
             self.assertTrue("API_KEY" in repr(e))
@@ -52,7 +52,7 @@ class SettingsTests(TestCase):
     )
     def test_throws_exception_when_api_passphrase_is_missing(self):
         try:
-            settings.Config()
+            settings.CoinbaseConfig()
             self.fail("Should have thrown exception")
         except EnvironmentError as e:
             self.assertTrue("API_PASSPHRASE" in repr(e))
@@ -64,32 +64,32 @@ class SettingsTests(TestCase):
     )
     def test_throws_exception_when_api_secret_is_missing(self):
         try:
-            settings.Config()
+            settings.CoinbaseConfig()
             self.fail("Should have thrown exception")
         except EnvironmentError as e:
             self.assertTrue("API_SECRET" in repr(e))
 
-    @patch.dict(os.environ, coinbase_api_dict(), clear=True)
+
+class SettingsConfigTests(TestCase):
     @patch.dict(os.environ, {"LOGGING_LEVEL": "DEBUG"})
     def test_read_logging_environment_variable(self):
         config = settings.Config()
 
         self.assertEqual("DEBUG", config.LOGGING_LEVEL)
 
-    @patch.dict(os.environ, coinbase_api_dict(), clear=True)
+    @patch.dict(os.environ, {}, clear=True)
     def test_read_missing_logging_environment_variable_defaults_to_info(self):
         config = settings.Config()
 
         self.assertEqual("INFO", config.LOGGING_LEVEL)
 
-    @patch.dict(os.environ, coinbase_api_dict(), clear=True)
     @patch.dict(os.environ, {"LOGGING_LEVEL": "INVALID_LEVEL"})
     def test_read_invalid_logging_environment_variable_defaults_to_info(self):
         config = settings.Config()
 
         self.assertEqual("INFO", config.LOGGING_LEVEL)
 
-    @patch.dict(os.environ, coinbase_api_dict(), clear=True)
+    @patch.dict(os.environ, {}, clear=True)
     def test_hardcoded_sandox_api_url(self):
         config = settings.Config()
 

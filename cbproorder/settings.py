@@ -16,8 +16,8 @@ class LoggingLevel(Enum):
     NOTSET = "NOTSET"
 
 
-class Config(object):
-    """Configuration settings."""
+class CoinbaseConfig(object):
+    """Coinbase configuration settings."""
 
     def __init__(self):
         try:
@@ -30,6 +30,11 @@ class Config(object):
                 "in order to authorize access to Coinbase Pro"
             ) from KeyError
 
+
+class Config(object):
+    """General configuration settings."""
+
+    def __init__(self):
         try:
             self.LOGGING_LEVEL = os.environ["LOGGING_LEVEL"]
             if self.LOGGING_LEVEL not in LoggingLevel.__members__:

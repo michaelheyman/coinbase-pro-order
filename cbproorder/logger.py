@@ -18,9 +18,11 @@ class CustomJsonFormatter(jsonlogger.JsonFormatter):
             log_record["level"] = record.levelname
 
 
-logging.getLogger().setLevel(settings.LOGGING_LEVEL)
+config = settings.Config()
+
+logging.getLogger().setLevel(config.LOGGING_LEVEL)
 logger = logging.getLogger(__name__)
-logger.setLevel(settings.LOGGING_LEVEL)
+logger.setLevel(config.LOGGING_LEVEL)
 logHandler = logging.StreamHandler()
 formatter = CustomJsonFormatter("%(timestamp)s %(filename)s %(level)s %(message)s")
 logHandler.setFormatter(formatter)
