@@ -1,5 +1,6 @@
 """Application configuration."""
 import os
+from enum import Enum
 
 from dotenv import load_dotenv
 
@@ -19,3 +20,15 @@ class CoinbaseConfig(object):
                 f"The {e} environment variable needs to be set "
                 "in order to authorize access to Coinbase Pro"
             ) from KeyError
+
+
+class LoggingLevel(Enum):
+    CRITICAL = "CRITICAL"
+    ERROR = "ERROR"
+    WARNING = "WARNING"
+    INFO = "INFO"
+    DEBUG = "DEBUG"
+    NOTSET = "NOTSET"
+
+
+LOGGING_LEVEL = LoggingLevel.INFO
