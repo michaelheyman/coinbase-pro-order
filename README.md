@@ -82,3 +82,12 @@ See [.pre-commit-config.yaml](.pre-commit-config.yaml) for information on which 
 pre-commit install
 pre-commit install -t pre-push
 ```
+
+## Testing
+
+Run the unit tests and the coverage tests:
+
+```bash
+make test
+make test-coverage
+```
