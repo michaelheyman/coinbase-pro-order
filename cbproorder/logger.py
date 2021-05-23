@@ -1,3 +1,4 @@
+"""Logging module."""
 import logging
 from datetime import datetime
 
@@ -7,7 +8,10 @@ from cbproorder import settings
 
 
 class CustomJsonFormatter(jsonlogger.JsonFormatter):
+    """Structured logger."""
+
     def add_fields(self, log_record, record, message_dict):
+        """Normalize the set of default set fields that is called for every log event."""
         super(CustomJsonFormatter, self).add_fields(log_record, record, message_dict)
         if not log_record.get("timestamp"):
             now = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ")

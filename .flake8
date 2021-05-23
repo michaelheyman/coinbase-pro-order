@@ -1,0 +1,5 @@
+[flake8]
+exclude = test*.py
+# Ignore settings that are being enforced by black
+# E501: line too long
+ignore = E501

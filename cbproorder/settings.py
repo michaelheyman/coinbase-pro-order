@@ -8,6 +8,8 @@ load_dotenv()
 
 
 class LoggingLevel(Enum):
+    """Logging levels that are valid according to python-json-logger."""
+
     CRITICAL = "CRITICAL"
     ERROR = "ERROR"
     WARNING = "WARNING"
@@ -20,6 +22,10 @@ class CoinbaseConfig(object):
     """Coinbase configuration settings."""
 
     def __init__(self):
+        """Read API variables from the environment.
+
+        :raises EnvironmentError: Missing required API variable
+        """
         try:
             self.API_KEY = os.environ["API_KEY"]
             self.API_PASSPHRASE = os.environ["API_PASSPHRASE"]
@@ -35,6 +41,7 @@ class Config(object):
     """General configuration settings."""
 
     def __init__(self):
+        """Read environent variables."""
         try:
             self.LOGGING_LEVEL = os.environ["LOGGING_LEVEL"]
             if self.LOGGING_LEVEL not in LoggingLevel.__members__:
