@@ -18,7 +18,7 @@ In order to authenticate against Coinbase you will need to create and remember t
 
 Anyone with access to these values will have access to your account, so handle these values wisely.
 
-In order to create a Coinbase API Key:
+In order to create a Coinbase API key:
 
 1. Go to https://pro.coinbase.com/profile/api
 1. Create a "New API Key" under your desired portfolio, usually "Default Portfolio"
@@ -32,15 +32,25 @@ In order to create a Coinbase API Key:
 
 More information on Coinbase Pro authentication available in their [official docs](https://docs.pro.coinbase.com/#authentication).
 
+### Coinbase Sandbox
+
+The Coinbase Pro sandbox is available at https://public.sandbox.pro.coinbase.com/profile/api.
+This public sandbox is available for testing API connectivity and web trading.
+
+Consider creating a Coinbase API key on the sandbox version of Coinbase Pro if you want to do dry-runs.
+
+More information on Coinbase Pro sandbox available in their [official docs](https://docs.pro.coinbase.com/#sandbox).
+
 ### Create an Environment File
 
 Create a `.env` file in the project root, and override the following variables.
 
-| Variable       | Type         | Description                                              |
-| -------------- | ------------ | -------------------------------------------------------- |
-| API_KEY        | **Required** | The Coinbase API key name                                |
-| API_PASSPHRASE | **Required** | The Coinbase API passphrase associated with this API key |
-| API_SECRET     | **Required** | The Coinbase API secret for this API key                 |
+| Variable          | Type         | Description                                              |
+| ----------------- | ------------ | -------------------------------------------------------- |
+| API_KEY           | **Required** | The Coinbase API key name                                |
+| API_PASSPHRASE    | **Required** | The Coinbase API passphrase associated with this API key |
+| API_SECRET        | **Required** | The Coinbase API secret for this API key                 |
+| LOGGING_LEVEL     | **Optional** | The logging level (defaults to INFO)                     |
 
 The `.env` file will be automatically loaded.
 

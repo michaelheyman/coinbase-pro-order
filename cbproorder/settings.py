@@ -7,21 +7,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-class CoinbaseConfig(object):
-    """Coinbase configuration settings."""
-
-    def __init__(self):
-        try:
-            self.api_key = os.environ["API_KEY"]
-            self.api_passphrase = os.environ["API_PASSPHRASE"]
-            self.api_secret = os.environ["API_SECRET"]
-        except KeyError as e:
-            raise EnvironmentError(
-                f"The {e} environment variable needs to be set "
-                "in order to authorize access to Coinbase Pro"
-            ) from KeyError
-
-
 class LoggingLevel(Enum):
     CRITICAL = "CRITICAL"
     ERROR = "ERROR"
@@ -31,4 +16,25 @@ class LoggingLevel(Enum):
     NOTSET = "NOTSET"
 
 
-LOGGING_LEVEL = LoggingLevel.INFO
+class Config(object):
+    """Configuration settings."""
+
+    def __init__(self):
+        try:
+            self.API_KEY = os.environ["API_KEY"]
+            self.API_PASSPHRASE = os.environ["API_PASSPHRASE"]
+            self.API_SECRET = os.environ["API_SECRET"]
+        except KeyError as e:
+            raise EnvironmentError(
+                f"The {e} environment variable needs to be set "
+                "in order to authorize access to Coinbase Pro"
+            ) from KeyError
+
+        try:
+            self.LOGGING_LEVEL = os.environ["LOGGING_LEVEL"]
+            if self.LOGGING_LEVEL not in LoggingLevel.__members__:
+                raise KeyError("Not a valid logging level")
+        except KeyError:
+            self.LOGGING_LEVEL = LoggingLevel.INFO.value
+
+        self.SANDBOX_API_URL = "https://api-public.sandbox.pro.coinbase.com"
