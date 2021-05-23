@@ -16,3 +16,34 @@ class StartTests(TestCase):
 
         assert result is None
         mock_error_logger.assert_called()
+
+
+class ValidateOrdersTests(TestCase):
+    def test_empty_orders_raises_exception(self):
+        orders = None
+        self.assertRaises(ValueError, main.validate_orders, orders)
+
+    def test_invalid_orders_collection_raises_exception(self):
+        orders = {}
+        self.assertRaises(ValueError, main.validate_orders, orders)
+        orders = ""
+        self.assertRaises(ValueError, main.validate_orders, orders)
+
+    def test_invalid_orders_type_raises_exception(self):
+        orders = [{"product_id": "BTC-USD", "price": "100.0"}, ["this-is-not-a-dict"]]
+        self.assertRaises(TypeError, main.validate_orders, orders)
+
+    def test_invalid_order_keys_raises_exception(self):
+        orders = [
+            {
+                # This is an example of a valid order
+                "product_id": "BTC-USD",
+                "price": "100.0",
+            },
+            {
+                # This is not
+                "this-is": "invalid",
+                "and-so-is": "this",
+            },
+        ]
+        self.assertRaises(ValueError, main.validate_orders, orders)
