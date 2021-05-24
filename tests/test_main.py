@@ -11,11 +11,49 @@ class StartTests(TestCase):
         self, mock_coinbase_config, mock_error_logger
     ):
         mock_coinbase_config.side_effect = EnvironmentError
+        expected_error_message = "There was an error loading your Coinbase credentials"
+        orders = []
 
-        result = main.start()
+        result = main.start(orders)
 
+        mock_error_logger.assert_called_once_with(expected_error_message, exc_info=1)
         assert result is None
-        mock_error_logger.assert_called()
+
+    @patch("cbproorder.main.validate_orders")
+    @patch("cbproorder.logger.logger.error")
+    @patch("cbproorder.settings.CoinbaseConfig")
+    def test_raises_exception_when_order_value_is_invalid(
+        self, _, mock_error_logger, mock_validate_orders
+    ):
+        error_message = "value-error-message"
+        mock_validate_orders.side_effect = ValueError(error_message)
+        expected_error_message = (
+            f"Unable to process request due to invalid order format: {error_message}"
+        )
+        orders = []
+
+        result = main.start(orders)
+
+        mock_error_logger.assert_called_once_with(expected_error_message)
+        assert result is None
+
+    @patch("cbproorder.main.validate_orders")
+    @patch("cbproorder.logger.logger.error")
+    @patch("cbproorder.settings.CoinbaseConfig")
+    def test_raises_exception_when_order_type_is_invalid(
+        self, _, mock_error_logger, mock_validate_orders
+    ):
+        error_message = "value-error-message"
+        mock_validate_orders.side_effect = TypeError(error_message)
+        expected_error_message = (
+            f"Unable to process request due to invalid order format: {error_message}"
+        )
+        orders = []
+
+        result = main.start(orders)
+
+        mock_error_logger.assert_called_once_with(expected_error_message)
+        assert result is None
 
 
 class ValidateOrdersTests(TestCase):

@@ -5,12 +5,18 @@ from cbproorder import settings
 from cbproorder.logger import logger
 
 
-def start():
+def start(orders):
     """Authenticate with Coinbase and execute orders."""
     try:
         coinbase = settings.CoinbaseConfig()
     except EnvironmentError:
         logger.error("There was an error loading your Coinbase credentials", exc_info=1)
+        return
+
+    try:
+        validate_orders(orders)
+    except (ValueError, TypeError) as e:
+        logger.error(f"Unable to process request due to invalid order format: {e}")
         return
 
     config = settings.Config()
