@@ -26,9 +26,36 @@ def start(orders):
         passphrase=coinbase.API_PASSPHRASE,
         api_url=config.SANDBOX_API_URL,
     )
-    currencies = auth_client.get_currencies()
-    logger.info(currencies)
-    logger.info("done")
+
+    result = {"success": [], "fail": []}
+
+    for order in orders:
+        try:
+            response = auth_client.buy(
+                product_id=order["product_id"],  # ex: BTC-USD
+                order_type="market",
+                # funds is the amount of 'quote currency' (RHS of the product_id pair) to buy
+                funds=order["price"],
+            )
+
+            if not response:
+                error = "Unable to connect to Coinbase Pro at this time. Please check your connectivity."
+                logger.error(error)
+                result["fail"].append({"order": order, "reason": error})
+                continue
+
+            if response.get("message"):
+                error = response["message"]
+                logger.error(error)
+                result["fail"].append({"order": order, "reason": error})
+                continue
+
+            logger.info("Purchase successful")
+            result["success"].append(order)
+        except ValueError as e:
+            logger.error(f"Purchase order failed: {e}")
+
+    return result
 
 
 def validate_orders(orders):

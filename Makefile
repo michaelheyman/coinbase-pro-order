@@ -3,6 +3,9 @@ PACKAGE_NAME=cbproorder
 run: ## Run the application
 	python -m ${PACKAGE_NAME}
 
+pre-commit: ## Run pre-commit on all files
+	pre-commit run --all-files
+
 test-coverage: ## Run test coverage tool
 	python -m pytest --cov=${PACKAGE_NAME} tests/
 
