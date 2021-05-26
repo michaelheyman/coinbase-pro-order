@@ -7,7 +7,9 @@ pre-commit: ## Run pre-commit on all files
 	pre-commit run --all-files
 
 test-coverage: ## Run test coverage tool
-	python -m pytest --cov=${PACKAGE_NAME} tests/
+	python -m pytest \
+	--cov-report term-missing \
+	--cov=${PACKAGE_NAME} tests/
 
 test: ## Run tests
 	python -m pytest -vv

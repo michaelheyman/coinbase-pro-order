@@ -69,9 +69,6 @@ def validate_orders(orders):
     if not all(isinstance(order, dict) for order in orders):
         raise TypeError("Expected all orders to be a dictionary")
 
-    if not all(isinstance(order, dict) for order in orders):
-        raise TypeError("Expected all orders to be a dictionary")
-
     required_keys = ["price", "product_id"]
 
     if not all(

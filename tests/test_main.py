@@ -220,24 +220,39 @@ class StartTests(TestCase):
 class ValidateOrdersTests(TestCase):
     def test_empty_orders_raises_exception(self):
         orders = None
-        self.assertRaises(ValueError, main.validate_orders, orders)
+
+        with self.assertRaises(ValueError) as context:
+            main.validate_orders(orders)
+        self.assertEqual("No orders to validate", str(context.exception))
 
     def test_invalid_orders_collection_raises_exception(self):
-        orders = {}
-        self.assertRaises(ValueError, main.validate_orders, orders)
-        orders = ""
-        self.assertRaises(ValueError, main.validate_orders, orders)
+        orders = {"product_id": "BTC-USD", "price": "10.0"}
+
+        with self.assertRaises(ValueError) as context:
+            main.validate_orders(orders)
+        self.assertEqual("Expected a list of orders", str(context.exception))
+
+        orders = "not-a-list"
+
+        with self.assertRaises(ValueError) as context:
+            main.validate_orders(orders)
+        self.assertEqual("Expected a list of orders", str(context.exception))
 
     def test_invalid_orders_type_raises_exception(self):
-        orders = [{"product_id": "BTC-USD", "price": "100.0"}, ["this-is-not-a-dict"]]
-        self.assertRaises(TypeError, main.validate_orders, orders)
+        orders = [{"product_id": "BTC-USD", "price": "10.0"}, ["this-is-not-a-dict"]]
+
+        with self.assertRaises(TypeError) as context:
+            main.validate_orders(orders)
+        self.assertEqual(
+            "Expected all orders to be a dictionary", str(context.exception)
+        )
 
     def test_invalid_order_keys_raises_exception(self):
         orders = [
             {
                 # This is an example of a valid order
                 "product_id": "BTC-USD",
-                "price": "100.0",
+                "price": "10.0",
             },
             {
                 # This is not
