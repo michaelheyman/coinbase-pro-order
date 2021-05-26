@@ -1,7 +1,15 @@
+CLOUD_FUNCTION_NAME=coinbase_orders
 PACKAGE_NAME=cbproorder
+PUBSUB_TOPIC=purchase-requests
 
 run: ## Run the application
 	python -m ${PACKAGE_NAME}
+
+deploy: ## Deploy Cloud Function
+	gcloud functions deploy ${CLOUD_FUNCTION_NAME} \
+	--timeout=540 --memory=1024MB --runtime python37 \
+	--trigger-topic=${PUBSUB_TOPIC} \
+	--region us-central1
 
 pre-commit: ## Run pre-commit on all files
 	pre-commit run --all-files
