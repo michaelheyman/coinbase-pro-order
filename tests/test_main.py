@@ -11,12 +11,12 @@ class StartTests(TestCase):
         self, mock_coinbase_config, mock_error_logger
     ):
         mock_coinbase_config.side_effect = EnvironmentError
-        expected_error_message = "There was an error loading your Coinbase credentials"
+        error_message = "There was an error loading your Coinbase credentials"
         orders = []
 
         result = main.start(orders)
 
-        mock_error_logger.assert_called_once_with(expected_error_message, exc_info=1)
+        mock_error_logger.assert_called_once_with(error_message, exc_info=1)
         assert result is None
 
     @patch("cbproorder.main.validate_orders")
@@ -25,16 +25,16 @@ class StartTests(TestCase):
     def test_raises_exception_when_order_value_is_invalid(
         self, _, mock_error_logger, mock_validate_orders
     ):
-        error_message = "value-error-message"
-        mock_validate_orders.side_effect = ValueError(error_message)
-        expected_error_message = (
-            f"Unable to process request due to invalid order format: {error_message}"
-        )
+        error = "value-error-message"
+        mock_validate_orders.side_effect = ValueError(error)
+        error_message = "Unable to process request due to invalid order format"
         orders = []
 
         result = main.start(orders)
 
-        mock_error_logger.assert_called_once_with(expected_error_message)
+        mock_error_logger.assert_called_once_with(
+            error_message, extra={"error": error, "orders": orders}
+        )
         assert result is None
 
     @patch("cbproorder.main.validate_orders")
@@ -43,34 +43,36 @@ class StartTests(TestCase):
     def test_raises_exception_when_order_type_is_invalid(
         self, _, mock_error_logger, mock_validate_orders
     ):
-        error_message = "value-error-message"
-        mock_validate_orders.side_effect = TypeError(error_message)
-        expected_error_message = (
-            f"Unable to process request due to invalid order format: {error_message}"
-        )
-        orders = []
+        error = "value-error-message"
+        mock_validate_orders.side_effect = TypeError(error)
+        error_message = "Unable to process request due to invalid order format"
+        orders = ["product_id", "BTC-USD"]
 
         result = main.start(orders)
 
-        mock_error_logger.assert_called_once_with(expected_error_message)
+        mock_error_logger.assert_called_once_with(
+            error_message, extra={"error": error, "orders": orders}
+        )
         assert result is None
 
     @patch("cbpro.AuthenticatedClient.buy")
     @patch("cbproorder.logger.logger.error")
     @patch("cbproorder.settings.CoinbaseConfig")
     def test_buy_error_connectivity(self, _, mock_error_logger, mock_buy):
+        error_message = "Unable to connect to Coinbase Pro at this time. Please check your connectivity."
         mock_buy.return_value = None
-        expected_error_message = "Unable to connect to Coinbase Pro at this time. Please check your connectivity."
         orders = [{"product_id": "BTC-USD", "price": "10.0"}]
 
         result = main.start(orders)
 
-        mock_error_logger.assert_called_once_with(expected_error_message)
+        mock_error_logger.assert_called_once_with(
+            error_message, extra={"order": orders[0]}
+        )
         assert not result["success"]
         assert len(result["fail"]) == 1
         assert result["fail"][0] == {
             "order": orders[0],
-            "reason": expected_error_message,
+            "reason": error_message,
         }
 
     @patch("cbpro.AuthenticatedClient.buy")
@@ -83,7 +85,9 @@ class StartTests(TestCase):
 
         result = main.start(orders)
 
-        mock_error_logger.assert_called_once_with(error_message)
+        mock_error_logger.assert_called_once_with(
+            error_message, extra={"order": orders[0]}
+        )
         assert not result["success"]
         assert len(result["fail"]) == 1
         assert result["fail"][0] == {
@@ -101,7 +105,9 @@ class StartTests(TestCase):
 
         result = main.start(orders)
 
-        mock_error_logger.assert_called_once_with(error_message)
+        mock_error_logger.assert_called_once_with(
+            error_message, extra={"order": orders[0]}
+        )
         assert not result["success"]
         assert len(result["fail"]) == 1
         assert result["fail"][0] == {
@@ -119,7 +125,9 @@ class StartTests(TestCase):
 
         result = main.start(orders)
 
-        mock_error_logger.assert_called_once_with(error_message)
+        mock_error_logger.assert_called_once_with(
+            error_message, extra={"order": orders[0]}
+        )
         assert not result["success"]
         assert len(result["fail"]) == 1
         assert result["fail"][0] == {
@@ -152,7 +160,9 @@ class StartTests(TestCase):
 
         result = main.start(orders)
 
-        mock_info_logger.assert_called_once_with("Purchase successful")
+        mock_info_logger.assert_called_once_with(
+            "Purchase successful", extra={"order": orders[0]}
+        )
         assert not result["fail"]
         assert len(result["success"]) == 1
         assert result["success"] == [orders[0]]

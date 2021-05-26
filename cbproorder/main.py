@@ -16,7 +16,10 @@ def start(orders):
     try:
         validate_orders(orders)
     except (ValueError, TypeError) as e:
-        logger.error(f"Unable to process request due to invalid order format: {e}")
+        logger.error(
+            "Unable to process request due to invalid order format",
+            extra={"error": str(e), "orders": orders},
+        )
         return
 
     config = settings.Config()
@@ -40,20 +43,20 @@ def start(orders):
 
             if not response:
                 error = "Unable to connect to Coinbase Pro at this time. Please check your connectivity."
-                logger.error(error)
+                logger.error(error, extra={"order": order})
                 result["fail"].append({"order": order, "reason": error})
                 continue
 
             if response.get("message"):
                 error = response["message"]
-                logger.error(error)
+                logger.error(error, extra={"order": order})
                 result["fail"].append({"order": order, "reason": error})
                 continue
 
-            logger.info("Purchase successful")
+            logger.info("Purchase successful", extra={"order": order})
             result["success"].append(order)
         except ValueError as e:
-            logger.error(f"Purchase order failed: {e}")
+            logger.error("Purchase order failed", extra={"error": str(e)})
 
     return result
 
