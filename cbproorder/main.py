@@ -33,30 +33,27 @@ def start(orders):
     result = {"success": [], "fail": []}
 
     for order in orders:
-        try:
-            response = auth_client.buy(
-                product_id=order["product_id"],  # ex: BTC-USD
-                order_type="market",
-                # funds is the amount of 'quote currency' (RHS of the product_id pair) to buy
-                funds=order["price"],
-            )
+        response = auth_client.buy(
+            product_id=order["product_id"],  # ex: BTC-USD
+            order_type="market",
+            # funds is the amount of 'quote currency' (RHS of the product_id pair) to buy
+            funds=order["price"],
+        )
 
-            if not response:
-                error = "Unable to connect to Coinbase Pro at this time. Please check your connectivity."
-                logger.error(error, extra={"order": order})
-                result["fail"].append({"order": order, "reason": error})
-                continue
+        if not response:
+            error = "Unable to connect to Coinbase Pro at this time. Please check your connectivity."
+            logger.error(error, extra={"order": order})
+            result["fail"].append({"order": order, "reason": error})
+            continue
 
-            if response.get("message"):
-                error = response["message"]
-                logger.error(error, extra={"order": order})
-                result["fail"].append({"order": order, "reason": error})
-                continue
+        if response.get("message"):
+            error = response["message"]
+            logger.error(error, extra={"order": order})
+            result["fail"].append({"order": order, "reason": error})
+            continue
 
-            logger.info("Purchase successful", extra={"order": order})
-            result["success"].append(order)
-        except ValueError as e:
-            logger.error("Purchase order failed", extra={"error": str(e)})
+        logger.info("Purchase successful", extra={"order": order})
+        result["success"].append(order)
 
     return result
 
