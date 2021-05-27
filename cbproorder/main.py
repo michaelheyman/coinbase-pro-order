@@ -8,12 +8,6 @@ from cbproorder.logger import logger
 def start(orders):
     """Authenticate with Coinbase and execute orders."""
     try:
-        coinbase = settings.CoinbaseConfig()
-    except EnvironmentError:
-        logger.error("There was an error loading your Coinbase credentials", exc_info=1)
-        return
-
-    try:
         validate_orders(orders)
     except (ValueError, TypeError) as e:
         logger.error(
@@ -22,13 +16,11 @@ def start(orders):
         )
         return
 
-    config = settings.Config()
-    auth_client = cbpro.AuthenticatedClient(
-        key=coinbase.API_KEY,
-        b64secret=coinbase.API_SECRET,
-        passphrase=coinbase.API_PASSPHRASE,
-        api_url=config.SANDBOX_API_URL,
-    )
+    try:
+        auth_client = authenticate()
+    except EnvironmentError:
+        logger.error("There was an error loading your Coinbase credentials", exc_info=1)
+        return
 
     result = {"success": [], "fail": []}
 
@@ -59,7 +51,11 @@ def start(orders):
 
 
 def validate_orders(orders):
-    """Validate the incoming orders request."""
+    """Validate the incoming orders request.
+
+    :raise: ValueError if orders values are invalid
+    :raise: TypeError if orders types are invalid
+    """
     if not orders:
         raise ValueError("No orders to validate")
 
@@ -79,3 +75,26 @@ def validate_orders(orders):
         ]
     ):
         raise ValueError(f"Each order must have the following keys: #{required_keys}")
+
+
+def authenticate():
+    """Create an authenticated client.
+
+    Pulls configuration elements from environment variables and attempts to create an
+    authenticated Coinbase client.
+
+    :raise: EnvironmentError if Coinbase settings are missing
+    :return: An authenticated Coinbase client
+    :rtype: cbpro.AuthenticatedClient
+    """
+    coinbase = settings.CoinbaseConfig()
+    config = settings.Config()
+
+    auth_client = cbpro.AuthenticatedClient(
+        key=coinbase.API_KEY,
+        b64secret=coinbase.API_SECRET,
+        passphrase=coinbase.API_PASSPHRASE,
+        api_url=config.SANDBOX_API_URL,
+    )
+
+    return auth_client
