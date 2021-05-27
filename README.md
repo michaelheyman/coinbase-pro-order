@@ -45,12 +45,13 @@ More information on Coinbase Pro sandbox available in their [official docs](http
 
 Create a `.env` file in the project root, and override the following variables.
 
-| Variable          | Type         | Description                                              |
-| ----------------- | ------------ | -------------------------------------------------------- |
-| API_KEY           | **Required** | The Coinbase API key name                                |
-| API_PASSPHRASE    | **Required** | The Coinbase API passphrase associated with this API key |
-| API_SECRET        | **Required** | The Coinbase API secret for this API key                 |
-| LOGGING_LEVEL     | **Optional** | The logging level (defaults to INFO)                     |
+| Variable          | Type         | Description                                                      |
+| ----------------- | ------------ | ---------------------------------------------------------------- |
+| API_KEY           | **Required** | The Coinbase API key name                                        |
+| API_PASSPHRASE    | **Required** | The Coinbase API passphrase associated with this API key         |
+| API_SECRET        | **Required** | The Coinbase API secret for this API key                         |
+| LOGGING_LEVEL     | **Optional** | The logging level (defaults to INFO)                             |
+| SANDBOX           | **Optional** | True if running the service in sandbox mode, undefined otherwise |
 
 The `.env` file will be automatically loaded.
 

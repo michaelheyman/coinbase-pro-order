@@ -49,4 +49,5 @@ class Config(object):
         except KeyError:
             self.LOGGING_LEVEL = LoggingLevel.INFO.value
 
+        self.SANDBOX = os.environ.get("SANDBOX", False)
         self.SANDBOX_API_URL = "https://api-public.sandbox.pro.coinbase.com"
