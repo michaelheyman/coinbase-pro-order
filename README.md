@@ -2,11 +2,13 @@
 
 ## Overview
 
-TBD
+Coinbase Pro lacks the support for recurring transfers, which are supported by the base version of Coinbase.
+This application aims to fill that void.
+
+`coinbase-pro-order` is a fully-managed and serverless application that allows you to configure recurring purchases
+through Coinbase Pro.
 
 ## Usage
-
-TBD
 
 ### Coinbase Pro Authentication
 
@@ -156,3 +158,21 @@ gcloud services enable cloudfunctions.googleapis.com
 ```
 
 Simply run `make deploy` to deploy the function and associate it with the aforementioned topic.
+
+
+### Schedule Recurring Job
+
+Use Cloud Scheduler to schedule a cron job that will send a message to PubSub that will then trigger the Cloud Function.
+
+Follow [these instructions](https://cloud.google.com/scheduler/docs/quickstart#create_a_job) to create a job and:
+
+* Name the job something self-documenting, like "coinbase-recurrent-buy"
+* Set the frequency to whatever fits your need. See [CronMaker](http://www.cronmaker.com) and [crontab.guru](https://crontab.guru/)
+for assistance in creating and decoding cron expressions. Note that cron does not support an expression that triggers
+"every two weeks"; for that use-case you will likely have to configure two jobs.
+* For the target type, select PubSub and the topic name you created earlier. In the message body, submit something
+similar to the following:
+    ```json
+    [{"product_id": "BTC-USD", "price": "25.0"}]
+    ```
+* Click "Create" to finish scheduling the job. You may choose to click "Run Now" and trigger the job immediately.
