@@ -27,7 +27,7 @@ repos:
     hooks:
       - id: tests
         name: pytest
-        entry: pytest -vv
+        entry: python -m pytest -vv
         pass_filenames: false
         language: system
         types: [python]
