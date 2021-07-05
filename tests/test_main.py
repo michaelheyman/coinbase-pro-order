@@ -270,6 +270,32 @@ class AuthenticateTests(TestCase):
         coinbase_config.API_PASSPHRASE = "fake-passphrase"
         coinbase_config.API_SECRET = "fake-api-secret"
         config = mock_config.return_value
+        config.SANDBOX = False
+        config.SANDBOX_API_URL = "http://sandbox-api-url"
+        authenticated_client = mock_auth_client.return_value
+        authenticated_client.auth = "authenticated"
+
+        auth_client = main.authenticate()
+
+        mock_auth_client.assert_called_once_with(
+            key=coinbase_config.API_KEY,
+            b64secret=coinbase_config.API_SECRET,
+            passphrase=coinbase_config.API_PASSPHRASE,
+        )
+        self.assertEqual(auth_client, authenticated_client)
+
+    @patch("cbproorder.settings.Config")
+    @patch("cbproorder.settings.CoinbaseConfig")
+    @patch("cbpro.AuthenticatedClient")
+    def test_returns_sandbox_authenticated_client(
+        self, mock_auth_client, mock_coinbase_config, mock_config
+    ):
+        coinbase_config = mock_coinbase_config.return_value
+        coinbase_config.API_KEY = "fake-api-key"
+        coinbase_config.API_PASSPHRASE = "fake-passphrase"
+        coinbase_config.API_SECRET = "fake-api-secret"
+        config = mock_config.return_value
+        config.SANDBOX = True
         config.SANDBOX_API_URL = "http://sandbox-api-url"
         authenticated_client = mock_auth_client.return_value
         authenticated_client.auth = "authenticated"

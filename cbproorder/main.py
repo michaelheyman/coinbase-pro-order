@@ -90,11 +90,18 @@ def authenticate():
     coinbase = settings.CoinbaseConfig()
     config = settings.Config()
 
-    auth_client = cbpro.AuthenticatedClient(
-        key=coinbase.API_KEY,
-        b64secret=coinbase.API_SECRET,
-        passphrase=coinbase.API_PASSPHRASE,
-        api_url=config.SANDBOX_API_URL,
-    )
+    if config.SANDBOX:
+        auth_client = cbpro.AuthenticatedClient(
+            key=coinbase.API_KEY,
+            b64secret=coinbase.API_SECRET,
+            passphrase=coinbase.API_PASSPHRASE,
+            api_url=config.SANDBOX_API_URL,
+        )
+    else:
+        auth_client = cbpro.AuthenticatedClient(
+            key=coinbase.API_KEY,
+            b64secret=coinbase.API_SECRET,
+            passphrase=coinbase.API_PASSPHRASE,
+        )
 
     return auth_client
