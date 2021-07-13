@@ -1,5 +1,29 @@
 # coinbase-pro-order
 
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Overview](#overview)
+- [Usage](#usage)
+  - [Coinbase Pro Authentication](#coinbase-pro-authentication)
+  - [Coinbase Sandbox](#coinbase-sandbox)
+  - [Create an Environment File](#create-an-environment-file)
+- [Developer Setup](#developer-setup)
+  - [Create Virtual Environment](#create-virtual-environment)
+  - [Install Requirements](#install-requirements)
+  - [Install Git Hooks](#install-git-hooks)
+- [Testing](#testing)
+- [Google Cloud Platform Integration and Deployment](#google-cloud-platform-integration-and-deployment)
+  - [Create Google Cloud Project](#create-google-cloud-project)
+    - [Browser](#browser)
+    - [GCloud CLI](#gcloud-cli)
+  - [Create PubSub Topic](#create-pubsub-topic)
+  - [Deploy Cloud Function](#deploy-cloud-function)
+  - [Schedule Recurring Job](#schedule-recurring-job)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 ## Overview
 
 Coinbase Pro lacks the support for recurring transfers, which are supported by the base version of Coinbase.
@@ -47,13 +71,13 @@ More information on Coinbase Pro sandbox available in their [official docs](http
 
 Create a `.env` file in the project root, and override the following variables.
 
-| Variable          | Type         | Description                                                      |
-| ----------------- | ------------ | ---------------------------------------------------------------- |
-| API_KEY           | **Required** | The Coinbase API key name                                        |
-| API_PASSPHRASE    | **Required** | The Coinbase API passphrase associated with this API key         |
-| API_SECRET        | **Required** | The Coinbase API secret for this API key                         |
-| LOGGING_LEVEL     | **Optional** | The logging level (defaults to INFO)                             |
-| SANDBOX           | **Optional** | True if running the service in sandbox mode, undefined otherwise |
+| Variable       | Type         | Description                                                      |
+| -------------- | ------------ | ---------------------------------------------------------------- |
+| API_KEY        | **Required** | The Coinbase API key name                                        |
+| API_PASSPHRASE | **Required** | The Coinbase API passphrase associated with this API key         |
+| API_SECRET     | **Required** | The Coinbase API secret for this API key                         |
+| LOGGING_LEVEL  | **Optional** | The logging level (defaults to INFO)                             |
+| SANDBOX        | **Optional** | True if running the service in sandbox mode, undefined otherwise |
 
 The `.env` file will be automatically loaded.
 
