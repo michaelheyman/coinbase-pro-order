@@ -15,12 +15,6 @@
   - [Install Git Hooks](#install-git-hooks)
 - [Testing](#testing)
 - [Google Cloud Platform Integration and Deployment](#google-cloud-platform-integration-and-deployment)
-  - [Create Google Cloud Project](#create-google-cloud-project)
-    - [Browser](#browser)
-    - [GCloud CLI](#gcloud-cli)
-  - [Create PubSub Topic](#create-pubsub-topic)
-  - [Deploy Cloud Function](#deploy-cloud-function)
-  - [Schedule Recurring Job](#schedule-recurring-job)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -121,84 +115,6 @@ make test-coverage
 
 ## Google Cloud Platform Integration and Deployment
 
-The `gcloud` CLI is recommended for this process. You can find installation instructions in:
-
-1. [This `brew` formula](https://formulae.brew.sh/cask/google-cloud-sdk)
-1. [The official docs](https://cloud.google.com/sdk/docs/install)
-
-### Create Google Cloud Project
-
-More information on creating projects available in the [official docs](https://cloud.google.com/resource-manager/docs/creating-managing-projects).
-
-#### Browser
-
-If you're signed into your GCP account, you can create a new project [here](https://console.cloud.google.com/projectcreate).
-
-Otherwise:
-
-1. Navigate to [Google Cloud Platform](https://console.cloud.google.com/) and
-1. Click the projects dropdown and select "New Project"
-1. Follow the prompts and take note of the project id
-
-#### GCloud CLI
-
-Project IDs are unique across all Google Cloud projects. Make sure your project ID is unique enough,
-otherwise you may see the following error:
-
-> ERROR: (gcloud.projects.create) Project creation failed. The project ID you specified is already in use by another
-> project. Please try an alternative ID.
-
-A common technique to create unique projects is to use your organization or name as a prefix.
-
-```bash
-gcloud projects create <project-id> --name="coinbase"
-```
-
-### Create PubSub Topic
-
-[PubSub](https://cloud.google.com/pubsub/docs/overview) is a messaging service that will receive messages and produce
-events that will trigger your Cloud Function. A topic is a resource that accepts and routes messages.
-
-For the following steps, ensure that your project is the active project in your `gcloud` config:
-
-```bash
-gcloud config set project <project-id>
-```
-
-The topic name must match the topic name defined in the [Makefile](./Makefile). In this case, create the following topic:
-
-```bash
-gcloud pubsub topics create purchase-requests
-```
-
-### Deploy Cloud Function
-
-Once the topic is configured in your project, you should be ready to deploy your Cloud Function.
-
-Run the following commands to enable required APIs:
-
-```bash
-gcloud services enable cloudbuild.googleapis.com
-gcloud services enable cloudfunctions.googleapis.com
-```
-
-Simply run `make deploy` to deploy the function and associate it with the aforementioned topic.
-
-### Schedule Recurring Job
-
-Use Cloud Scheduler to schedule a cron job that will send a message to PubSub that will then trigger the Cloud Function.
-
-Follow [these instructions](https://cloud.google.com/scheduler/docs/quickstart#create_a_job) to create a job and:
-
-- Name the job something self-documenting, like "coinbase-recurrent-buy"
-- Set the frequency to whatever fits your need. See [CronMaker](http://www.cronmaker.com) and [crontab.guru](https://crontab.guru/)
-for assistance in creating and decoding cron expressions. Note that cron does not support an expression that triggers
-"every two weeks"; for that use-case you will likely have to configure two jobs.
-- For the target type, select PubSub and the topic name you created earlier. In the message body, submit something
-similar to the following:
-
-```json
-[{"product_id": "BTC-USD", "price": "25.0"}]
-```
-
-- Click "Create" to finish scheduling the job. You may choose to click "Run Now" and trigger the job immediately.
+The infrastructure and deployment of this project is handled by Terraform.
+View the [Terraform README](./terraform/README.md) for instructions on how to
+deploy this cloud function to the Google Cloud Platform.
