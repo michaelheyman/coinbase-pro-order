@@ -2,6 +2,7 @@
 import cbpro
 
 from cbproorder import settings
+from cbproorder import utils
 from cbproorder.logger import logger
 
 
@@ -88,14 +89,13 @@ def authenticate():
     :rtype: cbpro.AuthenticatedClient
     """
     coinbase = settings.CoinbaseConfig()
-    config = settings.Config()
 
-    if config.SANDBOX:
+    if utils.is_local():
         auth_client = cbpro.AuthenticatedClient(
             key=coinbase.API_KEY,
             b64secret=coinbase.API_SECRET,
             passphrase=coinbase.API_PASSPHRASE,
-            api_url=config.SANDBOX_API_URL,
+            api_url=coinbase.SANDBOX_API_URL,
         )
     else:
         auth_client = cbpro.AuthenticatedClient(

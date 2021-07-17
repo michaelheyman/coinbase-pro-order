@@ -259,19 +259,18 @@ class AuthenticateTests(TestCase):
 
         self.assertRaises(EnvironmentError, main.authenticate)
 
-    @patch("cbproorder.settings.Config")
+    @patch("cbproorder.utils.is_local")
     @patch("cbproorder.settings.CoinbaseConfig")
     @patch("cbpro.AuthenticatedClient")
     def test_returns_authenticated_client(
-        self, mock_auth_client, mock_coinbase_config, mock_config
+        self, mock_auth_client, mock_coinbase_config, mock_is_local
     ):
+        mock_is_local.return_value = False
         coinbase_config = mock_coinbase_config.return_value
         coinbase_config.API_KEY = "fake-api-key"
         coinbase_config.API_PASSPHRASE = "fake-passphrase"
         coinbase_config.API_SECRET = "fake-api-secret"
-        config = mock_config.return_value
-        config.SANDBOX = False
-        config.SANDBOX_API_URL = "http://sandbox-api-url"
+        coinbase_config.SANDBOX_API_URL = "http://sandbox-api-url"
         authenticated_client = mock_auth_client.return_value
         authenticated_client.auth = "authenticated"
 
@@ -284,19 +283,18 @@ class AuthenticateTests(TestCase):
         )
         self.assertEqual(auth_client, authenticated_client)
 
-    @patch("cbproorder.settings.Config")
+    @patch("cbproorder.utils.is_local")
     @patch("cbproorder.settings.CoinbaseConfig")
     @patch("cbpro.AuthenticatedClient")
     def test_returns_sandbox_authenticated_client(
-        self, mock_auth_client, mock_coinbase_config, mock_config
+        self, mock_auth_client, mock_coinbase_config, mock_is_local
     ):
+        mock_is_local.return_value = True
         coinbase_config = mock_coinbase_config.return_value
         coinbase_config.API_KEY = "fake-api-key"
         coinbase_config.API_PASSPHRASE = "fake-passphrase"
         coinbase_config.API_SECRET = "fake-api-secret"
-        config = mock_config.return_value
-        config.SANDBOX = True
-        config.SANDBOX_API_URL = "http://sandbox-api-url"
+        coinbase_config.SANDBOX_API_URL = "http://sandbox-api-url"
         authenticated_client = mock_auth_client.return_value
         authenticated_client.auth = "authenticated"
 
@@ -306,6 +304,6 @@ class AuthenticateTests(TestCase):
             key=coinbase_config.API_KEY,
             b64secret=coinbase_config.API_SECRET,
             passphrase=coinbase_config.API_PASSPHRASE,
-            api_url=config.SANDBOX_API_URL,
+            api_url=coinbase_config.SANDBOX_API_URL,
         )
         self.assertEqual(auth_client, authenticated_client)

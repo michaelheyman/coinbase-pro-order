@@ -30,6 +30,14 @@ class SettingsCoinbaseConfigTests(TestCase):
         self.assertEqual(CoinbaseAPI.passphrase, config.API_PASSPHRASE)
         self.assertEqual(CoinbaseAPI.secret, config.API_SECRET)
 
+    @patch.dict(os.environ, coinbase_api_dict(), clear=True)
+    def test_hardcoded_sandox_api_url(self):
+        config = settings.CoinbaseConfig()
+
+        self.assertEqual(
+            "https://api-public.sandbox.pro.coinbase.com", config.SANDBOX_API_URL
+        )
+
     @patch.dict(
         os.environ,
         {
@@ -88,23 +96,3 @@ class SettingsConfigTests(TestCase):
         config = settings.Config()
 
         self.assertEqual("INFO", config.LOGGING_LEVEL)
-
-    @patch.dict(os.environ, {}, clear=True)
-    def test_read_missing_sandbox_environment_variable_defaults_to_false(self):
-        config = settings.Config()
-
-        self.assertEqual(False, config.SANDBOX)
-
-    @patch.dict(os.environ, {"SANDBOX": "foobar"}, clear=True)
-    def test_read_sandbox_environment_variable_string_is_truthy(self):
-        config = settings.Config()
-
-        self.assertTrue(config.SANDBOX)
-
-    @patch.dict(os.environ, {}, clear=True)
-    def test_hardcoded_sandox_api_url(self):
-        config = settings.Config()
-
-        self.assertEqual(
-            "https://api-public.sandbox.pro.coinbase.com", config.SANDBOX_API_URL
-        )

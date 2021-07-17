@@ -36,6 +36,8 @@ class CoinbaseConfig(object):
                 "in order to authorize access to Coinbase Pro"
             ) from KeyError
 
+        self.SANDBOX_API_URL = "https://api-public.sandbox.pro.coinbase.com"
+
 
 class Config(object):
     """General configuration settings."""
@@ -48,6 +50,3 @@ class Config(object):
                 raise KeyError("Not a valid logging level")
         except KeyError:
             self.LOGGING_LEVEL = LoggingLevel.INFO.value
-
-        self.SANDBOX = os.environ.get("SANDBOX", False)
-        self.SANDBOX_API_URL = "https://api-public.sandbox.pro.coinbase.com"
