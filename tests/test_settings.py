@@ -6,7 +6,7 @@ from cbproorder import settings
 
 
 class CoinbaseAPI:
-    """A set of test values for the Coinbase API"""
+    """A set of test values for the Coinbase API."""
 
     key = "API key example"
     passphrase = "API passphrase example"
