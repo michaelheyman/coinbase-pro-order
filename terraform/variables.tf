@@ -1,11 +1,10 @@
-variable "credentials_file" {
-  type    = string
-  default = "<PATH_TO_CREDENTIALS_FILE>"
-}
+# Set these two variables in a sibling terraform.tfvars file
+variable "credentials_file" {}
+variable "project" {}
 
-variable "project" {
+variable "environment" {
   type    = string
-  default = "<PROJECT_ID>"
+  default = "development"
 }
 
 variable "time_zone" {
