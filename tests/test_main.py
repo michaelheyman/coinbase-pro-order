@@ -259,13 +259,15 @@ class AuthenticateTests(TestCase):
 
         self.assertRaises(EnvironmentError, main.authenticate)
 
+    @patch("cbproorder.utils.is_dev")
     @patch("cbproorder.utils.is_local")
     @patch("cbproorder.settings.CoinbaseConfig")
     @patch("cbpro.AuthenticatedClient")
     def test_returns_authenticated_client(
-        self, mock_auth_client, mock_coinbase_config, mock_is_local
+        self, mock_auth_client, mock_coinbase_config, mock_is_local, mock_is_dev
     ):
         mock_is_local.return_value = False
+        mock_is_dev.return_value = False
         coinbase_config = mock_coinbase_config.return_value
         coinbase_config.API_KEY = "fake-api-key"
         coinbase_config.API_PASSPHRASE = "fake-passphrase"
@@ -283,13 +285,42 @@ class AuthenticateTests(TestCase):
         )
         self.assertEqual(auth_client, authenticated_client)
 
+    @patch("cbproorder.utils.is_dev")
     @patch("cbproorder.utils.is_local")
     @patch("cbproorder.settings.CoinbaseConfig")
     @patch("cbpro.AuthenticatedClient")
-    def test_returns_sandbox_authenticated_client(
-        self, mock_auth_client, mock_coinbase_config, mock_is_local
+    def test_returns_sandbox_authenticated_client_when_env_is_local(
+        self, mock_auth_client, mock_coinbase_config, mock_is_local, mock_is_dev
     ):
         mock_is_local.return_value = True
+        mock_is_dev.return_value = False
+        coinbase_config = mock_coinbase_config.return_value
+        coinbase_config.API_KEY = "fake-api-key"
+        coinbase_config.API_PASSPHRASE = "fake-passphrase"
+        coinbase_config.API_SECRET = "fake-api-secret"
+        coinbase_config.SANDBOX_API_URL = "http://sandbox-api-url"
+        authenticated_client = mock_auth_client.return_value
+        authenticated_client.auth = "authenticated"
+
+        auth_client = main.authenticate()
+
+        mock_auth_client.assert_called_once_with(
+            key=coinbase_config.API_KEY,
+            b64secret=coinbase_config.API_SECRET,
+            passphrase=coinbase_config.API_PASSPHRASE,
+            api_url=coinbase_config.SANDBOX_API_URL,
+        )
+        self.assertEqual(auth_client, authenticated_client)
+
+    @patch("cbproorder.utils.is_dev")
+    @patch("cbproorder.utils.is_local")
+    @patch("cbproorder.settings.CoinbaseConfig")
+    @patch("cbpro.AuthenticatedClient")
+    def test_returns_sandbox_authenticated_client_when_env_is_dev(
+        self, mock_auth_client, mock_coinbase_config, mock_is_local, mock_is_dev
+    ):
+        mock_is_local.return_value = False
+        mock_is_dev.return_value = True
         coinbase_config = mock_coinbase_config.return_value
         coinbase_config.API_KEY = "fake-api-key"
         coinbase_config.API_PASSPHRASE = "fake-passphrase"

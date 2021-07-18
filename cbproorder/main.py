@@ -90,7 +90,7 @@ def authenticate():
     """
     coinbase = settings.CoinbaseConfig()
 
-    if utils.is_local():
+    if utils.is_local() or utils.is_dev():
         auth_client = cbpro.AuthenticatedClient(
             key=coinbase.API_KEY,
             b64secret=coinbase.API_SECRET,
