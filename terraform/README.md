@@ -9,6 +9,8 @@
 - [Usage](#usage)
   - [Configuring Terraform](#configuring-terraform)
   - [Running Terraform](#running-terraform)
+  - [Terraform Best-Practices](#terraform-best-practices)
+    - [`tfsec`](#tfsec)
 - [Troubleshooting](#troubleshooting)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -97,6 +99,18 @@ If you want to revert your changes simply destroy the created resources:
 
 ```bash
 terraform destroy
+```
+
+### Terraform Best-Practices
+
+#### `tfsec`
+
+See [official docs](https://github.com/aquasecurity/tfsec#installation) for installation instructions.
+
+Usage:
+
+```bash
+tfsec . --tfvars-file variables.tf
 ```
 
 ## Troubleshooting

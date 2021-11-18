@@ -19,8 +19,10 @@ data "archive_file" "source" {
 }
 
 # Create bucket that will host the source code
+#tfsec:ignore:google-storage-enable-ubla
 resource "google_storage_bucket" "bucket" {
-  name = "${var.project}-function"
+  name = "${var.project}-function" #tfsec:ignore:google-storage-enable-ubla
+  # uniform_bucket_level_access = true
 }
 
 # Add source code zip to bucket
