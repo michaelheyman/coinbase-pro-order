@@ -12,6 +12,8 @@
   - [Terraform Best-Practices](#terraform-best-practices)
     - [`tfsec`](#tfsec)
 - [Troubleshooting](#troubleshooting)
+  - [Disabled APIs](#disabled-apis)
+  - [Attempted to load application default credentials](#attempted-to-load-application-default-credentials)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -115,6 +117,8 @@ tfsec . --tfvars-file variables.tf
 
 ## Troubleshooting
 
+### Disabled APIs
+
 The Terraform config attempts to enable the required APIs, but if that doesn't work follow the descriptive
 errors when attempting to plan/apply the infrastructure.
 
@@ -127,3 +131,14 @@ gcloud services enable cloudresourcemanager.googleapis.com
 gcloud services enable cloudscheduler.googleapis.com
 gcloud services enable pubsub.googleapis.co
 ```
+
+### Attempted to load application default credentials
+
+Full error:
+
+> Attempted to load application default credentials since neither `credentials` nor `access_token`
+> was set in the provider block
+
+This issue may happen because you have Google credentials already configured.
+
+If that is the case, then the solution may be to unset the `GOOGLE_APPLICATION_CREDENTIALS` environment variable.
