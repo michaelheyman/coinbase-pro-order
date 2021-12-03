@@ -1,6 +1,13 @@
 # Set these two variables in a sibling terraform.tfvars file
-variable "credentials_file" {}
-variable "project" {}
+variable "credentials_file" {
+  description = "Path to the credentials file. See README for details."
+  type        = string
+}
+
+variable "project" {
+  description = "Project ID of the project to deploy to. See README for details."
+  type        = string
+}
 
 variable "environment" {
   type    = string
@@ -13,21 +20,28 @@ variable "time_zone" {
 }
 
 variable "purchase_orders" {
-  type = list(map(string))
-  default = [
-    {
-      "product_id" = "ETH-USD",
-      "price"      = "25.0"
-    }
-  ]
+  description = "List of purchase order numbers to deploy to the environment."
+  type = list(object({
+    product_id = string # The product_id must match a valid product. The products list is available via the /products endpoint here: https://docs.cloud.coinbase.com/exchange/reference/exchangerestapi_getproducts
+    price      = string
+  }))
+
+  validation {
+    condition = alltrue([
+      for order in var.purchase_orders : order.price >= 10.0
+    ])
+    error_message = "The minimum price for each purchase is 10.0 USD."
+  }
 }
 
 variable "function_name" {
-  type    = string
-  default = "coinbase_orders"
+  description = "Name of the function to be created in GCP."
+  type        = string
+  default     = "coinbase_orders"
 }
 
 variable "pubsub_topic_name" {
-  type    = string
-  default = "purchase-requests"
+  description = "Name of the pubsub topic to be created in GCP."
+  type        = string
+  default     = "purchase-requests"
 }
