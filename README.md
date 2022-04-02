@@ -79,6 +79,8 @@ The `.env` file will be automatically loaded.
 
 ## Developer Setup
 
+Use the provided VSCode dev container, or follow these instructions.
+
 ### Create Virtual Environment
 
 Create a virtual environment with a supported Python version:

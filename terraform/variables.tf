@@ -10,8 +10,9 @@ variable "project" {
 }
 
 variable "environment" {
-  type    = string
-  default = "development"
+  description = "The 'development' environment runs against Coinbase Sandbox, while 'production' runs against real Coinbase."
+  type        = string
+  default     = "development"
 }
 
 variable "time_zone" {

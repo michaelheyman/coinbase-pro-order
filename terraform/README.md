@@ -58,15 +58,24 @@ on this subject.
 
 Create a `terraform.tfvars` file in this directory. Then, fill it with the following variables with their appropriate values:
 
-- `project`: this value is your GCP project id
-- `credentials_file`: this is the path to the service account key credentials file created above
-- `purchase_orders`: although the config provides a default purchase, you're encouraged to update this as well
+- `project`: Your GCP project id.
+- `credentials_file`: The path to the service account key credentials file created above.
+- `purchase_orders`: The pairs and amounts you wish to purchase. Use this cURL to retrieve a comprehensive
+list of the available pairs:
+
+  ```bash
+  curl -s https://api.exchange.coinbase.com/products | jq '.[] .id' | sort
+  ```
 
 Example:
 
 ```terraform
 credentials_file = "/path/to/your/credentials/file"
 project          = "your-unique-gcp-project-id"
+purchase_orders  = [{
+  product_id = "BTC-USD"
+  price      = "10.0"
+}]
 ```
 
 Visit the [variable configuration file](./variables.tf) to view other values that can be overridden.
