@@ -1,8 +1,6 @@
 """Application script."""
-import cbpro
-
+from cbproorder import coinbase
 from cbproorder import settings
-from cbproorder import utils
 from cbproorder.logger import logger
 
 
@@ -18,7 +16,12 @@ def start(orders):
         return
 
     try:
-        auth_client = authenticate()
+        config = settings.CoinbaseConfig()
+        client = coinbase.CoinbaseClient(
+            coinbase.CoinbaseFactory(),
+            config.API_KEY,
+            config.API_SECRET,
+        )
     except EnvironmentError:
         logger.error("There was an error loading your Coinbase credentials", exc_info=1)
         return
@@ -26,21 +29,21 @@ def start(orders):
     result = {"success": [], "fail": []}
 
     for order in orders:
-        response = auth_client.buy(
+        response = client.create_buy_order(
             product_id=order["product_id"],  # ex: BTC-USD
-            order_type="market",
+            order_type=coinbase.OrderType.MARKET,
             # funds is the amount of 'quote currency' (RHS of the product_id pair) to buy
             funds=order["price"],
         )
 
         if not response:
-            error = "Unable to connect to Coinbase Pro at this time. Please check your connectivity."
+            error = "Unable to connect to Coinbase at this time. Please check your connectivity."
             logger.error(error, extra={"order": order})
             result["fail"].append({"order": order, "reason": error})
             continue
 
-        if response.get("message"):
-            error = response["message"]
+        if response.order_error:
+            error = response.order_error.message
             logger.error(error, extra={"order": order})
             result["fail"].append({"order": order, "reason": error})
             continue
@@ -76,32 +79,3 @@ def validate_orders(orders):
         ]
     ):
         raise ValueError(f"Each order must have the following keys: #{required_keys}")
-
-
-def authenticate():
-    """Create an authenticated client.
-
-    Pulls configuration elements from environment variables and attempts to create an
-    authenticated Coinbase client.
-
-    :raise: EnvironmentError if Coinbase settings are missing
-    :return: An authenticated Coinbase client
-    :rtype: cbpro.AuthenticatedClient
-    """
-    coinbase = settings.CoinbaseConfig()
-
-    if utils.is_local() or utils.is_dev():
-        auth_client = cbpro.AuthenticatedClient(
-            key=coinbase.API_KEY,
-            b64secret=coinbase.API_SECRET,
-            passphrase=coinbase.API_PASSPHRASE,
-            api_url=coinbase.SANDBOX_API_URL,
-        )
-    else:
-        auth_client = cbpro.AuthenticatedClient(
-            key=coinbase.API_KEY,
-            b64secret=coinbase.API_SECRET,
-            passphrase=coinbase.API_PASSPHRASE,
-        )
-
-    return auth_client
