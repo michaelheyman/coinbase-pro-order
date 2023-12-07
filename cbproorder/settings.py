@@ -28,15 +28,12 @@ class CoinbaseConfig(object):
         """
         try:
             self.API_KEY = os.environ["API_KEY"]
-            self.API_PASSPHRASE = os.environ["API_PASSPHRASE"]
             self.API_SECRET = os.environ["API_SECRET"]
         except KeyError as e:
             raise EnvironmentError(
                 f"The {e} environment variable needs to be set "
                 "in order to authorize access to Coinbase Pro"
             ) from KeyError
-
-        self.SANDBOX_API_URL = "https://api-public.sandbox.pro.coinbase.com"
 
 
 class Config(object):
