@@ -1,10 +1,11 @@
 import unittest
 from unittest.mock import patch
 
-# from cbproorder.coinbase import CoinbaseClient, CoinbaseFactory, OrderType
-from cbproorder.interface.coinbase_advanced_service import CoinbaseAdvancedService
+from cbproorder.domain.exception.order import UnsupportedOrderType
 from cbproorder.domain.value_object.orders import Order, OrderSide, OrderType
 from cbproorder.domain.value_object.pair import Pair
+from cbproorder.interface.coinbase_advanced_service import \
+    CoinbaseAdvancedService
 
 
 class TestCoinbaseClient(unittest.TestCase):
@@ -36,7 +37,7 @@ class TestCoinbaseClient(unittest.TestCase):
         self.assertEqual(result, "order_id")
 
     @patch("coinbaseadvanced.client.CoinbaseAdvancedTradeAPIClient")
-    def test_create_buy_order_unsupported_limit_order_type_returns_none(
+    def test_create_buy_order_unsupported_limit_order_type_raises_unsupported_order_type_exception(
         self,
         mock_client,
     ):
@@ -52,14 +53,12 @@ class TestCoinbaseClient(unittest.TestCase):
             type=OrderType.LIMIT,
         )
 
-        # Act
-        result = coinbase.create_market_buy_order(order=order)
-
-        # Assert
-        self.assertEqual(result, None)
+        # Act & Assert
+        with self.assertRaises(UnsupportedOrderType):
+            coinbase.create_market_buy_order(order=order),
 
     @patch("coinbaseadvanced.client.CoinbaseAdvancedTradeAPIClient")
-    def test_create_buy_order_unsupported_stop_order_type_returns_none(
+    def test_create_buy_order_unsupported_stop_order_type_raises_unsupported_order_type_exception(
         self,
         mock_client,
     ):
@@ -75,8 +74,6 @@ class TestCoinbaseClient(unittest.TestCase):
             type=OrderType.LIMIT,
         )
 
-        # Act
-        result = coinbase.create_market_buy_order(order=order)
-
-        # Assert
-        self.assertEqual(result, None)
+        # Act & Assert
+        with self.assertRaises(UnsupportedOrderType):
+            coinbase.create_market_buy_order(order=order),
