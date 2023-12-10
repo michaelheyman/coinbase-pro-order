@@ -22,46 +22,59 @@
 
 ## Overview
 
-Coinbase Pro lacks the support for recurring transfers, which are supported by the base version of Coinbase.
-This application aims to fill that void.
+Coinbase lacks the support for low-fee recurring purchases, which are supported
+by the base version of Coinbase. However, the base version of Coinbase lacks
+charges a flat fee for each transaction based on its value:
 
-`coinbase-pro-order` is a fully-managed and serverless application that allows you to configure recurring purchases
-through Coinbase Pro.
+| Total Transaction Amount                     | USD Fee                               |
+| -------------------------------------------- | ------------------------------------- |
+| $10 or less                                  | $0.99                                 |
+| More than $10 but less than or equal to $25  | $1.49                                 |
+| More than $25 but less than or equal to $50  | $1.99                                 |
+| More than $50 but less than or equal to $200 | $2.99                                 |
+| More than $200                               | 1.49% of the total transaction amount |
+
+This application allows users to configure recurring purchases leveraging
+Coinbase Advanced Trade API, which charges much lower fees.
+
+`coinbase-pro-order` is a fully-managed and serverless application that allows
+you to configure recurring purchases through Coinbase Advanced Trade API.
 
 ## Usage
 
-### Coinbase Pro Authentication
+### Coinbase Advanced Trade API Authentication
 
-In order to authenticate against Coinbase you will need to create and remember these three pieces of information:
+In order to authenticate against Coinbase you will need to create and remember
+these three pieces of information:
 
 - Key
 - Secret
-- Passphrase
 
-Anyone with access to these values will have access to your account, so handle these values wisely.
+Anyone with access to these values will have access to your account, so handle
+these values wisely.
 
 In order to create a Coinbase API key:
 
-1. Go to <https://pro.coinbase.com/profile/api>
-1. Create a "New API Key" under your desired portfolio, usually "Default Portfolio"
-1. Provide an API key nickname such as "Coinbase Pro Order Script"
-1. Give the API key the following permissions:
-    - `trade`: this permission is required to execute new orders
-    - `view`: this permission allows to query for data
-1. A passphrase should have been automatically generated, accept that value or create your own. **Store this value safely**.
-1. Follow the prompts and store your API secret safely
-1. The new API key value should now show up in the description of the API key. Store this value safely
+1. Go to <https://www.coinbase.com/settings/api>
+1. Click "New API Key"
+1. Add all the accounts that you plan on interacting with. This includes the
+"Cash (USD)" account, if you're buying with USD cash.
+1. Add permissions to the API key:
 
-More information on Coinbase Pro authentication available in their [official docs](https://docs.pro.coinbase.com/#authentication).
+    - `Cash (USD)`: this permission is required to query for account balances
+    - `wallet:accounts:read`: this permission is required to query for account balances
+    - `wallet:buys:create`: this permission is required to create new orders
+    - `wallet:orders:read`: this permission is required to query for order status
+    - `wallet:transactions:read`: this permission is required to query for transaction history
+    - `wallet:user:read`: this permission is required to query for user information
 
-### Coinbase Sandbox
+1. Click "Create"
+1. Make a note of the API key, and API secret. **Store these values safely**.
 
-The Coinbase Pro sandbox is available at <https://public.sandbox.pro.coinbase.com/profile/api>.
-This public sandbox is available for testing API connectivity and web trading.
+More information on Coinbase Advanced Trace API can be found here:
 
-Consider creating a Coinbase API key on the sandbox version of Coinbase Pro if you want to do dry-runs.
-
-More information on Coinbase Pro sandbox available in their [official docs](https://docs.pro.coinbase.com/#sandbox).
+- Authentication <https://docs.cloud.coinbase.com/advanced-trade-api/docs/rest-api-auth>
+- Permissions: <https://docs.cloud.coinbase.com/advanced-trade-api/docs/rest-api-overview#advanced-trade-endpoints>
 
 ### Create an Environment File
 
@@ -70,10 +83,8 @@ Create a `.env` file in the project root, and override the following variables.
 | Variable       | Type         | Description                                                                      |
 | -------------- | ------------ | -------------------------------------------------------------------------------- |
 | API_KEY        | **Required** | The Coinbase API key name                                                        |
-| API_PASSPHRASE | **Required** | The Coinbase API passphrase associated with this API key                         |
 | API_SECRET     | **Required** | The Coinbase API secret for this API key                                         |
 | LOGGING_LEVEL  | **Optional** | The logging level (defaults to INFO)                                             |
-| ENVIRONMENT    | **Optional** | Defaults to "development". Set this to "production" to run against real Coinbase |
 
 The `.env` file will be automatically loaded.
 
@@ -84,9 +95,9 @@ The `.env` file will be automatically loaded.
 Create a virtual environment with a supported Python version:
 
 ```bash
-pyenv install 3.9.0
-pyenv virtualenv 3.9.0 coinbase-pro-order-3.9.0
-pyenv activate coinbase-pro-order-3.9.0
+pyenv install 3.12.0
+pyenv virtualenv 3.12.0 coinbase-pro-order-3.12.0
+pyenv activate coinbase-pro-order-3.12.0
 ```
 
 ### Install Requirements
@@ -120,3 +131,8 @@ make test-coverage
 The infrastructure and deployment of this project is handled by Terraform.
 View the [Terraform README](./terraform/README.md) for instructions on how to
 deploy this cloud function to the Google Cloud Platform.
+
+## Enhancements
+
+- [ ] Add support for Google Secrets Manager to store API key and secret
+- [ ] Create a facade on top of Coinbase API to simplify the API and rely less on concrete implemenations

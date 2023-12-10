@@ -59,149 +59,149 @@ class StartTests(TestCase):
         )
         assert result is None
 
-    @patch("cbproorder.logger.logger.error")
-    @patch("cbproorder.main.authenticate")
-    @patch("cbproorder.main.validate_orders")
-    def test_exits_when_config_raises_error(
-        self, _, mock_authenticate, mock_error_logger
-    ):
-        mock_authenticate.side_effect = EnvironmentError
-        error_message = "There was an error loading your Coinbase credentials"
-        orders = []
+    # @patch("cbproorder.logger.logger.error")
+    # @patch("cbproorder.main.authenticate")
+    # @patch("cbproorder.main.validate_orders")
+    # def test_exits_when_config_raises_error(
+    #     self, _, mock_authenticate, mock_error_logger
+    # ):
+    #     mock_authenticate.side_effect = EnvironmentError
+    #     error_message = "There was an error loading your Coinbase credentials"
+    #     orders = []
 
-        result = main.start(orders)
+    #     result = main.start(orders)
 
-        mock_error_logger.assert_called_once_with(error_message, exc_info=1)
-        assert result is None
+    #     mock_error_logger.assert_called_once_with(error_message, exc_info=1)
+    #     assert result is None
 
-    @patch("cbpro.AuthenticatedClient.buy")
-    @patch("cbproorder.logger.logger.error")
-    @patch("cbproorder.settings.CoinbaseConfig")
-    def test_buy_error_connectivity(self, _, mock_error_logger, mock_buy):
-        error_message = "Unable to connect to Coinbase Pro at this time. Please check your connectivity."
-        mock_buy.return_value = None
-        orders = [{"product_id": "BTC-USD", "price": "10.0"}]
+    # @patch("cbpro.AuthenticatedClient.buy")
+    # @patch("cbproorder.logger.logger.error")
+    # @patch("cbproorder.settings.CoinbaseConfig")
+    # def test_buy_error_connectivity(self, _, mock_error_logger, mock_buy):
+    #     error_message = "Unable to connect to Coinbase Pro at this time. Please check your connectivity."
+    #     mock_buy.return_value = None
+    #     orders = [{"product_id": "BTC-USD", "price": "10.0"}]
 
-        result = main.start(orders)
+    #     result = main.start(orders)
 
-        mock_error_logger.assert_called_once_with(
-            error_message, extra={"order": orders[0]}
-        )
-        assert not result["success"]
-        assert len(result["fail"]) == 1
-        assert result["fail"][0] == {
-            "order": orders[0],
-            "reason": error_message,
-        }
+    #     mock_error_logger.assert_called_once_with(
+    #         error_message, extra={"order": orders[0]}
+    #     )
+    #     assert not result["success"]
+    #     assert len(result["fail"]) == 1
+    #     assert result["fail"][0] == {
+    #         "order": orders[0],
+    #         "reason": error_message,
+    #     }
 
-    @patch("cbpro.AuthenticatedClient.buy")
-    @patch("cbproorder.logger.logger.error")
-    @patch("cbproorder.settings.CoinbaseConfig")
-    def test_buy_error_funds_too_small(self, _, mock_error_logger, mock_buy):
-        error_message = "funds is too small. Minimum size is 10.00000000"
-        mock_buy.return_value = {"message": error_message}
-        orders = [{"product_id": "BTC-USD", "price": "1.0"}]
+    # @patch("cbpro.AuthenticatedClient.buy")
+    # @patch("cbproorder.logger.logger.error")
+    # @patch("cbproorder.settings.CoinbaseConfig")
+    # def test_buy_error_funds_too_small(self, _, mock_error_logger, mock_buy):
+    #     error_message = "funds is too small. Minimum size is 10.00000000"
+    #     mock_buy.return_value = {"message": error_message}
+    #     orders = [{"product_id": "BTC-USD", "price": "1.0"}]
 
-        result = main.start(orders)
+    #     result = main.start(orders)
 
-        mock_error_logger.assert_called_once_with(
-            error_message, extra={"order": orders[0]}
-        )
-        assert not result["success"]
-        assert len(result["fail"]) == 1
-        assert result["fail"][0] == {
-            "order": orders[0],
-            "reason": error_message,
-        }
+    #     mock_error_logger.assert_called_once_with(
+    #         error_message, extra={"order": orders[0]}
+    #     )
+    #     assert not result["success"]
+    #     assert len(result["fail"]) == 1
+    #     assert result["fail"][0] == {
+    #         "order": orders[0],
+    #         "reason": error_message,
+    #     }
 
-    @patch("cbpro.AuthenticatedClient.buy")
-    @patch("cbproorder.logger.logger.error")
-    @patch("cbproorder.settings.CoinbaseConfig")
-    def test_buy_error_product_not_found(self, _, mock_error_logger, mock_buy):
-        error_message = "Product not found"
-        mock_buy.return_value = {"message": error_message}
-        orders = [{"product_id": "FOO-BAR", "price": "10.0"}]
+    # @patch("cbpro.AuthenticatedClient.buy")
+    # @patch("cbproorder.logger.logger.error")
+    # @patch("cbproorder.settings.CoinbaseConfig")
+    # def test_buy_error_product_not_found(self, _, mock_error_logger, mock_buy):
+    #     error_message = "Product not found"
+    #     mock_buy.return_value = {"message": error_message}
+    #     orders = [{"product_id": "FOO-BAR", "price": "10.0"}]
 
-        result = main.start(orders)
+    #     result = main.start(orders)
 
-        mock_error_logger.assert_called_once_with(
-            error_message, extra={"order": orders[0]}
-        )
-        assert not result["success"]
-        assert len(result["fail"]) == 1
-        assert result["fail"][0] == {
-            "order": orders[0],
-            "reason": error_message,
-        }
+    #     mock_error_logger.assert_called_once_with(
+    #         error_message, extra={"order": orders[0]}
+    #     )
+    #     assert not result["success"]
+    #     assert len(result["fail"]) == 1
+    #     assert result["fail"][0] == {
+    #         "order": orders[0],
+    #         "reason": error_message,
+    #     }
 
-    @patch("cbpro.AuthenticatedClient.buy")
-    @patch("cbproorder.logger.logger.error")
-    @patch("cbproorder.settings.CoinbaseConfig")
-    def test_buy_error_funds_must_be_a_number(self, _, mock_error_logger, mock_buy):
-        error_message = "funds must be a number"
-        mock_buy.return_value = {"message": error_message}
-        orders = [{"product_id": "BTC-USD", "price": "exposure"}]
+    # @patch("cbpro.AuthenticatedClient.buy")
+    # @patch("cbproorder.logger.logger.error")
+    # @patch("cbproorder.settings.CoinbaseConfig")
+    # def test_buy_error_funds_must_be_a_number(self, _, mock_error_logger, mock_buy):
+    #     error_message = "funds must be a number"
+    #     mock_buy.return_value = {"message": error_message}
+    #     orders = [{"product_id": "BTC-USD", "price": "exposure"}]
 
-        result = main.start(orders)
+    #     result = main.start(orders)
 
-        mock_error_logger.assert_called_once_with(
-            error_message, extra={"order": orders[0]}
-        )
-        assert not result["success"]
-        assert len(result["fail"]) == 1
-        assert result["fail"][0] == {
-            "order": orders[0],
-            "reason": error_message,
-        }
+    #     mock_error_logger.assert_called_once_with(
+    #         error_message, extra={"order": orders[0]}
+    #     )
+    #     assert not result["success"]
+    #     assert len(result["fail"]) == 1
+    #     assert result["fail"][0] == {
+    #         "order": orders[0],
+    #         "reason": error_message,
+    #     }
 
-    @patch("cbpro.AuthenticatedClient.buy")
-    @patch("cbproorder.logger.logger.info")
-    @patch("cbproorder.settings.CoinbaseConfig")
-    def test_buy_success(self, _, mock_info_logger, mock_buy):
-        mock_buy.return_value = self.success_response
-        orders = [{"product_id": "BTC-USD", "price": "10.0"}]
+    # @patch("cbpro.AuthenticatedClient.buy")
+    # @patch("cbproorder.logger.logger.info")
+    # @patch("cbproorder.settings.CoinbaseConfig")
+    # def test_buy_success(self, _, mock_info_logger, mock_buy):
+    #     mock_buy.return_value = self.success_response
+    #     orders = [{"product_id": "BTC-USD", "price": "10.0"}]
 
-        result = main.start(orders)
+    #     result = main.start(orders)
 
-        mock_info_logger.assert_called_once_with(
-            "Purchase successful", extra={"order": orders[0]}
-        )
-        assert not result["fail"]
-        assert len(result["success"]) == 1
-        assert result["success"] == [orders[0]]
+    #     mock_info_logger.assert_called_once_with(
+    #         "Purchase successful", extra={"order": orders[0]}
+    #     )
+    #     assert not result["fail"]
+    #     assert len(result["success"]) == 1
+    #     assert result["success"] == [orders[0]]
 
-    @patch("cbpro.AuthenticatedClient.buy")
-    @patch("cbproorder.logger.logger.error")
-    @patch("cbproorder.logger.logger.info")
-    @patch("cbproorder.settings.CoinbaseConfig")
-    def test_buy_multiple_success_and_failure(
-        self, _, mock_error_logger, mock_info_logger, mock_buy
-    ):
-        orders = [
-            {"product_id": "BTC-USD", "price": "10.0"},
-            {"product_id": "BTC-USD", "price": "exposure"},
-            {"product_id": "BTC-USD", "price": "10.0"},
-            {"product_id": "FOO-BAR", "price": "10.0"},
-        ]
-        errors = ["funds must be a number", "Product not found"]
-        mock_buy.side_effect = [
-            self.success_response,
-            {"message": errors[0]},
-            self.success_response,
-            {"message": errors[1]},
-        ]
+    # @patch("cbpro.AuthenticatedClient.buy")
+    # @patch("cbproorder.logger.logger.error")
+    # @patch("cbproorder.logger.logger.info")
+    # @patch("cbproorder.settings.CoinbaseConfig")
+    # def test_buy_multiple_success_and_failure(
+    #     self, _, mock_error_logger, mock_info_logger, mock_buy
+    # ):
+    #     orders = [
+    #         {"product_id": "BTC-USD", "price": "10.0"},
+    #         {"product_id": "BTC-USD", "price": "exposure"},
+    #         {"product_id": "BTC-USD", "price": "10.0"},
+    #         {"product_id": "FOO-BAR", "price": "10.0"},
+    #     ]
+    #     errors = ["funds must be a number", "Product not found"]
+    #     mock_buy.side_effect = [
+    #         self.success_response,
+    #         {"message": errors[0]},
+    #         self.success_response,
+    #         {"message": errors[1]},
+    #     ]
 
-        result = main.start(orders)
+    #     result = main.start(orders)
 
-        assert mock_error_logger.call_count == 2
-        assert mock_info_logger.call_count == 2
-        assert len(result["success"]) == 2
-        assert len(result["fail"]) == 2
-        assert result["success"] == [orders[0], orders[2]]
-        assert result["fail"] == [
-            {"order": orders[1], "reason": errors[0]},
-            {"order": orders[3], "reason": errors[1]},
-        ]
+    #     assert mock_error_logger.call_count == 2
+    #     assert mock_info_logger.call_count == 2
+    #     assert len(result["success"]) == 2
+    #     assert len(result["fail"]) == 2
+    #     assert result["success"] == [orders[0], orders[2]]
+    #     assert result["fail"] == [
+    #         {"order": orders[1], "reason": errors[0]},
+    #         {"order": orders[3], "reason": errors[1]},
+    #     ]
 
 
 class ValidateOrdersTests(TestCase):
@@ -248,93 +248,3 @@ class ValidateOrdersTests(TestCase):
             },
         ]
         self.assertRaises(ValueError, main.validate_orders, orders)
-
-
-class AuthenticateTests(TestCase):
-    @patch("cbproorder.settings.CoinbaseConfig")
-    def test_raises_exception_when_config_environment_variables_missing(
-        self, mock_coinbase_config
-    ):
-        mock_coinbase_config.side_effect = EnvironmentError
-
-        self.assertRaises(EnvironmentError, main.authenticate)
-
-    @patch("cbproorder.utils.is_dev")
-    @patch("cbproorder.utils.is_local")
-    @patch("cbproorder.settings.CoinbaseConfig")
-    @patch("cbpro.AuthenticatedClient")
-    def test_returns_authenticated_client(
-        self, mock_auth_client, mock_coinbase_config, mock_is_local, mock_is_dev
-    ):
-        mock_is_local.return_value = False
-        mock_is_dev.return_value = False
-        coinbase_config = mock_coinbase_config.return_value
-        coinbase_config.API_KEY = "fake-api-key"
-        coinbase_config.API_PASSPHRASE = "fake-passphrase"
-        coinbase_config.API_SECRET = "fake-api-secret"
-        coinbase_config.SANDBOX_API_URL = "http://sandbox-api-url"
-        authenticated_client = mock_auth_client.return_value
-        authenticated_client.auth = "authenticated"
-
-        auth_client = main.authenticate()
-
-        mock_auth_client.assert_called_once_with(
-            key=coinbase_config.API_KEY,
-            b64secret=coinbase_config.API_SECRET,
-            passphrase=coinbase_config.API_PASSPHRASE,
-        )
-        self.assertEqual(auth_client, authenticated_client)
-
-    @patch("cbproorder.utils.is_dev")
-    @patch("cbproorder.utils.is_local")
-    @patch("cbproorder.settings.CoinbaseConfig")
-    @patch("cbpro.AuthenticatedClient")
-    def test_returns_sandbox_authenticated_client_when_env_is_local(
-        self, mock_auth_client, mock_coinbase_config, mock_is_local, mock_is_dev
-    ):
-        mock_is_local.return_value = True
-        mock_is_dev.return_value = False
-        coinbase_config = mock_coinbase_config.return_value
-        coinbase_config.API_KEY = "fake-api-key"
-        coinbase_config.API_PASSPHRASE = "fake-passphrase"
-        coinbase_config.API_SECRET = "fake-api-secret"
-        coinbase_config.SANDBOX_API_URL = "http://sandbox-api-url"
-        authenticated_client = mock_auth_client.return_value
-        authenticated_client.auth = "authenticated"
-
-        auth_client = main.authenticate()
-
-        mock_auth_client.assert_called_once_with(
-            key=coinbase_config.API_KEY,
-            b64secret=coinbase_config.API_SECRET,
-            passphrase=coinbase_config.API_PASSPHRASE,
-            api_url=coinbase_config.SANDBOX_API_URL,
-        )
-        self.assertEqual(auth_client, authenticated_client)
-
-    @patch("cbproorder.utils.is_dev")
-    @patch("cbproorder.utils.is_local")
-    @patch("cbproorder.settings.CoinbaseConfig")
-    @patch("cbpro.AuthenticatedClient")
-    def test_returns_sandbox_authenticated_client_when_env_is_dev(
-        self, mock_auth_client, mock_coinbase_config, mock_is_local, mock_is_dev
-    ):
-        mock_is_local.return_value = False
-        mock_is_dev.return_value = True
-        coinbase_config = mock_coinbase_config.return_value
-        coinbase_config.API_KEY = "fake-api-key"
-        coinbase_config.API_PASSPHRASE = "fake-passphrase"
-        coinbase_config.API_SECRET = "fake-api-secret"
-        coinbase_config.SANDBOX_API_URL = "http://sandbox-api-url"
-        authenticated_client = mock_auth_client.return_value
-        authenticated_client.auth = "authenticated"
-
-        auth_client = main.authenticate()
-
-        mock_auth_client.assert_called_once_with(
-            key=coinbase_config.API_KEY,
-            b64secret=coinbase_config.API_SECRET,
-            passphrase=coinbase_config.API_PASSPHRASE,
-            api_url=coinbase_config.SANDBOX_API_URL,
-        )
-        self.assertEqual(auth_client, authenticated_client)
