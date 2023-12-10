@@ -1,15 +1,21 @@
 PACKAGE_NAME=cbproorder
 
 .PHONY: lint
-lint: lint/black lint/flake8 ## Check style
-
-.PHONY: lint/black
-lint/black: ## Check style with black
-	black ${PACKAGE_NAME} tests
+lint: lint/flake8 ## Check style
 
 .PHONY: lint/flake8
 lint/flake8: ## Check style with flake8
 	flake8 ${PACKAGE_NAME}
+
+.PHONY: format
+format: format/black format/isort ## Format files
+
+.PHONY: format/black
+format/black: ## Format with black
+	black ${PACKAGE_NAME} tests
+
+format/isort: ## Reorder imports with isort
+	isort ${PACKAGE_NAME} tests
 
 .PHONY: pre-commit
 pre-commit: ## Run pre-commit on all files
