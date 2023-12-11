@@ -1,5 +1,17 @@
 PACKAGE_NAME=cbproorder
 
+.PHONY: clean
+clean: ## Clean all Python artifacts
+	find . -type f -name "*.pyc" -delete
+	find . -type d -name "__pycache__" -delete
+	rm -rf .pytest_cache
+	rm -rf htmlcov
+	rm -f .coverage
+	rm -rf .mypy_cache
+	rm -rf build
+	rm -rf dist
+	rm -rf *.egg-info
+
 .PHONY: lint
 lint: lint/flake8 ## Check style
 
