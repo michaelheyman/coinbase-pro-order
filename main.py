@@ -1,6 +1,12 @@
-"""Cloud function module."""
-from cbproorder import main
-from cbproorder.logger import logger
+from cbproorder.application.use_case.command import (
+    SubmitMarketBuyOrderCommand,
+    SubmitMarketBuyOrderCommandUseCase,
+)
+from cbproorder.infrastructure.config import Config
+from cbproorder.infrastructure.logger import get_logger
+from cbproorder.interface.coinbase_advanced_service import CoinbaseAdvancedService
+
+logger = get_logger(__name__)
 
 
 def coinbase_orders(event, context):
@@ -38,4 +44,29 @@ def coinbase_orders(event, context):
         )
         return
 
-    return main.start(orders)
+    # TODO: validate orders
+
+    config = Config()
+    order_service = CoinbaseAdvancedService(
+        api_key=config.APY_KEY,
+        secret_key=config.SECRET_KEY,
+    )
+    use_case = SubmitMarketBuyOrderCommandUseCase(order_service=order_service)
+
+    for order in orders:
+        marker_buy_order = SubmitMarketBuyOrderCommand(
+            product_id=order["product_id"],
+            funds=order["price"],
+        )
+
+        try:
+            order_response = use_case.create_market_buy_order(order=marker_buy_order)
+        except Exception as e:
+            logger.error(
+                "Failed to create market buy order",
+                extra={"error": e},
+                exc_info=1,
+            )
+            continue
+
+        logger.info("Purchase successful", extra={"order": order})
