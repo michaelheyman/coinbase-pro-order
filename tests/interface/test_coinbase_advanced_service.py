@@ -2,10 +2,12 @@ import unittest
 from unittest.mock import patch
 
 from coinbaseadvanced.models.orders import Order as CoinbaseAdvancedOrder
+
 from cbproorder.domain.exception.order import UnsupportedOrderType
 from cbproorder.domain.value_object.orders import Order, OrderSide, OrderType
 from cbproorder.domain.value_object.pair import Pair
-from cbproorder.interface.coinbase_advanced_service import CoinbaseAdvancedService
+from cbproorder.interface.coinbase_advanced_service import \
+    CoinbaseAdvancedService
 
 
 class TestCoinbaseClient(unittest.TestCase):

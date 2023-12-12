@@ -8,8 +8,8 @@
 
 - [Overview](#overview)
 - [Usage](#usage)
-  - [Coinbase Pro Authentication](#coinbase-pro-authentication)
-  - [Coinbase Sandbox](#coinbase-sandbox)
+  - [Coinbase Advanced Trade API Authentication](#coinbase-advanced-trade-api-authentication)
+  - [Notification Configuration](#notification-configuration)
   - [Create an Environment File](#create-an-environment-file)
 - [Developer Setup](#developer-setup)
   - [Create Virtual Environment](#create-virtual-environment)
@@ -17,6 +17,7 @@
   - [Install Git Hooks](#install-git-hooks)
 - [Testing](#testing)
 - [Google Cloud Platform Integration and Deployment](#google-cloud-platform-integration-and-deployment)
+- [Enhancements](#enhancements)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -76,15 +77,30 @@ More information on Coinbase Advanced Trace API can be found here:
 - Authentication <https://docs.cloud.coinbase.com/advanced-trade-api/docs/rest-api-auth>
 - Permissions: <https://docs.cloud.coinbase.com/advanced-trade-api/docs/rest-api-overview#advanced-trade-endpoints>
 
+### Notification Configuration
+
+This system supports notifications via Telegram. In order to configure
+notifications, you will need to create a Telegram bot and retrieve your chat ID.
+
+1. Start a chat with [`@BotFather`](https://t.me/BotFather) and type `/newbot`
+2. Reply to BotFather with a name for your bot
+3. Choose a username for the bot. It must be unique and end with `bot`
+4. Save the HTTP API key associated with the bot
+5. Start a chat with [`@myidbot`](https://t.me/myidbot) and retrieve your chat
+ID number by submitting the `/start` and then the `/getid` commands
+6. Start a conversation with the bot created in step #3, and type `/start`
+
 ### Create an Environment File
 
 Create a `.env` file in the project root, and override the following variables.
 
-| Variable       | Type         | Description                                                                      |
-| -------------- | ------------ | -------------------------------------------------------------------------------- |
-| API_KEY        | **Required** | The Coinbase API key name                                                        |
-| API_SECRET     | **Required** | The Coinbase API secret for this API key                                         |
-| LOGGING_LEVEL  | **Optional** | The logging level (defaults to INFO)                                             |
+| Variable            | Type         | Description                                                                      |
+| ------------------- | ------------ | ------------------------------------------------- |
+| COINBASE_API_KEY    | **Required** | The Coinbase API key name                         |
+| COINBASE_API_SECRET | **Required** | The Coinbase API secret for this API key          |
+| LOGGING_LEVEL       | **Optional** | The logging level (defaults to INFO)              |
+| TELEGRAM_BOT_TOKEN  | **Required** | The Telegram bot token of the bot created earlier |
+| TELEGRAM_CHAT_ID    | **Required** | The Telegram chat ID for the destination user     |
 
 The `.env` file will be automatically loaded.
 
@@ -134,5 +150,4 @@ deploy this cloud function to the Google Cloud Platform.
 
 ## Enhancements
 
-- [ ] Add support for Google Secrets Manager to store API key and secret
-- [ ] Create a facade on top of Coinbase API to simplify the API and rely less on concrete implemenations
+- [ ] Add support for Google Secrets Manager to store secrets
