@@ -39,3 +39,25 @@ class Order:
     quote_size: float
     side: OrderSide
     type: OrderType
+
+
+@dataclass
+class OrderResult:
+    """
+    A class to represent the result of an order operation.
+
+    This class encapsulates whether the operation was successful, the original order, the ID of the order (if it was created), the status of the order, and any error message (if the operation failed).
+
+    Attributes:
+        success (bool): Whether the operation was successful.
+        order (Order): The original order.
+        order_id (str, optional): The ID of the order, if it was created. Defaults to None.
+        status (str, optional): The status of the order. Defaults to None.
+        error_message (str, optional): Any error message, if the operation failed. Defaults to None.
+    """
+
+    success: bool
+    order: Order
+    order_id: str = None
+    status: str = None
+    error_message: str = None

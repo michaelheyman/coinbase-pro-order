@@ -1,9 +1,9 @@
 from abc import ABC, abstractmethod
 
-from cbproorder.domain.value_object.orders import Order
+from cbproorder.domain.value_object.orders import Order, OrderResult
 
 
-class OrderServiceInterface(ABC):
+class OrderService(ABC):
     """
     A class to represent the interface for an order service.
 
@@ -11,7 +11,7 @@ class OrderServiceInterface(ABC):
     """
 
     @abstractmethod
-    def create_market_buy_order(self, order: Order):
+    def create_market_buy_order(self, order: Order) -> OrderResult:
         """
         Create a market buy order.
 

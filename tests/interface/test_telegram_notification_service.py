@@ -1,9 +1,9 @@
-import asyncio
 import unittest
 from unittest.mock import patch
 
-from cbproorder.interface.telegram_notification_service import \
-    TelegramNotificationService
+from cbproorder.interface.telegram_notification_service import (
+    TelegramNotificationService,
+)
 
 
 class TestTelegramNotificationService(unittest.TestCase):

@@ -5,6 +5,9 @@ from cbproorder.application.use_case.command import (
 from cbproorder.infrastructure.config import Config
 from cbproorder.infrastructure.logger import get_logger
 from cbproorder.interface.coinbase_advanced_service import CoinbaseAdvancedService
+from cbproorder.interface.telegram_notification_service import (
+    TelegramNotificationService,
+)
 
 logger = get_logger(__name__)
 
@@ -48,10 +51,17 @@ def coinbase_orders(event, context):
 
     config = Config()
     order_service = CoinbaseAdvancedService(
-        api_key=config.APY_KEY,
-        secret_key=config.SECRET_KEY,
+        api_key=config.COINBASE_API_KEY,
+        secret_key=config.COINBASE_SECRET_KEY,
     )
-    use_case = SubmitMarketBuyOrderCommandUseCase(order_service=order_service)
+    notification_service = TelegramNotificationService(
+        bot_token=config.TELEGRAM_BOT_TOKEN,
+        chat_id=config.TELEGRAM_CHAT_ID,
+    )
+    use_case = SubmitMarketBuyOrderCommandUseCase(
+        order_service=order_service,
+        notification_service=notification_service,
+    )
 
     for order in orders:
         marker_buy_order = SubmitMarketBuyOrderCommand(
@@ -60,7 +70,7 @@ def coinbase_orders(event, context):
         )
 
         try:
-            order_response = use_case.create_market_buy_order(order=marker_buy_order)
+            _ = use_case.create_market_buy_order(order=marker_buy_order)
         except Exception as e:
             logger.error(
                 "Failed to create market buy order",

@@ -1,55 +1,14 @@
 import uuid
-from dataclasses import dataclass
 
 from coinbaseadvanced import client
 from coinbaseadvanced.models.orders import Order as CoinbaseAdvancedOrder
 
-from cbproorder.application.order_service import OrderServiceInterface
+from cbproorder.application.order_service import OrderService
 from cbproorder.domain.exception.order import UnsupportedOrderType
-from cbproorder.domain.value_object.orders import Order, OrderType
+from cbproorder.domain.value_object.orders import Order, OrderResult, OrderType
 
 
-@dataclass
-class OrderResult:
-    """
-    A class to represent the result of an order.
-
-    Attributes:
-        id (str): The ID of the order.
-        product_id (str): The product ID of the order.
-        side (str): The side of the order (buy or sell).
-        type (str): The type of the order (limit, market, or stop).
-        funds (float): The size of the order in quote currency.
-        status (str): The status of the order.
-    """
-
-    # TODO: Add more attributes to this class.
-    success: bool
-
-    @classmethod
-    def from_coinbase_advanced_order(cls, order: CoinbaseAdvancedOrder):
-        """
-        Create an OrderResult object from a CoinbaseAdvancedOrder object.
-
-        The CoinbaseAdvancedOrder object is returned from the Coinbase Advanced
-        Trade API, and its documentation can be found here:
-
-        https://docs.cloud.coinbase.com/advanced-trade-api/reference/retailbrokerageapi_postorder
-
-        Args:
-            order (CoinbaseAdvancedOrder): The CoinbaseAdvancedOrder object to convert.
-
-        Returns:
-            OrderResult: The converted OrderResult object.
-        """
-        success = True if order.order_id and order.side else False
-
-        return cls(
-            success=success,
-        )
-
-
-class CoinbaseAdvancedService(OrderServiceInterface):
+class CoinbaseAdvancedService(OrderService):
     """
     A class to represent the Coinbase Advanced Service.
 
@@ -93,4 +52,33 @@ class CoinbaseAdvancedService(OrderServiceInterface):
             quote_size=order.quote_size,
         )
 
-        return OrderResult.from_coinbase_advanced_order(created_order)
+        return self._order_result_from_coinbase_advanced_order(
+            order=order,
+            coinbase_order=created_order,
+        )
+
+    def _order_result_from_coinbase_advanced_order(
+        self,
+        order: Order,
+        coinbase_order: CoinbaseAdvancedOrder,
+    ) -> OrderResult:
+        """
+        Create an OrderResult object from a CoinbaseAdvancedOrder object.
+
+        The CoinbaseAdvancedOrder object is returned from the Coinbase Advanced
+        Trade API, and its documentation can be found here:
+
+        https://docs.cloud.coinbase.com/advanced-trade-api/reference/retailbrokerageapi_postorder
+
+        Args:
+            order (CoinbaseAdvancedOrder): The CoinbaseAdvancedOrder object to convert.
+
+        Returns:
+            OrderResult: The converted OrderResult object.
+        """
+        success = True if coinbase_order.order_id and coinbase_order.side else False
+
+        return OrderResult(
+            success=success,
+            order=order,
+        )

@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 
-class NotificationServiceInterface(ABC):
+class NotificationService(ABC):
     """
     A class to represent the interface for a notification service.
 

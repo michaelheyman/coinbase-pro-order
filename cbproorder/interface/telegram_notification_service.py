@@ -1,7 +1,7 @@
-from cbproorder.application.notification_service import NotificationServiceInterface
+from cbproorder.application.notification_service import NotificationService
 
 
-class TelegramNotificationService(NotificationServiceInterface):
+class TelegramNotificationService(NotificationService):
     """
     A class to represent a Telegram notification service.
 
