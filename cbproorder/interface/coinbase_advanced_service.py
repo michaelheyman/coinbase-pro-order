@@ -39,7 +39,7 @@ class CoinbaseAdvancedService(OrderService):
             UnsupportedOrderType: If the order type is not MARKET.
 
         Returns:
-            dict: The response from the Coinbase Advanced API.
+            OrderResult: The result of the order operation, encapsulating whether the operation was successful, the original order, and any error message (if the operation failed).
         """
         if order.type != OrderType.MARKET:
             raise UnsupportedOrderType(order.type)
@@ -53,14 +53,12 @@ class CoinbaseAdvancedService(OrderService):
         )
 
         return self._order_result_from_coinbase_advanced_order(
-            order=order,
-            coinbase_order=created_order,
+            coinbase_order_response=created_order,
         )
 
     def _order_result_from_coinbase_advanced_order(
         self,
-        order: Order,
-        coinbase_order: CoinbaseAdvancedOrder,
+        coinbase_order_response: CoinbaseAdvancedOrder,
     ) -> OrderResult:
         """
         Create an OrderResult object from a CoinbaseAdvancedOrder object.
@@ -76,9 +74,27 @@ class CoinbaseAdvancedService(OrderService):
         Returns:
             OrderResult: The converted OrderResult object.
         """
-        success = True if coinbase_order.order_id and coinbase_order.side else False
+        success = (
+            True
+            if coinbase_order_response.order_id and coinbase_order_response.side
+            else False
+        )
+
+        if coinbase_order_response.order_error:
+            return OrderResult(
+                success=False,
+                order_id=coinbase_order_response.order_id,
+                product_id=coinbase_order_response.product_id,
+                error=coinbase_order_response.order_error.error,
+                error_message=coinbase_order_response.order_error.message,
+                error_details=coinbase_order_response.order_error.error_details,
+            )
 
         return OrderResult(
             success=success,
-            order=order,
+            order_id=coinbase_order_response.order_id,
+            product_id=coinbase_order_response.product_id,
+            quote_size=coinbase_order_response.order_configuration.market_market_ioc.quote_size,
+            base_size=coinbase_order_response.order_configuration.market_market_ioc.base_size,
+            side=coinbase_order_response.side,
         )

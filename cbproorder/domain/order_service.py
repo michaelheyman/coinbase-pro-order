@@ -20,6 +20,9 @@ class OrderService(ABC):
         Args:
             order (Order): The order to create.
 
+        Returns:
+            OrderResult: The result of the order operation, encapsulating whether the operation was successful, the original order, and any error message (if the operation failed).
+
         Raises:
             NotImplementedError: If the method is not implemented by a subclass.
         """
