@@ -3,8 +3,8 @@ import uuid
 from coinbaseadvanced import client
 from coinbaseadvanced.models.orders import Order as CoinbaseAdvancedOrder
 
-from cbproorder.application.order_service import OrderService
 from cbproorder.domain.exception.order import UnsupportedOrderType
+from cbproorder.domain.order_service import OrderService
 from cbproorder.domain.value_object.orders import Order, OrderResult, OrderType
 
 

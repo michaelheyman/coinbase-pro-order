@@ -1,5 +1,5 @@
-from cbproorder.application.notification_service import NotificationService
-from cbproorder.application.order_service import OrderService
+from cbproorder.domain.notification_service import NotificationService
+from cbproorder.domain.order_service import OrderService
 from cbproorder.domain.value_object.orders import (
     Order,
     OrderResult,

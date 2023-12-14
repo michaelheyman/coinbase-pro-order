@@ -1,4 +1,4 @@
-from cbproorder.application.notification_service import NotificationService
+from cbproorder.domain.notification_service import NotificationService
 
 
 class TelegramNotificationService(NotificationService):
