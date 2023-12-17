@@ -15,6 +15,7 @@
   - [Create Virtual Environment](#create-virtual-environment)
   - [Install Requirements](#install-requirements)
   - [Install Git Hooks](#install-git-hooks)
+  - [Run Application Locally](#run-application-locally)
 - [Testing](#testing)
 - [Google Cloud Platform Integration and Deployment](#google-cloud-platform-integration-and-deployment)
 - [Enhancements](#enhancements)
@@ -133,6 +134,37 @@ pre-commit install
 pre-commit install -t pre-push
 ```
 
+### Run Application Locally
+
+:warning: This will create real orders on Coinbase. Use with caution.
+
+With the `functions-framework` installed, you can run the application locally
+by setting up a listener for the `coinbase_orders` function:
+
+```bash
+functions-framework --target=coinbase_orders --signature-type=event --debug
+```
+
+Then, create a `test_event.json` file with the array of orders.
+
+With the listener running, you can send a test event to the function and have it read the contents of that file:
+
+```bash
+curl -L 'http://localhost:8080' \
+-H 'Content-Type: application/json' \
+-H 'ce-id: 123451234512345' \
+-H 'ce-specversion: 1.0' \
+-H 'ce-time: 2020-01-02T12:34:56.789Z' \
+-H 'ce-type: google.cloud.pubsub.topic.v1.messagePublished' \
+-H 'ce-source: //pubsub.googleapis.com/projects/MY-PROJECT/topics/MY-TOPIC' \
+-d '{
+    "message": {
+        "data": "'"$(jq -c . < test_event.json | base64)"'"
+    },
+    "subscription": "projects/MY-PROJECT/subscriptions/MY-SUB"
+}'
+```
+
 ## Testing
 
 Run the unit tests and the coverage tests:
@@ -150,4 +182,8 @@ deploy this cloud function to the Google Cloud Platform.
 
 ## Enhancements
 
+- [ ] Validate orders
+- [ ] Create notification domain object
 - [ ] Add support for Google Secrets Manager to store secrets
+- [ ] Support overriding JSON logging to standard logging via environment variable
+- [ ] Add support for other notification mechanisms
