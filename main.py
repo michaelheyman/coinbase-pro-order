@@ -64,13 +64,14 @@ def coinbase_orders(event, context):
     )
 
     for order in orders:
-        marker_buy_order = SubmitMarketBuyOrderCommand(
+        buy_order_command = SubmitMarketBuyOrderCommand(
             product_id=order["product_id"],
             funds=order["price"],
         )
 
         try:
-            _ = use_case.create_market_buy_order(order=marker_buy_order)
+            order_result = use_case.create_market_buy_order(command=buy_order_command)
+            logger.debug(f"Order result {order_result}")
         except Exception as e:
             logger.error(
                 "Failed to create market buy order",

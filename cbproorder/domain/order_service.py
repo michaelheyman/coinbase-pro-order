@@ -26,4 +26,4 @@ class OrderService(ABC):
         Raises:
             NotImplementedError: If the method is not implemented by a subclass.
         """
-        pass
+        pass  # pragma: no cover

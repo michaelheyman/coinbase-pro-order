@@ -40,3 +40,8 @@ class TestConfig(unittest.TestCase):
     def test_telegram_chat_id(self):
         config = Config()
         self.assertEqual(config.TELEGRAM_CHAT_ID, 123456789)
+
+    @patch.dict(os.environ, {"TELEGRAM_CHAT_ID": "12345abcd"}, clear=True)
+    def test_telegram_chat_id_invalid_int_returns_none(self):
+        config = Config()
+        self.assertEqual(config.TELEGRAM_CHAT_ID, None)

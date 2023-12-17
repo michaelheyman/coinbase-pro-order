@@ -19,4 +19,4 @@ class NotificationService(ABC):
             title (str): The title of the notification.
             message (str): The message to send in the notification.
         """
-        pass
+        pass  # pragma: no cover

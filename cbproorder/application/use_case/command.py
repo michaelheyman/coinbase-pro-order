@@ -73,6 +73,6 @@ class SubmitMarketBuyOrderCommandUseCase:
         # TODO: modify notification based on the result of creating an order
         self.notification_service.send_notification(
             title="Order Created",
-            message=f"Order created for {self.order.pair} at {self.order.quote_size}",
+            message=f"Order created for {self.order.pair} at ${self.order.quote_size}",
         )
         return created_order

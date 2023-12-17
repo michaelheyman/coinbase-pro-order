@@ -6,6 +6,9 @@ from coinbaseadvanced.models.orders import Order as CoinbaseAdvancedOrder
 from cbproorder.domain.exception.order import UnsupportedOrderType
 from cbproorder.domain.order_service import OrderService
 from cbproorder.domain.value_object.orders import Order, OrderResult, OrderType
+from cbproorder.infrastructure.logger import get_logger
+
+logger = get_logger(__name__)
 
 
 class CoinbaseAdvancedService(OrderService):
@@ -51,6 +54,7 @@ class CoinbaseAdvancedService(OrderService):
             product_id=product_id,
             quote_size=order.quote_size,
         )
+        logger.debug(f"Created order {created_order}")
 
         return self._order_result_from_coinbase_advanced_order(
             coinbase_order_response=created_order,

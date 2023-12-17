@@ -78,5 +78,5 @@ class Config:
         chat_id = os.getenv("TELEGRAM_CHAT_ID")
         try:
             return int(chat_id)
-        except (TypeError, ValueError):
+        except ValueError:
             return None
