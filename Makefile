@@ -1,15 +1,33 @@
 PACKAGE_NAME=cbproorder
 
-.PHONY: lint
-lint: lint/black lint/flake8 ## Check style
+.PHONY: clean
+clean: ## Clean all Python artifacts
+	find . -type f -name "*.pyc" -delete
+	find . -type d -name "__pycache__" -delete
+	rm -rf .pytest_cache
+	rm -rf htmlcov
+	rm -f .coverage
+	rm -rf .mypy_cache
+	rm -rf build
+	rm -rf dist
+	rm -rf *.egg-info
 
-.PHONY: lint/black
-lint/black: ## Check style with black
-	black ${PACKAGE_NAME} tests
+.PHONY: lint
+lint: lint/flake8 ## Check style
 
 .PHONY: lint/flake8
 lint/flake8: ## Check style with flake8
 	flake8 ${PACKAGE_NAME}
+
+.PHONY: format
+format: format/black format/isort ## Format files
+
+.PHONY: format/black
+format/black: ## Format with black
+	black ${PACKAGE_NAME} tests
+
+format/isort: ## Reorder imports with isort
+	isort ${PACKAGE_NAME} tests
 
 .PHONY: pre-commit
 pre-commit: ## Run pre-commit on all files

@@ -1,6 +1,11 @@
 [flake8]
+docstring-convention=google
 # Ignore settings that are being enforced by black
+# D100: Missing docstring in public module
+# D104: Missing docstring in public package
+# D200: One-line docstring should fit on one line with quotes
+# D212: Multi-line docstring summary should start at the first line
 # E501: line too long
-ignore = E501
+ignore = D100,D104,D200,D212,E501
 per-file-ignores =
     tests/*:D100,D101,D102,D103
