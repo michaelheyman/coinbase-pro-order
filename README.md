@@ -73,12 +73,17 @@ In order to create a Coinbase API key:
 "Cash (USD)" account, if you're buying with USD cash.
 1. Add permissions to the API key:
 
-    - `Cash (USD)`: this permission is required to query for account balances
-    - `wallet:accounts:read`: this permission is required to query for account balances
-    - `wallet:buys:create`: this permission is required to create new orders
-    - `wallet:orders:read`: this permission is required to query for order status
-    - `wallet:transactions:read`: this permission is required to query for transaction history
-    - `wallet:user:read`: this permission is required to query for user information
+    - For making orders
+      - `Cash (USD)`: this permission is required to query for account balances
+      - `wallet:accounts:read`: this permission is required to query for account balances
+      - `wallet:buys:create`: this permission is required to create new orders
+      - `wallet:orders:read`: this permission is required to query for order status
+      - `wallet:transactions:read`: this permission is required to query for transaction history
+      - `wallet:user:read`: this permission is required to query for user information
+    - For making deposits:
+      - `wallet:accounts:read`: this permission is required to query for account balances
+      - `wallet:deposits:create`: this permission is required to create new deposits
+      - `wallet:payment-methods:read`: this permission is required to query for payment methods
 
 1. Click "Create"
 1. Make a note of the API key, and API secret. **Store these values safely**.

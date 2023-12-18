@@ -1,3 +1,4 @@
+coinbase==2.1.0
 coinbaseadvanced==0.2.0
 google-cloud-secret-manager==2.17.0
 pyTelegramBotAPI==4.14.0
