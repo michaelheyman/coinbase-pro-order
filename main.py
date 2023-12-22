@@ -1,3 +1,5 @@
+import os
+
 from cbproorder.application.use_case.command import (
     SubmitMarketBuyOrderCommand,
     SubmitMarketBuyOrderCommandUseCase,
@@ -5,6 +7,12 @@ from cbproorder.application.use_case.command import (
 from cbproorder.infrastructure.config import Config
 from cbproorder.infrastructure.logger import get_logger
 from cbproorder.interface.coinbase_advanced_service import CoinbaseAdvancedService
+from cbproorder.interface.environments_secrets_provider import (
+    EnvironmentSecretsProvider,
+)
+from cbproorder.interface.google_secrets_manager_provider import (
+    GoogleSecretsManagerProvider,
+)
 from cbproorder.interface.telegram_notification_service import (
     TelegramNotificationService,
 )
@@ -49,7 +57,14 @@ def coinbase_orders(event, context):
 
     # TODO: validate orders
 
-    config = Config()
+    if os.getenv("ENVIRONMENT") == "production":
+        secrets_provider = GoogleSecretsManagerProvider(
+            project_id=os.getenv("GOOGLE_PROJECT_ID"),
+        )
+    else:
+        secrets_provider = EnvironmentSecretsProvider()
+
+    config = Config(secrets_provider=secrets_provider)
     order_service = CoinbaseAdvancedService(
         api_key=config.COINBASE_API_KEY,
         secret_key=config.COINBASE_SECRET_KEY,
