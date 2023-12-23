@@ -61,6 +61,10 @@ Create a `terraform.tfvars` file in this directory. Then, fill it with the follo
 - `project`: this value is your GCP project id
 - `credentials_file`: this is the path to the service account key credentials file created above
 - `purchase_orders`: although the config provides a default purchase, you're encouraged to update this as well
+- `coinbase_api_key`: this is the API key for your Coinbase account
+- `coinbase_secret_key`: this is the secret key for your Coinbase account
+- `telegram_bot_token`: this is the token for your Telegram bot
+- `telegram_chat_id`: this is the chat id for your Telegram bot`
 
 Example:
 
@@ -130,6 +134,7 @@ gcloud services enable cloudfunctions.googleapis.com
 gcloud services enable cloudresourcemanager.googleapis.com
 gcloud services enable cloudscheduler.googleapis.com
 gcloud services enable pubsub.googleapis.co
+gcloud services enable secretmanager.googleapis.com
 ```
 
 ### Attempted to load application default credentials

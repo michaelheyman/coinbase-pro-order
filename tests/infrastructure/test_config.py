@@ -1,6 +1,6 @@
 import os
 import unittest
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from cbproorder.infrastructure.config import Config
 
@@ -10,38 +10,53 @@ class TestConfig(unittest.TestCase):
     A class to represent the unit tests for the Config class.
     """
 
-    @patch.dict(os.environ, {"COINBASE_API_KEY": "test_api_key"}, clear=True)
-    def test_coinbase_api_key(self):
-        config = Config()
-        self.assertEqual(config.COINBASE_API_KEY, "test_api_key")
+    def setUp(self):
+        self.mock_secrets_provider = MagicMock()
+        self.config = Config(self.mock_secrets_provider)
 
-    @patch.dict(os.environ, {"COINBASE_SECRET_KEY": "test_secret_key"}, clear=True)
+    def test_coinbase_api_key(self):
+        self.mock_secrets_provider.get_secret.return_value = "test_api_key"
+        self.assertEqual(self.config.COINBASE_API_KEY, "test_api_key")
+        self.mock_secrets_provider.get_secret.assert_called_once_with(
+            "COINBASE_API_KEY"
+        )
+
     def test_coinbase_secret_key(self):
-        config = Config()
-        self.assertEqual(config.COINBASE_SECRET_KEY, "test_secret_key")
+        self.mock_secrets_provider.get_secret.return_value = "test_secret_key"
+        self.assertEqual(self.config.COINBASE_SECRET_KEY, "test_secret_key")
+        self.mock_secrets_provider.get_secret.assert_called_once_with(
+            "COINBASE_SECRET_KEY"
+        )
 
     @patch.dict(os.environ, {"LOGGING_LEVEL": "DEBUG"}, clear=True)
     def test_logging_level(self):
-        config = Config()
-        self.assertEqual(config.LOGGING_LEVEL, "DEBUG")
+        self.assertEqual(self.config.LOGGING_LEVEL, "DEBUG")
 
-    @patch.dict(
-        os.environ,
-        {"TELEGRAM_BOT_TOKEN": "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11"},
-        clear=True,
-    )
+    def test_logging_level_default(self):
+        os.environ.pop("LOGGING_LEVEL", None)
+        self.assertEqual(self.config.LOGGING_LEVEL, "INFO")
+
     def test_telegram_bot_token(self):
-        config = Config()
+        self.mock_secrets_provider.get_secret.return_value = (
+            "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11"
+        )
         self.assertEqual(
-            config.TELEGRAM_BOT_TOKEN, "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11"
+            self.config.TELEGRAM_BOT_TOKEN, "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11"
+        )
+        self.mock_secrets_provider.get_secret.assert_called_once_with(
+            "TELEGRAM_BOT_TOKEN"
         )
 
-    @patch.dict(os.environ, {"TELEGRAM_CHAT_ID": "123456789"}, clear=True)
     def test_telegram_chat_id(self):
-        config = Config()
-        self.assertEqual(config.TELEGRAM_CHAT_ID, 123456789)
+        self.mock_secrets_provider.get_secret.return_value = "123456789"
+        self.assertEqual(self.config.TELEGRAM_CHAT_ID, 123456789)
+        self.mock_secrets_provider.get_secret.assert_called_once_with(
+            "TELEGRAM_CHAT_ID"
+        )
 
-    @patch.dict(os.environ, {"TELEGRAM_CHAT_ID": "12345abcd"}, clear=True)
     def test_telegram_chat_id_invalid_int_returns_none(self):
-        config = Config()
-        self.assertEqual(config.TELEGRAM_CHAT_ID, None)
+        self.mock_secrets_provider.get_secret.return_value = "12345abcd"
+        self.assertEqual(self.config.TELEGRAM_CHAT_ID, None)
+        self.mock_secrets_provider.get_secret.assert_called_once_with(
+            "TELEGRAM_CHAT_ID"
+        )

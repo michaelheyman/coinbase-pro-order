@@ -4,6 +4,9 @@ from datetime import datetime
 from pythonjsonlogger import jsonlogger
 
 from cbproorder.infrastructure.config import Config
+from cbproorder.interface.environments_secrets_provider import (
+    EnvironmentSecretsProvider,
+)
 
 
 class CustomJsonFormatter(jsonlogger.JsonFormatter):
@@ -51,7 +54,7 @@ def get_logger(name):
     Returns:
         logging.Logger: The logger.
     """
-    config = Config()
+    config = Config(secrets_provider=EnvironmentSecretsProvider())
     logging.getLogger().setLevel(config.LOGGING_LEVEL)
     logger = logging.getLogger(name)
     logger.setLevel(config.LOGGING_LEVEL)

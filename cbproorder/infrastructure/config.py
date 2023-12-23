@@ -1,31 +1,23 @@
 import os
 
-from dotenv import load_dotenv
+from cbproorder.domain.secrets_provider import SecretsProvider
 
 
 class Config:
     """
     A class to represent the application configuration.
 
-    This class retrieves configuration values from environment variables and provides them as properties.
-
-    Attributes:
-        COINBASE_API_KEY (str): The API key for the Coinbase Advanced API.
-        COINBASE_SECRET_KEY (str): The secret key for the Coinbase Advanced API.
-        LOGGING_LEVEL (str): The logging level for the application.
-        TELEGRAM_API_ID (str): The API ID for the Telegram API.
-        TELEGRAM_API_HASH (str): The API hash for the Telegram API.
-        TELEGRAM_BOT_NAME (str): The name of the Telegram bot.
-        TELEGRAM_BOT_TOKEN (str): The token for the Telegram bot.
+    This class retrieves configuration values from secrets and provides them as properties.
     """
 
-    def __init__(self):
+    def __init__(self, secrets_provider: SecretsProvider):
         """
-        Constructs an instance of the Config class.
+        Initialize the Config class.
 
-        Loads environment variables from a .env file.
+        Args:
+            secrets_provider (SecretsProvider): The secrets provider to use for retrieving secrets.
         """
-        load_dotenv()
+        self.secrets_provider = secrets_provider
 
     @property
     def COINBASE_API_KEY(self):
@@ -35,7 +27,7 @@ class Config:
         Returns:
             str: The API key.
         """
-        return os.getenv("COINBASE_API_KEY")
+        return self.secrets_provider.get_secret("COINBASE_API_KEY")
 
     @property
     def COINBASE_SECRET_KEY(self):
@@ -45,7 +37,7 @@ class Config:
         Returns:
             str: The secret key.
         """
-        return os.getenv("COINBASE_SECRET_KEY")
+        return self.secrets_provider.get_secret("COINBASE_SECRET_KEY")
 
     @property
     def LOGGING_LEVEL(self):
@@ -65,7 +57,7 @@ class Config:
         Returns:
             str: The bot token.
         """
-        return os.getenv("TELEGRAM_BOT_TOKEN")
+        return self.secrets_provider.get_secret("TELEGRAM_BOT_TOKEN")
 
     @property
     def TELEGRAM_CHAT_ID(self):
@@ -73,9 +65,9 @@ class Config:
         Get the ID of the Telegram chat.
 
         Returns:
-            int: The chat ID. If the environment variable is not set or is not a valid integer, returns None.
+            int: The chat ID. If the secret is not set or is not a valid integer, returns None.
         """
-        chat_id = os.getenv("TELEGRAM_CHAT_ID")
+        chat_id = self.secrets_provider.get_secret("TELEGRAM_CHAT_ID")
         try:
             return int(chat_id)
         except ValueError:

@@ -1,4 +1,5 @@
 PACKAGE_NAME=cbproorder
+READMES=README.md terraform/README.md
 
 .PHONY: clean
 clean: ## Clean all Python artifacts
@@ -38,6 +39,17 @@ test-coverage: ## Run test coverage tool
 	python -m pytest \
 	--cov-report term-missing \
 	--cov=${PACKAGE_NAME} tests/
+
+.PHONY: readme
+readme: readme/lint readme/format ## Apply READMEs formatting and linting
+
+.PHONY: readme/lint
+readme/lint: ## Lint READMEs
+	npx -y markdownlint-cli2 --fix ${READMES}
+
+.PHONY: readme/format
+readme/format: ## Format READMEs
+	npx -y doctoc --github ${READMES}
 
 .PHONY: run
 run: ## Run the application
