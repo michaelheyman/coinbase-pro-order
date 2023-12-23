@@ -10,12 +10,13 @@
 - [Usage](#usage)
   - [Coinbase Advanced Trade API Authentication](#coinbase-advanced-trade-api-authentication)
   - [Notification Configuration](#notification-configuration)
-  - [Create an Environment File](#create-an-environment-file)
 - [Developer Setup](#developer-setup)
   - [Create Virtual Environment](#create-virtual-environment)
   - [Install Requirements](#install-requirements)
   - [Install Git Hooks](#install-git-hooks)
   - [Run Application Locally](#run-application-locally)
+    - [Create an Environment File](#create-an-environment-file)
+    - [Run the Application](#run-the-application)
 - [Testing](#testing)
 - [Google Cloud Platform Integration and Deployment](#google-cloud-platform-integration-and-deployment)
 - [Enhancements](#enhancements)
@@ -43,6 +44,16 @@ Coinbase Advanced Trade API, which charges much lower fees.
 you to configure recurring purchases through Coinbase Advanced Trade API.
 
 ## Usage
+
+This application is designed to be deployed to Google Cloud Platform.
+
+To learn more about how to deploy this application, see the README in the
+[terraform](./terraform) directory.
+
+To learn more about how to run this application locally, see the README the
+[Run Application Locally](#run-application-locally) section.
+
+In any way, the application requires the following services:
 
 ### Coinbase Advanced Trade API Authentication
 
@@ -91,20 +102,6 @@ notifications, you will need to create a Telegram bot and retrieve your chat ID.
 ID number by submitting the `/start` and then the `/getid` commands
 6. Start a conversation with the bot created in step #3, and type `/start`
 
-### Create an Environment File
-
-Create a `.env` file in the project root, and override the following variables.
-
-| Variable            | Type         | Description                                                                      |
-| ------------------- | ------------ | ------------------------------------------------- |
-| COINBASE_API_KEY    | **Required** | The Coinbase API key name                         |
-| COINBASE_API_SECRET | **Required** | The Coinbase API secret for this API key          |
-| LOGGING_LEVEL       | **Optional** | The logging level (defaults to INFO)              |
-| TELEGRAM_BOT_TOKEN  | **Required** | The Telegram bot token of the bot created earlier |
-| TELEGRAM_CHAT_ID    | **Required** | The Telegram chat ID for the destination user     |
-
-The `.env` file will be automatically loaded.
-
 ## Developer Setup
 
 ### Create Virtual Environment
@@ -137,6 +134,22 @@ pre-commit install -t pre-push
 ### Run Application Locally
 
 :warning: This will create real orders on Coinbase. Use with caution.
+
+#### Create an Environment File
+
+Create a `.env` file in the project root, and override the following variables.
+
+| Variable            | Type         | Description                                                                      |
+| ------------------- | ------------ | ------------------------------------------------- |
+| COINBASE_API_KEY    | **Required** | The Coinbase API key name                         |
+| COINBASE_API_SECRET | **Required** | The Coinbase API secret for this API key          |
+| LOGGING_LEVEL       | **Optional** | The logging level (defaults to INFO)              |
+| TELEGRAM_BOT_TOKEN  | **Required** | The Telegram bot token of the bot created earlier |
+| TELEGRAM_CHAT_ID    | **Required** | The Telegram chat ID for the destination user     |
+
+The `.env` file will be automatically loaded.
+
+#### Run the Application
 
 With the `functions-framework` installed, you can run the application locally
 by setting up a listener for the `coinbase_orders` function:
@@ -184,6 +197,5 @@ deploy this cloud function to the Google Cloud Platform.
 
 - [ ] Validate orders
 - [ ] Create notification domain object
-- [ ] Add support for Google Secrets Manager to store secrets
 - [ ] Support overriding JSON logging to standard logging via environment variable
 - [ ] Add support for other notification mechanisms
