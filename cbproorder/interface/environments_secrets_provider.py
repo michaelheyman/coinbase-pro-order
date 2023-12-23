@@ -2,6 +2,7 @@ import os
 
 from dotenv import load_dotenv
 
+from cbproorder.domain.exception.secret import RequiredSecretNotFound
 from cbproorder.domain.secrets_provider import SecretsProvider
 
 
@@ -26,10 +27,19 @@ class EnvironmentSecretsProvider(SecretsProvider):
         """
         Retrieve a secret from the environment variables given its ID.
 
+        This method attempts to retrieve the secret with the given ID from the environment variables.
+        If the secret is not found, it raises a RequiredSecretNotFound exception.
+
         Args:
             secret_id (str): The ID of the secret.
 
         Returns:
-            str: The secret value, or an empty string if the secret is not found.
+            str: The secret value.
+
+        Raises:
+            RequiredSecretNotFound: If the secret with the given ID is not found in the environment variables.
         """
-        return os.getenv(secret_id, "")
+        try:
+            return os.environ[secret_id]
+        except KeyError:
+            raise RequiredSecretNotFound(secret_id=secret_id)

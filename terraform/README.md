@@ -130,6 +130,7 @@ gcloud services enable cloudfunctions.googleapis.com
 gcloud services enable cloudresourcemanager.googleapis.com
 gcloud services enable cloudscheduler.googleapis.com
 gcloud services enable pubsub.googleapis.co
+gcloud services enable secretmanager.googleapis.com
 ```
 
 ### Attempted to load application default credentials

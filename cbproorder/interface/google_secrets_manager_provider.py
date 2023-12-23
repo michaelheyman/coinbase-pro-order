@@ -1,5 +1,7 @@
+from google.api_core.exceptions import NotFound
 from google.cloud import secretmanager
 
+from cbproorder.domain.exception.secret import RequiredSecretNotFound
 from cbproorder.domain.secrets_provider import SecretsProvider
 
 
@@ -33,5 +35,8 @@ class GoogleSecretsManagerProvider(SecretsProvider):
             str: The secret value.
         """
         name = f"projects/{self.project_id}/secrets/{secret_id.lower()}/versions/latest"
-        response = self.client.access_secret_version(request={"name": name})
-        return response.payload.data.decode("UTF-8")
+        try:
+            response = self.client.access_secret_version(request={"name": name})
+            return response.payload.data.decode("UTF-8")
+        except NotFound:
+            raise RequiredSecretNotFound(secret_id=secret_id)
