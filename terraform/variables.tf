@@ -45,3 +45,25 @@ variable "pubsub_topic_name" {
   type        = string
   default     = "purchase-requests"
 }
+
+# Secrets
+
+variable "coinbase_api_key" {
+  description = "Coinbase API key."
+  type        = string
+}
+
+variable "coinbase_secret_key" {
+  description = "Coinbase secret key."
+  type        = string
+}
+
+variable "telegram_bot_token" {
+  description = "Telegram bot token."
+  type        = string
+}
+
+variable "telegram_chat_id" {
+  description = "Telegram chat ID."
+  type        = string
+}
