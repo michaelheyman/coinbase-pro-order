@@ -1,9 +1,12 @@
 import os
 
+from pydantic import ValidationError
+
 from cbproorder.application.use_case.command import (
     SubmitMarketBuyOrderCommand,
     SubmitMarketBuyOrderCommandUseCase,
 )
+from cbproorder.domain.value_object.orders import Order
 from cbproorder.infrastructure.config import Config
 from cbproorder.infrastructure.logger import get_logger
 from cbproorder.interface.coinbase_advanced_service import CoinbaseAdvancedService
@@ -46,7 +49,17 @@ def coinbase_orders(event, context):
     logger.info("Cloud event triggered", extra={"event": event, "context": context})
 
     try:
-        orders = json.loads(base64.b64decode(event["data"]).decode("utf-8"))
+        # Decode the Pub/Sub message and load it into a dict
+        orders_dict = json.loads(base64.b64decode(event["data"]).decode("utf-8"))
+        # Convert orders dict into a list of Order objects, automatically validating the data
+        orders = [Order.from_dict(order_dict) for order_dict in orders_dict]
+    except ValidationError as e:
+        logger.error(
+            "Error validating orders",
+            extra={"error": e},
+            exc_info=1,
+        )
+        return
     except Exception as e:
         logger.error(
             "Failed to read in orders",
@@ -54,8 +67,6 @@ def coinbase_orders(event, context):
             exc_info=1,
         )
         return
-
-    # TODO: validate orders
 
     if os.getenv("ENVIRONMENT") == "production":
         secrets_provider = GoogleSecretsManagerProvider(
@@ -80,13 +91,14 @@ def coinbase_orders(event, context):
 
     for order in orders:
         buy_order_command = SubmitMarketBuyOrderCommand(
-            product_id=order["product_id"],
-            funds=order["price"],
+            product_id=order.product_id,
+            funds=order.quote_size,
         )
 
         try:
             order_result = use_case.create_market_buy_order(command=buy_order_command)
             logger.debug(f"Order result {order_result}")
+            logger.info("Purchase successful", extra={"order": order})
         except Exception as e:
             logger.error(
                 "Failed to create market buy order",
@@ -94,5 +106,3 @@ def coinbase_orders(event, context):
                 exc_info=1,
             )
             continue
-
-        logger.info("Purchase successful", extra={"order": order})

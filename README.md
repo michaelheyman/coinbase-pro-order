@@ -195,7 +195,6 @@ deploy this cloud function to the Google Cloud Platform.
 
 ## Enhancements
 
-- [ ] Validate orders
 - [ ] Create notification domain object
 - [ ] Support overriding JSON logging to standard logging via environment variable
 - [ ] Add support for other notification mechanisms
