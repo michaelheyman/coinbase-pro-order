@@ -1,4 +1,5 @@
 from cbproorder.domain.notification_service import NotificationService
+from cbproorder.domain.value_object.notification import NotificationMessage
 
 
 class TelegramNotificationService(NotificationService):
@@ -21,7 +22,7 @@ class TelegramNotificationService(NotificationService):
         self.chat_id = chat_id
         self.client = TeleBot(token=bot_token)
 
-    def send_notification(self, title: str, message: str):
+    def send_notification(self, message: NotificationMessage):
         """
         Send a notification to the Telegram chat.
 
@@ -31,10 +32,9 @@ class TelegramNotificationService(NotificationService):
             title (str): The title of the notification.
             message (str): The message to send in the notification.
         """
-        text = f"<b>{title}</b>\n{message}"
         self.client.send_message(
             chat_id=self.chat_id,
-            text=text,
+            text=message.to_html(),
             parse_mode="HTML",
             disable_notification=True,
         )

@@ -19,7 +19,6 @@
     - [Run the Application](#run-the-application)
 - [Testing](#testing)
 - [Google Cloud Platform Integration and Deployment](#google-cloud-platform-integration-and-deployment)
-- [Enhancements](#enhancements)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -192,9 +191,3 @@ make test-coverage
 The infrastructure and deployment of this project is handled by Terraform.
 View the [Terraform README](./terraform/README.md) for instructions on how to
 deploy this cloud function to the Google Cloud Platform.
-
-## Enhancements
-
-- [ ] Create notification domain object
-- [ ] Support overriding JSON logging to standard logging via environment variable
-- [ ] Add support for other notification mechanisms

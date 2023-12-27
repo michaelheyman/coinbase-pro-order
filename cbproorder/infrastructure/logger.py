@@ -1,5 +1,7 @@
 import logging
+import os
 from datetime import datetime
+from functools import lru_cache
 
 from pythonjsonlogger import jsonlogger
 
@@ -7,6 +9,32 @@ from cbproorder.infrastructure.config import Config
 from cbproorder.interface.environments_secrets_provider import (
     EnvironmentSecretsProvider,
 )
+
+
+@lru_cache(maxsize=None)
+def config_cached() -> Config:
+    """
+    Get an instance of the Config class.
+
+    This function creates an instance of the Config class, which provides application configuration. The instance is cached, so it's only created once.
+
+    Returns:
+        Config: An instance of the Config class.
+    """
+    return Config(secrets_provider=EnvironmentSecretsProvider())
+
+
+@lru_cache(maxsize=None)
+def use_standard_logging() -> str:
+    """
+    Check if the application should use standard logging.
+
+    This function checks if the "ENABLE_STANDARD_LOG_FORMAT" environment variable is set. The result is cached, so the environment variable is only checked once.
+
+    Returns:
+        str: The value of the "ENABLE_STANDARD_LOG_FORMAT" environment variable, or None if it's not set.
+    """
+    return os.getenv("ENABLE_STANDARD_LOG_FORMAT", False)
 
 
 class CustomJsonFormatter(jsonlogger.JsonFormatter):
@@ -54,12 +82,21 @@ def get_logger(name):
     Returns:
         logging.Logger: The logger.
     """
-    config = Config(secrets_provider=EnvironmentSecretsProvider())
+    config = config_cached()
     logging.getLogger().setLevel(config.LOGGING_LEVEL)
     logger = logging.getLogger(name)
     logger.setLevel(config.LOGGING_LEVEL)
     logHandler = logging.StreamHandler()
-    formatter = CustomJsonFormatter("%(timestamp)s %(filename)s %(level)s %(message)s")
+
+    if use_standard_logging():
+        formatter = logging.Formatter(
+            "%(asctime)s %(filename)s %(levelname)s %(message)s"
+        )
+    else:
+        formatter = CustomJsonFormatter(
+            "%(timestamp)s %(filename)s %(level)s %(message)s"
+        )
+
     logHandler.setFormatter(formatter)
     logger.addHandler(logHandler)
     return logger
