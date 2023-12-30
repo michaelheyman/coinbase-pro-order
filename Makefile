@@ -53,7 +53,7 @@ readme/format: ## Format READMEs
 
 .PHONY: run
 run: ## Run the application
-	python -m ${PACKAGE_NAME}
+	ENABLE_STANDARD_LOG_FORMAT=${ENABLE_STANDARD_LOG_FORMAT:true} python -m ${PACKAGE_NAME}
 
 .PHONY: test
 test: ## Run tests

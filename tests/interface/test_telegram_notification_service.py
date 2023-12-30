@@ -1,6 +1,7 @@
 import unittest
 from unittest.mock import patch
 
+from cbproorder.domain.value_object.notification import NotificationMessage
 from cbproorder.interface.telegram_notification_service import (
     TelegramNotificationService,
 )
@@ -22,16 +23,18 @@ class TestTelegramNotificationService(unittest.TestCase):
     def test_send_notification(self, mock_client):
         bot_token = "token"
         chat_id = 123456789
-        title = "test_title"
-        message = "test_message"
         service = TelegramNotificationService(
             bot_token=bot_token,
             chat_id=chat_id,
         )
-        service.send_notification(title="test_title", message="test_message")
+        message = NotificationMessage(
+            title="test_title",
+            contents="test_message",
+        )
+        service.send_notification(message=message)
         mock_client.return_value.send_message.assert_called_once_with(
             chat_id=chat_id,
-            text=f"<b>{title}</b>\n{message}",
+            text=f"<b>{message.title}</b>\n{message.contents}",
             parse_mode="HTML",
             disable_notification=True,
         )

@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 
+from cbproorder.domain.value_object.notification import NotificationMessage
+
 
 class NotificationService(ABC):
     """
@@ -9,14 +11,13 @@ class NotificationService(ABC):
     """
 
     @abstractmethod
-    def send_notification(self, title: str, message: str):
+    def send_notification(self, message: NotificationMessage):
         """
         Send a notification with a given message.
 
         This method must be overridden by subclasses.
 
         Args:
-            title (str): The title of the notification.
-            message (str): The message to send in the notification.
+            message (NotificationMessage): The message to send in the notification.
         """
         pass  # pragma: no cover
