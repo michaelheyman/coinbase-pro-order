@@ -8,6 +8,7 @@ from cbproorder.application.use_case.command import (
     SubmitMarketBuyOrderCommand,
     SubmitMarketBuyOrderCommandUseCase,
 )
+from cbproorder.domain.value_object.deposit import Deposit
 from cbproorder.domain.value_object.orders import Order
 from cbproorder.infrastructure.config import Config
 from cbproorder.infrastructure.logger import get_logger
@@ -137,7 +138,17 @@ def coinbase_deposit(event, context):
     logger.info("Cloud event triggered", extra={"event": event, "context": context})
 
     try:
-        deposit = json.loads(base64.b64decode(event["data"]).decode("utf-8"))
+        # Decode the Pub/Sub message and load it into a dict
+        deposit_dict = json.loads(base64.b64decode(event["data"]).decode("utf-8"))
+        # Convert orders dict into a list of Order objects, automatically validating the data
+        deposit = Deposit.from_dict(deposit_dict)
+    except ValidationError as e:
+        logger.error(
+            "Error validating deposit",
+            extra={"error": e},
+            exc_info=1,
+        )
+        return
     except Exception as e:
         logger.error(
             "Failed to read in deposit request",
@@ -145,8 +156,6 @@ def coinbase_deposit(event, context):
             exc_info=1,
         )
         return
-
-    # TODO: validate deposit
 
     if os.getenv("ENVIRONMENT") == "production":
         secrets_provider = GoogleSecretsManagerProvider(
@@ -169,8 +178,8 @@ def coinbase_deposit(event, context):
         notification_service=notification_service,
     )
     deposit_command = SubmitDepositCommand(
-        amount=deposit["amount"],
-        currency=deposit["currency"],
+        amount=deposit.amount,
+        currency=deposit.currency,
     )
 
     try:

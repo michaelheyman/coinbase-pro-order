@@ -1,7 +1,40 @@
-from dataclasses import dataclass
+import dataclasses
+
+from pydantic import Field, TypeAdapter
+from pydantic.dataclasses import dataclass
 
 
 @dataclass(frozen=True, slots=True)
+class Deposit:
+    """
+    A class to represent a deposit.
+    """
+
+    amount: float = Field(..., description="The amount to deposit.")
+    currency: str = Field(..., description="The currency of the deposit.")
+
+    @classmethod
+    def from_dict(cls, deposit_dict: dict) -> "Deposit":
+        """
+        Create a Deposit instance from a dictionary.
+
+        Args:
+            deposit_dict (dict): The dictionary with the deposit data. It should have 'amount' and 'currency' keys.
+
+        Returns:
+            Deposit: The created Deposit instance.
+
+        Raises:
+            ValidationError: If the data dictionary doesn't have the required keys or the values are not of the expected type.
+        """
+        deposit = {
+            "amount": deposit_dict["amount"],
+            "currency": deposit_dict["currency"],
+        }
+        return TypeAdapter(cls).validate_python(deposit)
+
+
+@dataclasses.dataclass(frozen=True, slots=True)
 class DepositResult:
     """
     A data class that represents the result of a deposit operation.
@@ -19,7 +52,7 @@ class DepositResult:
     fee: float = None
 
     @classmethod
-    def from_deposit_dict(cls, deposit: dict):
+    def from_deposit_dict(cls, deposit: dict) -> "DepositResult":
         """
         Create a DepositResult instance from a dictionary.
 
@@ -29,12 +62,11 @@ class DepositResult:
         Returns:
             DepositResult: A DepositResult instance with the data from the dictionary.
         """
-        data = deposit.get("data", {})
-        amount = data.get("amount", {}).get("amount")
-        fee = data.get("fee", {}).get("amount")
+        amount = deposit.get("amount", {}).get("amount")
+        fee = deposit.get("fee", {}).get("amount")
         return cls(
-            status=data.get("status"),
-            currency=data.get("amount", {}).get("currency"),
+            status=deposit["status"],
+            currency=deposit["amount"]["currency"],
             amount=float(amount) if amount else None,
             fee=float(fee) if fee else None,
         )
