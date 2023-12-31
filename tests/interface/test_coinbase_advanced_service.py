@@ -1,3 +1,4 @@
+import os
 import unittest
 from unittest.mock import patch
 
@@ -15,6 +16,27 @@ from cbproorder.interface.coinbase_advanced_service import CoinbaseAdvancedServi
 
 
 class TestCoinbaseClient(unittest.TestCase):
+    @patch("coinbaseadvanced.client.CoinbaseAdvancedTradeAPIClient")
+    @patch.dict(os.environ, {"COINBASE_ADVANCED_API_URL": "http://test-url"})
+    def test_init_with_env_var(self, mock_client):
+        service = CoinbaseAdvancedService("test-api-key", "test-secret-key")
+        mock_client.assert_called_once_with(
+            api_key="test-api-key",
+            secret_key="test-secret-key",
+            base_url="http://test-url",
+        )
+        self.assertEqual(service.client, mock_client.return_value)
+
+    @patch("coinbaseadvanced.client.CoinbaseAdvancedTradeAPIClient")
+    @patch.dict(os.environ, {}, clear=True)
+    def test_init_without_env_var(self, mock_client):
+        service = CoinbaseAdvancedService("test-api-key", "test-secret-key")
+        mock_client.assert_called_once_with(
+            api_key="test-api-key",
+            secret_key="test-secret-key",
+        )
+        self.assertEqual(service.client, mock_client.return_value)
+
     @patch("coinbaseadvanced.client.CoinbaseAdvancedTradeAPIClient")
     @patch("uuid.uuid4")
     def test_create_buy_order_success(self, mock_uuid, mock_client):

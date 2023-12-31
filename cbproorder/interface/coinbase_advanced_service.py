@@ -1,3 +1,4 @@
+import os
 import uuid
 
 from coinbaseadvanced import client
@@ -16,20 +17,33 @@ class CoinbaseAdvancedService(OrderService):
     A class to represent the Coinbase Advanced Service.
 
     This class is a concrete implementation of the OrderServiceInterface for the Coinbase Advanced API.
-
-    Attributes:
-        client (CoinbaseAdvancedTradeAPIClient): The client to interact with the Coinbase Advanced API.
     """
 
-    def __init__(self, api_key: str, secret_key: str):
+    def __init__(self, api_key: str, secret_key: str) -> None:
         """
         Constructs an instance of the CoinbaseAdvancedService.
 
         Args:
             api_key (str): The API key for the Coinbase Advanced Trade API.
             secret_key (str): The secret key for the Coinbase Advanced Trade API.
+
+        The service uses the environment variable COINBASE_ADVANCED_API_URL to
+        override the base URL for testing purposes.
+        If COINBASE_ADVANCED_API_URL is set, the service will use this as the
+        base URL, otherwise, it will use the default base URL.
         """
-        self.client = client.CoinbaseAdvancedTradeAPIClient(api_key, secret_key)
+        if os.getenv("COINBASE_ADVANCED_API_URL"):
+            self.client = client.CoinbaseAdvancedTradeAPIClient(
+                api_key=api_key,
+                secret_key=secret_key,
+                base_url=os.getenv("COINBASE_ADVANCED_API_URL"),
+            )
+            return
+
+        self.client = client.CoinbaseAdvancedTradeAPIClient(
+            api_key=api_key,
+            secret_key=secret_key,
+        )
 
     def create_market_buy_order(self, order: Order) -> OrderResult:
         """
