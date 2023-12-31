@@ -17,6 +17,8 @@
   - [Run Application Locally](#run-application-locally)
     - [Create an Environment File](#create-an-environment-file)
     - [Run the Application](#run-the-application)
+      - [`coinbase_orders` function](#coinbase_orders-function)
+      - [`coinbase_deposit` function](#coinbase_deposit-function)
 - [Testing](#testing)
 - [Google Cloud Platform Integration and Deployment](#google-cloud-platform-integration-and-deployment)
 
@@ -156,13 +158,61 @@ The `.env` file will be automatically loaded.
 #### Run the Application
 
 With the `functions-framework` installed, you can run the application locally
-by setting up a listener for the `coinbase_orders` function:
+by setting up a listener for the function you want to execute.
+
+##### `coinbase_orders` function
+
+To run the `coinbase_orders` function, use the following command:
 
 ```bash
 functions-framework --target=coinbase_orders --signature-type=event --debug
 ```
 
-Then, create a `test_event.json` file with the array of orders.
+Then, create a `test_event.json` file with the array of orders. Example:
+
+```json
+[
+    {
+        "product_id": "BTC-USD",
+        "price": 10.0
+    }
+]
+```
+
+With the listener running, you can send a test event to the function and have it read the contents of that file:
+
+```bash
+curl -L 'http://localhost:8080' \
+-H 'Content-Type: application/json' \
+-H 'ce-id: 123451234512345' \
+-H 'ce-specversion: 1.0' \
+-H 'ce-time: 2020-01-02T12:34:56.789Z' \
+-H 'ce-type: google.cloud.pubsub.topic.v1.messagePublished' \
+-H 'ce-source: //pubsub.googleapis.com/projects/MY-PROJECT/topics/MY-TOPIC' \
+-d '{
+    "message": {
+        "data": "'"$(jq -c . < test_event.json | base64)"'"
+    },
+    "subscription": "projects/MY-PROJECT/subscriptions/MY-SUB"
+}'
+```
+
+##### `coinbase_deposit` function
+
+To run the `coinbase_deposit` function, use the following command:
+
+```bash
+functions-framework --target=coinbase_orders --signature-type=event --debug
+```
+
+Then, create a `test_event.json` file with deposit request. Example:
+
+```json
+{
+    "amount": 10.0,
+    "currency": "USD"
+}
+```
 
 With the listener running, you can send a test event to the function and have it read the contents of that file:
 
