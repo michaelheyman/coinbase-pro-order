@@ -4,6 +4,7 @@ from cbproorder.domain.deposit_service import DepositService
 from cbproorder.domain.notification_service import NotificationService
 from cbproorder.domain.order_service import OrderService
 from cbproorder.domain.value_object.deposit import DepositResult
+from cbproorder.domain.value_object.notification import NotificationMessage
 from cbproorder.domain.value_object.orders import (
     Order,
     OrderResult,
@@ -72,10 +73,11 @@ class SubmitMarketBuyOrderCommandUseCase:
         created_order = self.order_service.create_market_buy_order(self.order)
 
         # TODO: modify notification based on the result of creating an order
-        self.notification_service.send_notification(
+        message = NotificationMessage(
             title="Order Created",
-            message=f"Order created for {self.order.pair} at ${self.order.quote_size}",
+            contents=f"Order created for {self.order.pair} at ${self.order.quote_size}",
         )
+        self.notification_service.send_notification(message=message)
         return created_order
 
 
@@ -124,9 +126,9 @@ class SubmitDepositCommandUseCase:
             DepositResult: The result of the deposit operation.
         """
         deposit_result = self.deposit_service.deposit_usd(command.amount)
-        # TODO: create notification objects
-        self.notification_service.send_notification(
+        message = NotificationMessage(
             title="Deposit Created",
-            message=f"Deposited ${deposit_result.amount} {deposit_result.currency}",
+            contents=f"Deposited ${deposit_result.amount} {deposit_result.currency}",
         )
+        self.notification_service.send_notification(message=message)
         return deposit_result
