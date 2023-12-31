@@ -4,6 +4,9 @@ from cbproorder.domain.exception.deposit import (
     DepositPaymentMethodNotFound,
 )
 from cbproorder.domain.value_object.deposit import DepositResult
+from cbproorder.infrastructure.logger import get_logger
+
+logger = get_logger(__name__)
 
 
 class CoinbaseDepositService(DepositService):
@@ -28,7 +31,7 @@ class CoinbaseDepositService(DepositService):
 
         self.client = Client(
             api_key=api_key,
-            secret_key=secret_key,
+            api_secret=secret_key,
         )
 
     def deposit_usd(self, amount: float) -> DepositResult:
@@ -60,7 +63,10 @@ class CoinbaseDepositService(DepositService):
             amount=str(amount),
             currency=self.USD_CURRENCY,
         )
-        return DepositResult.from_deposit_dict(deposit)
+        logger.info("Deposit created", extra={"deposit": deposit})
+        result = DepositResult.from_deposit_dict(deposit)
+        logger.info("Deposit result", extra={"result": result})
+        return result
 
     def get_deposit_account_id(self) -> str | None:
         """
