@@ -9,7 +9,7 @@ class TestOrder(unittest.TestCase):
     def test_from_dict_valid(self):
         order_dict = {
             "product_id": "ETH-USD",
-            "price": 100.0,
+            "price": 10.0,
         }
         order = Order.from_dict(order_dict)
         self.assertEqual(str(order.pair), "ETH-USD")

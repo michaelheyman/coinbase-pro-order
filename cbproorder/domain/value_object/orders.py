@@ -34,7 +34,7 @@ class Order:
     pair: Pair = Field(..., description="The currency pair for the order.")
     quote_size: float = Field(
         ...,
-        gt=10.0,
+        ge=10.0,
         description="The size of the order in quote currency.",
     )
     side: OrderSide = Field(..., description="The side of the order (buy or sell).")
