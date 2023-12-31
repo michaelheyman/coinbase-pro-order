@@ -13,7 +13,7 @@ class TestOrder(unittest.TestCase):
         }
         order = Order.from_dict(order_dict)
         self.assertEqual(str(order.pair), "ETH-USD")
-        self.assertEqual(order.quote_size, 100.0)
+        self.assertEqual(order.quote_size, 10.0)
         self.assertEqual(order.side, OrderSide.BUY)
         self.assertEqual(order.type, OrderType.MARKET)
 

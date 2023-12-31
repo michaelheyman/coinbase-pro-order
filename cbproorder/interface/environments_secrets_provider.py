@@ -13,7 +13,7 @@ class EnvironmentSecretsProvider(SecretsProvider):
     This class inherits from the SecretsProvider abstract base class and implements the get_secret method.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """
         Initialize the EnvironmentSecretsProvider.
 

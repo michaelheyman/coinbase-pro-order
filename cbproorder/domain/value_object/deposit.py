@@ -48,8 +48,8 @@ class DepositResult:
 
     status: str
     currency: str
-    amount: float = None
-    fee: float = None
+    amount: float | None = None
+    fee: float | None = None
 
     @classmethod
     def from_deposit_dict(cls, deposit: dict) -> "DepositResult":

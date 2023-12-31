@@ -6,7 +6,7 @@ class DepositAccountNotFound(Exception):
         message -- explanation of the error
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """
         Initialize the DepositAccountNotFound exception with a default message.
         """
@@ -21,7 +21,7 @@ class DepositPaymentMethodNotFound(Exception):
         message -- explanation of the error
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """
         Initialize the DepositPaymentMethodNotFound exception with a default message.
         """

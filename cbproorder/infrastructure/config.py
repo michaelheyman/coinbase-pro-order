@@ -10,7 +10,7 @@ class Config:
     This class retrieves configuration values from secrets and provides them as properties.
     """
 
-    def __init__(self, secrets_provider: SecretsProvider):
+    def __init__(self, secrets_provider: SecretsProvider) -> None:
         """
         Initialize the Config class.
 
@@ -20,7 +20,7 @@ class Config:
         self.secrets_provider = secrets_provider
 
     @property
-    def COINBASE_API_KEY(self):
+    def COINBASE_API_KEY(self) -> str:
         """
         Get the API key for the Coinbase Advanced API.
 
@@ -30,7 +30,7 @@ class Config:
         return self.secrets_provider.get_secret("COINBASE_API_KEY")
 
     @property
-    def COINBASE_SECRET_KEY(self):
+    def COINBASE_SECRET_KEY(self) -> str:
         """
         Get the secret key for the Coinbase Advanced API.
 
@@ -40,7 +40,7 @@ class Config:
         return self.secrets_provider.get_secret("COINBASE_SECRET_KEY")
 
     @property
-    def LOGGING_LEVEL(self):
+    def LOGGING_LEVEL(self) -> str:
         """
         Get the logging level for the application.
 
@@ -50,7 +50,7 @@ class Config:
         return os.getenv("LOGGING_LEVEL", "INFO")
 
     @property
-    def TELEGRAM_BOT_TOKEN(self):
+    def TELEGRAM_BOT_TOKEN(self) -> str:
         """
         Get the token for the Telegram bot.
 
@@ -60,15 +60,15 @@ class Config:
         return self.secrets_provider.get_secret("TELEGRAM_BOT_TOKEN")
 
     @property
-    def TELEGRAM_CHAT_ID(self):
+    def TELEGRAM_CHAT_ID(self) -> int:
         """
         Get the ID of the Telegram chat.
 
+        Raises:
+            ValueError: If the chat ID is not an integer.
+
         Returns:
-            int: The chat ID. If the secret is not set or is not a valid integer, returns None.
+            int: The chat ID.
         """
         chat_id = self.secrets_provider.get_secret("TELEGRAM_CHAT_ID")
-        try:
-            return int(chat_id)
-        except ValueError:
-            return None
+        return int(chat_id)

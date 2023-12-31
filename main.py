@@ -8,6 +8,7 @@ from cbproorder.application.use_case.command import (
     SubmitMarketBuyOrderCommand,
     SubmitMarketBuyOrderCommandUseCase,
 )
+from cbproorder.domain.secrets_provider import SecretsProvider
 from cbproorder.domain.value_object.deposit import Deposit
 from cbproorder.domain.value_object.orders import Order
 from cbproorder.infrastructure.config import Config
@@ -27,7 +28,7 @@ from cbproorder.interface.telegram_notification_service import (
 logger = get_logger(__name__)
 
 
-def coinbase_orders(event, context):
+def coinbase_orders(event: dict, context: dict) -> None:
     """Background Cloud Function to be triggered by Pub/Sub.
 
     Docstrings taken from: https://cloud.google.com/functions/docs/calling/pubsub
@@ -61,20 +62,21 @@ def coinbase_orders(event, context):
         logger.error(
             "Error validating orders",
             extra={"error": e},
-            exc_info=1,
+            exc_info=True,
         )
         return
     except Exception as e:
         logger.error(
             "Failed to read in orders",
             extra={"error": e},
-            exc_info=1,
+            exc_info=True,
         )
         return
 
+    secrets_provider: SecretsProvider
     if os.getenv("ENVIRONMENT") == "production":
         secrets_provider = GoogleSecretsManagerProvider(
-            project_id=os.getenv("GOOGLE_PROJECT_ID"),
+            project_id=os.getenv("GOOGLE_PROJECT_ID", "test-project-id"),
         )
     else:
         secrets_provider = EnvironmentSecretsProvider()
@@ -95,7 +97,7 @@ def coinbase_orders(event, context):
 
     for order in orders:
         buy_order_command = SubmitMarketBuyOrderCommand(
-            product_id=order.product_id,
+            product_id=str(order.pair),
             funds=order.quote_size,
         )
 
@@ -107,12 +109,12 @@ def coinbase_orders(event, context):
             logger.error(
                 "Failed to create market buy order",
                 extra={"error": e},
-                exc_info=1,
+                exc_info=True,
             )
             continue
 
 
-def coinbase_deposit(event, context):
+def coinbase_deposit(event: dict, context: dict) -> None:
     """Background Cloud Function to be triggered by Pub/Sub.
 
     Docstrings taken from: https://cloud.google.com/functions/docs/calling/pubsub
@@ -146,20 +148,21 @@ def coinbase_deposit(event, context):
         logger.error(
             "Error validating deposit",
             extra={"error": e},
-            exc_info=1,
+            exc_info=True,
         )
         return
     except Exception as e:
         logger.error(
             "Failed to read in deposit request",
             extra={"error": e},
-            exc_info=1,
+            exc_info=True,
         )
         return
 
+    secrets_provider: SecretsProvider
     if os.getenv("ENVIRONMENT") == "production":
         secrets_provider = GoogleSecretsManagerProvider(
-            project_id=os.getenv("GOOGLE_PROJECT_ID"),
+            project_id=os.getenv("GOOGLE_PROJECT_ID", "test-project-id"),
         )
     else:
         secrets_provider = EnvironmentSecretsProvider()
@@ -188,6 +191,6 @@ def coinbase_deposit(event, context):
         logger.error(
             "Failed to deposit USD",
             extra={"error": e},
-            exc_info=1,
+            exc_info=True,
         )
         return

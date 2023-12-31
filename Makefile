@@ -30,6 +30,10 @@ format/black: ## Format with black
 format/isort: ## Reorder imports with isort
 	isort ${PACKAGE_NAME} tests
 
+.PHONY: mypy
+mypy: ## Run the mypy type checker
+	mypy . --ignore-missing-imports --disallow-untyped-defs --exclude '^tests/.*'
+
 .PHONY: pre-commit
 pre-commit: ## Run pre-commit on all files
 	pre-commit run --all-files

@@ -12,7 +12,7 @@ class TelegramNotificationService(NotificationService):
     This class sends notifications via Telegram using the provided API ID, API hash, bot name, bot token, and chat ID.
     """
 
-    def __init__(self, bot_token: str, chat_id: int):
+    def __init__(self, bot_token: str, chat_id: int) -> None:
         """
         Initialize the TelegramNotificationService.
 
@@ -25,7 +25,7 @@ class TelegramNotificationService(NotificationService):
         self.chat_id = chat_id
         self.client = TeleBot(token=bot_token)
 
-    def send_notification(self, message: NotificationMessage):
+    def send_notification(self, message: NotificationMessage) -> None:
         """
         Send a notification to the Telegram chat.
 
