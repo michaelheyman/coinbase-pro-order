@@ -1,5 +1,8 @@
 from cbproorder.domain.notification_service import NotificationService
 from cbproorder.domain.value_object.notification import NotificationMessage
+from cbproorder.infrastructure.logger import get_logger
+
+logger = get_logger(__name__)
 
 
 class TelegramNotificationService(NotificationService):
@@ -37,4 +40,9 @@ class TelegramNotificationService(NotificationService):
             text=message.to_html(),
             parse_mode="HTML",
             disable_notification=True,
+        )
+
+        logger.info(
+            "Sent notification message via Telegram",
+            extra={"notification_message": message},
         )

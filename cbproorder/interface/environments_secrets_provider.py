@@ -21,8 +21,6 @@ class EnvironmentSecretsProvider(SecretsProvider):
         """
         load_dotenv()
 
-    # TODO: raise a custom exception if the secret is not found. Think about
-    # adding a strict option to this method
     def get_secret(self, secret_id: str) -> str:
         """
         Retrieve a secret from the environment variables given its ID.

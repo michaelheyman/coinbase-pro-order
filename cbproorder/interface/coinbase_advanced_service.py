@@ -54,7 +54,7 @@ class CoinbaseAdvancedService(OrderService):
             product_id=product_id,
             quote_size=order.quote_size,
         )
-        logger.debug(f"Created order {created_order}")
+        logger.info("Created by market order", extra={"order": created_order})
 
         return self._order_result_from_coinbase_advanced_order(
             coinbase_order_response=created_order,
