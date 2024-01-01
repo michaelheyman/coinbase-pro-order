@@ -1,0 +1,128 @@
+{
+  "uuid": "d553a541-cf08-4bf4-ba41-0524a486eb1f",
+  "lastMigration": 32,
+  "name": "Coinbase Advanced Trade API",
+  "endpointPrefix": "",
+  "latency": 0,
+  "port": 3000,
+  "hostname": "",
+  "folders": [],
+  "routes": [
+    {
+      "uuid": "3a15942d-d9ce-4b3f-92ba-9659ca463e9e",
+      "type": "http",
+      "documentation": "https://docs.cloud.coinbase.com/advanced-trade-api/reference/retailbrokerageapi_postorder",
+      "method": "post",
+      "endpoint": "api/v3/brokerage/orders",
+      "responses": [
+        {
+          "uuid": "c5f32c98-4a9d-4d8b-ac5f-ce0ca17ec92c",
+          "body": "{\n  \"success\": true,\n  \"failure_reason\": \"UNKNOWN_FAILURE_REASON\",\n  \"order_id\": \"1f71a67f-6964-4a58-9438-411a5a6f22fc\",\n  \"success_response\": {\n    \"order_id\": \"1f71a67f-6964-4a58-9438-411a5a6f22fc\",\n    \"product_id\": \"{{body 'product_id'}}\",\n    \"side\": \"{{uppercase (body 'side')}}\",\n    \"client_order_id\": \"{{body 'client_order_id'}}\"\n  },\n  \"order_configuration\": {{ body 'order_configuration' }}\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "A successful response.",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "body",
+              "modifier": "client_order_id",
+              "value": "",
+              "invert": true,
+              "operator": "null"
+            },
+            {
+              "target": "body",
+              "modifier": "product_id",
+              "value": "",
+              "invert": true,
+              "operator": "null"
+            },
+            {
+              "target": "body",
+              "modifier": "side",
+              "value": "^(BUY|SELL)$",
+              "invert": false,
+              "operator": "regex_i"
+            },
+            {
+              "target": "body",
+              "modifier": "order_configuration",
+              "value": "",
+              "invert": true,
+              "operator": "null"
+            }
+          ],
+          "rulesOperator": "AND",
+          "disableTemplating": false,
+          "fallbackTo404": true,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
+          "uuid": "11e6585a-1d64-49df-8126-da36e9ea7fba",
+          "body": "",
+          "latency": 0,
+          "statusCode": 400,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null
+    }
+  ],
+  "rootChildren": [
+    {
+      "type": "route",
+      "uuid": "3a15942d-d9ce-4b3f-92ba-9659ca463e9e"
+    }
+  ],
+  "proxyMode": false,
+  "proxyHost": "",
+  "proxyRemovePrefix": false,
+  "tlsOptions": {
+    "enabled": false,
+    "type": "CERT",
+    "pfxPath": "",
+    "certPath": "",
+    "keyPath": "",
+    "caPath": "",
+    "passphrase": ""
+  },
+  "cors": true,
+  "headers": [
+    {
+      "key": "Content-Type",
+      "value": "application/json"
+    }
+  ],
+  "proxyReqHeaders": [
+    {
+      "key": "",
+      "value": ""
+    }
+  ],
+  "proxyResHeaders": [
+    {
+      "key": "",
+      "value": ""
+    }
+  ],
+  "data": [],
+  "callbacks": []
+}

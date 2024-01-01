@@ -63,6 +63,10 @@ run: ## Run the application
 test: ## Run tests
 	python -m pytest -vv
 
+.PHONY: up
+up: ## Run docker compose
+	docker compose up --build
+
 .DEFAULT_GOAL := help
 help:
 	@grep -E '^[^: ]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'

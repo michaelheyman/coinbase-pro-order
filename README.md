@@ -17,8 +17,8 @@
   - [Run Application Locally](#run-application-locally)
     - [Create an Environment File](#create-an-environment-file)
     - [Run the Application](#run-the-application)
-      - [`coinbase_orders` function](#coinbase_orders-function)
-      - [`coinbase_deposit` function](#coinbase_deposit-function)
+      - [Run Orders Function](#run-orders-function)
+      - [Run Deposit Function](#run-deposit-function)
 - [Testing](#testing)
 - [Google Cloud Platform Integration and Deployment](#google-cloud-platform-integration-and-deployment)
 
@@ -139,19 +139,21 @@ pre-commit install -t pre-push
 
 ### Run Application Locally
 
-:warning: This will create real orders on Coinbase. Use with caution.
+:warning: This can create real orders on Coinbase if the base url is not
+overridden. Use with caution.
 
 #### Create an Environment File
 
 Create a `.env` file in the project root, and override the following variables.
 
-| Variable            | Type         | Description                                                                      |
-| ------------------- | ------------ | ------------------------------------------------- |
-| COINBASE_API_KEY    | **Required** | The Coinbase API key name                         |
-| COINBASE_API_SECRET | **Required** | The Coinbase API secret for this API key          |
-| LOGGING_LEVEL       | **Optional** | The logging level (defaults to INFO)              |
-| TELEGRAM_BOT_TOKEN  | **Required** | The Telegram bot token of the bot created earlier |
-| TELEGRAM_CHAT_ID    | **Required** | The Telegram chat ID for the destination user     |
+| Variable                  | Type         | Description                                                            |
+| ------------------------- | ------------ | ---------------------------------------------------------------------- |
+| COINBASE_API_KEY          | **Required** | The Coinbase API key name                                              |
+| COINBASE_API_SECRET       | **Required** | The Coinbase API secret for this API key                               |
+| TELEGRAM_BOT_TOKEN        | **Required** | The Telegram bot token of the bot created earlier                      |
+| TELEGRAM_CHAT_ID          | **Required** | The Telegram chat ID for the destination user                          |
+| COINBASE_API_BASE_URL     | **Optional** | The Coinbase API base URL (defaults to <https://api.coinbase.com>)     |
+| LOGGING_LEVEL             | **Optional** | The logging level (defaults to INFO)                                   |
 
 The `.env` file will be automatically loaded.
 
@@ -160,15 +162,29 @@ The `.env` file will be automatically loaded.
 With the `functions-framework` installed, you can run the application locally
 by setting up a listener for the function you want to execute.
 
-##### `coinbase_orders` function
+There are two ways of running the application locally:
 
-To run the `coinbase_orders` function, use the following command:
+1. Run the application locally using the `functions-framework` CLI
 
-```bash
-functions-framework --target=coinbase_orders --signature-type=event --debug
-```
+  ```bash
+  # coinbase_orders
+  functions-framework --target=coinbase_orders --signature-type=event --debug --port 8081
+  ```
 
-Then, create a `test_event.json` file with the array of orders. Example:
+  ```bash
+  # coinbase_deposit
+  functions-framework --target=coinbase_deposit --signature-type=event --debug --port 8082
+  ```
+
+1. Run the application locally using docker-compose:
+
+  ```bash
+  make up
+  ```
+
+##### Run Orders Function
+
+To execute a coinbase order locally, create a `test_event.json` file with the array of orders. Example:
 
 ```json
 [
@@ -182,7 +198,7 @@ Then, create a `test_event.json` file with the array of orders. Example:
 With the listener running, you can send a test event to the function and have it read the contents of that file:
 
 ```bash
-curl -L 'http://localhost:8080' \
+curl -L 'http://localhost:8081' \
 -H 'Content-Type: application/json' \
 -H 'ce-id: 123451234512345' \
 -H 'ce-specversion: 1.0' \
@@ -197,15 +213,9 @@ curl -L 'http://localhost:8080' \
 }'
 ```
 
-##### `coinbase_deposit` function
+##### Run Deposit Function
 
-To run the `coinbase_deposit` function, use the following command:
-
-```bash
-functions-framework --target=coinbase_orders --signature-type=event --debug
-```
-
-Then, create a `test_event.json` file with deposit request. Example:
+To execute a coinbase deposit locally, create a `test_event.json` file with deposit request. Example:
 
 ```json
 {
@@ -217,7 +227,7 @@ Then, create a `test_event.json` file with deposit request. Example:
 With the listener running, you can send a test event to the function and have it read the contents of that file:
 
 ```bash
-curl -L 'http://localhost:8080' \
+curl -L 'http://localhost:8082' \
 -H 'Content-Type: application/json' \
 -H 'ce-id: 123451234512345' \
 -H 'ce-specversion: 1.0' \

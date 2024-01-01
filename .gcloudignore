@@ -14,12 +14,17 @@
 .gitignore
 
 # Artifacts required for development only
+mock_servers
 tests
 .flake8
+.isort.cfg
+.markdownlint.yaml
 .pre-commit-config.yaml
+docker-compose.yml
 Makefile
 pytest.ini
 requirements-dev.txt
+test_event.json
 
 # Other artifacts
 .idea

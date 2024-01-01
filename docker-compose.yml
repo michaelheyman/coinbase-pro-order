@@ -1,0 +1,51 @@
+version: "3.8"
+services:
+  common-functions-framework: &common_functions_framework
+    build: .
+    environment:
+      - COINBASE_API_BASE_URL=http://mock-server:3000
+      - COINBASE_API_KEY=your_api_key
+      - COINBASE_SECRET_KEY=your_api_secret
+      - LOGGING_LEVEL=DEBUG
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
+    volumes:
+      - .:/func
+
+  deposit-function:
+    <<: *common_functions_framework
+    container_name: deposit-function
+    command:
+      [
+        "functions-framework",
+        "--target=coinbase_deposit",
+        "--signature-type=event",
+        "--debug",
+      ]
+    ports:
+      - "8081:8080"
+    depends_on:
+      - mock-server
+
+  orders-function:
+    <<: *common_functions_framework
+    container_name: orders-function
+    command:
+      [
+        "functions-framework",
+        "--target=coinbase_orders",
+        "--signature-type=event",
+        "--debug",
+      ]
+    ports:
+      - "8082:8080"
+    depends_on:
+      - mock-server
+
+  mock-server:
+    image: mockoon/cli:6.1.0
+    command: ["--data", "data", "--port", "3000"]
+    volumes:
+      - ./mock_servers/coinbase/environment.json:/data:readonly
+    ports:
+      - "3000:3000"
