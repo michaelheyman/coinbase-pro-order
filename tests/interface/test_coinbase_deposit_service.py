@@ -1,3 +1,4 @@
+import os
 import unittest
 from unittest.mock import patch
 
@@ -9,6 +10,33 @@ from cbproorder.interface.coinbase_deposit_service import CoinbaseDepositService
 
 
 class TestCoinbaseDepositService(unittest.TestCase):
+    @patch("coinbase.wallet.client.Client")
+    @patch.dict(os.environ, {"COINBASE_API_BASE_URL": "http://test-url"})
+    def test_init_with_env_var(self, mock_client):
+        service = CoinbaseDepositService(
+            api_key="test-api-key",
+            secret_key="test-secret-key",
+        )
+        mock_client.assert_called_once_with(
+            api_key="test-api-key",
+            api_secret="test-secret-key",
+            base_url="http://test-url",
+        )
+        self.assertEqual(service.client, mock_client.return_value)
+
+    @patch("coinbase.wallet.client.Client")
+    @patch.dict(os.environ, {}, clear=True)
+    def test_init_without_env_var(self, mock_client):
+        service = CoinbaseDepositService(
+            api_key="test-api-key",
+            secret_key="test-secret-key",
+        )
+        mock_client.assert_called_once_with(
+            api_key="test-api-key",
+            api_secret="test-secret-key",
+        )
+        self.assertEqual(service.client, mock_client.return_value)
+
     @patch(
         "cbproorder.interface.coinbase_deposit_service.CoinbaseDepositService.get_ach_payment_method_id"
     )
@@ -73,7 +101,7 @@ class TestCoinbaseDepositService(unittest.TestCase):
             account_id="79774f73-3838-4505-8db6-d0a7421f3dc7",
             payment_method="738e6a58-10a1-4a89-a64b-7057d5cecf27",
             amount=str(amount),
-            currency=service.USD_CURRENCY,
+            currency=service._USD_CURRENCY,
         )
         self.assertEqual(deposit.status, "created")
         self.assertEqual(deposit.currency, "USD")

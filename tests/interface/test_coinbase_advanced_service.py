@@ -17,7 +17,7 @@ from cbproorder.interface.coinbase_advanced_service import CoinbaseAdvancedServi
 
 class TestCoinbaseClient(unittest.TestCase):
     @patch("coinbaseadvanced.client.CoinbaseAdvancedTradeAPIClient")
-    @patch.dict(os.environ, {"COINBASE_ADVANCED_API_URL": "http://test-url"})
+    @patch.dict(os.environ, {"COINBASE_API_BASE_URL": "http://test-url"})
     def test_init_with_env_var(self, mock_client):
         service = CoinbaseAdvancedService("test-api-key", "test-secret-key")
         mock_client.assert_called_once_with(

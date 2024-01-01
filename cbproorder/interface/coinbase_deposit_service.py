@@ -1,3 +1,5 @@
+import os
+
 from cbproorder.domain.deposit_service import DepositService
 from cbproorder.domain.exception.deposit import (
     DepositAccountNotFound,
@@ -17,7 +19,7 @@ class CoinbaseDepositService(DepositService):
         client: A Coinbase client instance for making API calls.
     """
 
-    USD_CURRENCY = "USD"
+    _USD_CURRENCY = "USD"
 
     def __init__(self, api_key: str, secret_key: str):
         """
@@ -28,6 +30,14 @@ class CoinbaseDepositService(DepositService):
             secret_key (str): The secret key for the Coinbase API.
         """
         from coinbase.wallet.client import Client
+
+        if os.getenv("COINBASE_API_BASE_URL"):
+            self.client = Client(
+                api_key=api_key,
+                api_secret=secret_key,
+                base_url=os.getenv("COINBASE_API_BASE_URL"),
+            )
+            return
 
         self.client = Client(
             api_key=api_key,
@@ -61,7 +71,7 @@ class CoinbaseDepositService(DepositService):
             account_id=deposit_account_id,
             payment_method=ach_payment_method_id,
             amount=str(amount),
-            currency=self.USD_CURRENCY,
+            currency=self._USD_CURRENCY,
         )
         logger.info("Deposit created", extra={"deposit": deposit})
         result = DepositResult.from_deposit_dict(deposit)
@@ -82,7 +92,7 @@ class CoinbaseDepositService(DepositService):
 
         for account in accounts["data"]:
             # There should onlyu be one account with balance.currency of USD
-            if account.get("balance", {}).get("currency") == self.USD_CURRENCY:
+            if account.get("balance", {}).get("currency") == self._USD_CURRENCY:
                 return account["id"]
         return None
 

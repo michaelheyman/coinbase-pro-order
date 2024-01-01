@@ -27,16 +27,16 @@ class CoinbaseAdvancedService(OrderService):
             api_key (str): The API key for the Coinbase Advanced Trade API.
             secret_key (str): The secret key for the Coinbase Advanced Trade API.
 
-        The service uses the environment variable COINBASE_ADVANCED_API_URL to
+        The service uses the environment variable COINBASE_API_BASE_URL to
         override the base URL for testing purposes.
-        If COINBASE_ADVANCED_API_URL is set, the service will use this as the
+        If COINBASE_API_BASE_URL is set, the service will use this as the
         base URL, otherwise, it will use the default base URL.
         """
-        if os.getenv("COINBASE_ADVANCED_API_URL"):
+        if os.getenv("COINBASE_API_BASE_URL"):
             self.client = client.CoinbaseAdvancedTradeAPIClient(
                 api_key=api_key,
                 secret_key=secret_key,
-                base_url=os.getenv("COINBASE_ADVANCED_API_URL"),
+                base_url=os.getenv("COINBASE_API_BASE_URL"),
             )
             return
 
