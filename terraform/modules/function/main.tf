@@ -21,7 +21,7 @@ data "archive_file" "source" {
 # Create bucket that will host the source code
 #tfsec:ignore:google-storage-enable-ubla
 resource "google_storage_bucket" "bucket" {
-  name = "${var.project}-function" #tfsec:ignore:google-storage-enable-ubla
+  name = "${var.project_id}-function" #tfsec:ignore:google-storage-enable-ubla
   # uniform_bucket_level_access = true
 }
 
@@ -35,7 +35,7 @@ resource "google_storage_bucket_object" "zip" {
 
 # Enable Cloud Functions API
 resource "google_project_service" "cf" {
-  project = var.project
+  project = var.project_id
   service = "cloudfunctions.googleapis.com"
 
   disable_dependent_services = true
@@ -44,7 +44,7 @@ resource "google_project_service" "cf" {
 
 # Enable Cloud Build API
 resource "google_project_service" "cb" {
-  project = var.project
+  project = var.project_id
   service = "cloudbuild.googleapis.com"
 
   disable_dependent_services = true
@@ -62,11 +62,12 @@ resource "google_cloudfunctions_function" "function" {
 
   event_trigger {
     event_type = "google.pubsub.topic.publish"
-    resource   = "projects/${var.project}/topics/${var.pubsub_topic_name}"
+    resource   = "projects/${var.project_id}/topics/${var.pubsub_topic_name}"
   }
   entry_point = var.function_entry_point
 
   environment_variables = {
-    ENVIRONMENT = var.environment
+    ENVIRONMENT       = var.environment
+    GOOGLE_PROJECT_ID = var.project_id
   }
 }

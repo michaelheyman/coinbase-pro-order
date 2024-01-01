@@ -6,7 +6,7 @@ locals {
 
 module "function" {
   source               = "./modules/function"
-  project              = var.project
+  project_id           = var.project_id
   function_name        = local.function_name
   pubsub_topic_name    = local.pubsub_topic_name
   function_entry_point = "coinbase_orders"

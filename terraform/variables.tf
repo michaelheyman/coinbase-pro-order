@@ -4,7 +4,7 @@ variable "credentials_file" {
   type        = string
 }
 
-variable "project" {
+variable "project_id" {
   description = "Project ID of the project to deploy to. See README for details."
   type        = string
 }
