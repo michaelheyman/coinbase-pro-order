@@ -1,5 +1,7 @@
+coinbase==2.1.0
 coinbaseadvanced==0.2.0
 google-cloud-secret-manager==2.17.0
+pydantic==2.5.2
 pyTelegramBotAPI==4.14.0
 python-dotenv==0.17.1
-python-json-logger==2.0.1
+python-json-logger==2.0.7

@@ -19,7 +19,7 @@ terraform {
 provider "google" {
   credentials = file(var.credentials_file)
 
-  project = var.project
+  project = var.project_id
   region  = local.region
   zone    = local.zone
 }
@@ -27,7 +27,7 @@ provider "google" {
 provider "google-beta" {
   credentials = file(var.credentials_file)
 
-  project = var.project
+  project = var.project_id
   region  = local.region
   zone    = local.zone
 }

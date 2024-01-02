@@ -1,3 +1,4 @@
+import os
 import uuid
 
 from coinbaseadvanced import client
@@ -16,20 +17,33 @@ class CoinbaseAdvancedService(OrderService):
     A class to represent the Coinbase Advanced Service.
 
     This class is a concrete implementation of the OrderServiceInterface for the Coinbase Advanced API.
-
-    Attributes:
-        client (CoinbaseAdvancedTradeAPIClient): The client to interact with the Coinbase Advanced API.
     """
 
-    def __init__(self, api_key: str, secret_key: str):
+    def __init__(self, api_key: str, secret_key: str) -> None:
         """
         Constructs an instance of the CoinbaseAdvancedService.
 
         Args:
             api_key (str): The API key for the Coinbase Advanced Trade API.
             secret_key (str): The secret key for the Coinbase Advanced Trade API.
+
+        The service uses the environment variable COINBASE_API_BASE_URL to
+        override the base URL for testing purposes.
+        If COINBASE_API_BASE_URL is set, the service will use this as the
+        base URL, otherwise, it will use the default base URL.
         """
-        self.client = client.CoinbaseAdvancedTradeAPIClient(api_key, secret_key)
+        if os.getenv("COINBASE_API_BASE_URL"):
+            self.client = client.CoinbaseAdvancedTradeAPIClient(
+                api_key=api_key,
+                secret_key=secret_key,
+                base_url=os.getenv("COINBASE_API_BASE_URL"),
+            )
+            return
+
+        self.client = client.CoinbaseAdvancedTradeAPIClient(
+            api_key=api_key,
+            secret_key=secret_key,
+        )
 
     def create_market_buy_order(self, order: Order) -> OrderResult:
         """
@@ -54,7 +68,7 @@ class CoinbaseAdvancedService(OrderService):
             product_id=product_id,
             quote_size=order.quote_size,
         )
-        logger.debug(f"Created order {created_order}")
+        logger.info("Created by market order", extra={"order": created_order})
 
         return self._order_result_from_coinbase_advanced_order(
             coinbase_order_response=created_order,

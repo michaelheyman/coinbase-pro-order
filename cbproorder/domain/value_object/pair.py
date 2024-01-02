@@ -15,7 +15,7 @@ class Pair:
     quote_currency: str
 
     @classmethod
-    def from_string(cls, pair_string: str):
+    def from_string(cls, pair_string: str) -> "Pair":
         """
         Create a Pair object from a string.
 
@@ -28,7 +28,7 @@ class Pair:
         base, quote = pair_string.split("-")
         return cls(base, quote)
 
-    def __str__(self):
+    def __str__(self) -> str:
         """
         Create a string representation of the Pair object.
 

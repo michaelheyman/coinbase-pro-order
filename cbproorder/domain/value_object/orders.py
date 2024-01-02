@@ -1,3 +1,4 @@
+import dataclasses
 from enum import Enum
 
 from pydantic import Field, TypeAdapter
@@ -34,7 +35,7 @@ class Order:
     pair: Pair = Field(..., description="The currency pair for the order.")
     quote_size: float = Field(
         ...,
-        gt=10.0,
+        ge=10.0,
         description="The size of the order in quote currency.",
     )
     side: OrderSide = Field(..., description="The side of the order (buy or sell).")
@@ -63,32 +64,33 @@ class Order:
         return TypeAdapter(cls).validate_python(order)
 
 
-# @dataclass(frozen=True, slots=True)
-@dataclass(frozen=True, slots=True)
+@dataclasses.dataclass(frozen=True, slots=True)
 class OrderResult:
     """
     A class to represent the result of an order operation.
 
     This class encapsulates whether the operation was successful, the original order, the ID of the order (if it was created), the product ID associated with the order, the quote size of the order, the base size of the order, the side of the order, and any error message (if the operation failed).
+
+    Attributes:
+        success (bool): Whether the operation was successful.
+        order_id (str | None): The ID of the order, if it was created.
+        product_id (str | None): The product ID associated with the order.
+        quote_size (str | None): The quote size of the order.
+        base_size (str | None): The base size of the order.
+        side (str | None): The side of the order.
+        error (str | None): Any error code, if the operation failed.
+        error_message (str | None): Any error message, if the operation failed.
+        error_details (str | None): Any error details, if the operation failed.
     """
 
     success: bool = Field(False, description="Whether the operation was successful.")
     # Success fields
-    order_id: str = Field(None, description="The ID of the order, if it was created.")
-    product_id: str = Field(
-        None,
-        description="The product ID associated with the order.",
-    )
-    quote_size: str = Field(None, description="The quote size of the order.")
-    base_size: str = Field(None, description="The base size of the order.")
-    side: str = Field(None, description="The side of the order.")
+    order_id: str | None = None
+    product_id: str | None = None
+    quote_size: str | None = None
+    base_size: str | None = None
+    side: str | None = None
     # Error fields
-    error: str = Field(None, description="Any error code, if the operation failed.")
-    error_message: str = Field(
-        None,
-        description="Any error message, if the operation failed.",
-    )
-    error_details: str = Field(
-        None,
-        description="Any error details, if the operation failed.",
-    )
+    error: str | None = None
+    error_message: str | None = None
+    error_details: str | None = None

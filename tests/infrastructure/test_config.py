@@ -54,9 +54,8 @@ class TestConfig(unittest.TestCase):
             "TELEGRAM_CHAT_ID"
         )
 
-    def test_telegram_chat_id_invalid_int_returns_none(self):
+    def test_telegram_chat_id_invalid_int_raises_exception(self):
         self.mock_secrets_provider.get_secret.return_value = "12345abcd"
-        self.assertEqual(self.config.TELEGRAM_CHAT_ID, None)
-        self.mock_secrets_provider.get_secret.assert_called_once_with(
-            "TELEGRAM_CHAT_ID"
-        )
+
+        with self.assertRaises(ValueError):
+            self.config.TELEGRAM_CHAT_ID

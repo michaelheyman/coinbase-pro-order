@@ -14,6 +14,7 @@
 - [Troubleshooting](#troubleshooting)
   - [Disabled APIs](#disabled-apis)
   - [Attempted to load application default credentials](#attempted-to-load-application-default-credentials)
+- [Enhancements](#enhancements)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -58,8 +59,9 @@ on this subject.
 
 Create a `terraform.tfvars` file in this directory. Then, fill it with the following variables with their appropriate values:
 
-- `project`: this value is your GCP project id
+- `project_id`: this value is your GCP project id
 - `credentials_file`: this is the path to the service account key credentials file created above
+- `deposit_request`: request that will be sent to Coinbase to deposit funds
 - `purchase_orders`: although the config provides a default purchase, you're encouraged to update this as well
 - `coinbase_api_key`: this is the API key for your Coinbase account
 - `coinbase_secret_key`: this is the secret key for your Coinbase account
@@ -70,7 +72,7 @@ Example:
 
 ```terraform
 credentials_file = "/path/to/your/credentials/file"
-project          = "your-unique-gcp-project-id"
+project_id       = "your-unique-gcp-project-id"
 ```
 
 Visit the [variable configuration file](./variables.tf) to view other values that can be overridden.
@@ -147,3 +149,13 @@ Full error:
 This issue may happen because you have Google credentials already configured.
 
 If that is the case, then the solution may be to unset the `GOOGLE_APPLICATION_CREDENTIALS` environment variable.
+
+## Enhancements
+
+- [ ] Update providers to latest versions
+- [ ] Co-location of resources into the same region to reduce costs -- start
+with multi-region buckets and co-locate with cloud funBctions
+- [ ] Provision the `Secret Manager Secret Accessor` role to the
+`${var.project_id}@appspot.gserviceaccount.com` service account
+- [ ] Divest from having to use the credentials file -- define all resources
+in Terraform

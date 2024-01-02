@@ -17,6 +17,8 @@
   - [Run Application Locally](#run-application-locally)
     - [Create an Environment File](#create-an-environment-file)
     - [Run the Application](#run-the-application)
+      - [Run Deposit Function](#run-deposit-function)
+      - [Run Orders Function](#run-orders-function)
 - [Testing](#testing)
 - [Google Cloud Platform Integration and Deployment](#google-cloud-platform-integration-and-deployment)
 
@@ -73,12 +75,17 @@ In order to create a Coinbase API key:
 "Cash (USD)" account, if you're buying with USD cash.
 1. Add permissions to the API key:
 
-    - `Cash (USD)`: this permission is required to query for account balances
-    - `wallet:accounts:read`: this permission is required to query for account balances
-    - `wallet:buys:create`: this permission is required to create new orders
-    - `wallet:orders:read`: this permission is required to query for order status
-    - `wallet:transactions:read`: this permission is required to query for transaction history
-    - `wallet:user:read`: this permission is required to query for user information
+    - For making orders
+      - `Cash (USD)`: this permission is required to query for account balances
+      - `wallet:accounts:read`: this permission is required to query for account balances
+      - `wallet:buys:create`: this permission is required to create new orders
+      - `wallet:orders:read`: this permission is required to query for order status
+      - `wallet:transactions:read`: this permission is required to query for transaction history
+      - `wallet:user:read`: this permission is required to query for user information
+    - For making deposits:
+      - `wallet:accounts:read`: this permission is required to query for account balances
+      - `wallet:deposits:create`: this permission is required to create new deposits
+      - `wallet:payment-methods:read`: this permission is required to query for payment methods
 
 1. Click "Create"
 1. Make a note of the API key, and API secret. **Store these values safely**.
@@ -132,37 +139,97 @@ pre-commit install -t pre-push
 
 ### Run Application Locally
 
-:warning: This will create real orders on Coinbase. Use with caution.
+:warning: This can create real orders on Coinbase if the base url is not
+overridden. Use with caution.
 
 #### Create an Environment File
 
 Create a `.env` file in the project root, and override the following variables.
 
-| Variable            | Type         | Description                                                                      |
-| ------------------- | ------------ | ------------------------------------------------- |
-| COINBASE_API_KEY    | **Required** | The Coinbase API key name                         |
-| COINBASE_API_SECRET | **Required** | The Coinbase API secret for this API key          |
-| LOGGING_LEVEL       | **Optional** | The logging level (defaults to INFO)              |
-| TELEGRAM_BOT_TOKEN  | **Required** | The Telegram bot token of the bot created earlier |
-| TELEGRAM_CHAT_ID    | **Required** | The Telegram chat ID for the destination user     |
+| Variable                  | Type         | Description                                                            |
+| ------------------------- | ------------ | ---------------------------------------------------------------------- |
+| COINBASE_API_KEY          | **Required** | The Coinbase API key name                                              |
+| COINBASE_API_SECRET       | **Required** | The Coinbase API secret for this API key                               |
+| TELEGRAM_BOT_TOKEN        | **Required** | The Telegram bot token of the bot created earlier                      |
+| TELEGRAM_CHAT_ID          | **Required** | The Telegram chat ID for the destination user                          |
+| COINBASE_API_BASE_URL     | **Optional** | The Coinbase API base URL (defaults to <https://api.coinbase.com>)     |
+| LOGGING_LEVEL             | **Optional** | The logging level (defaults to INFO)                                   |
 
 The `.env` file will be automatically loaded.
 
 #### Run the Application
 
 With the `functions-framework` installed, you can run the application locally
-by setting up a listener for the `coinbase_orders` function:
+by setting up a listener for the function you want to execute.
 
-```bash
-functions-framework --target=coinbase_orders --signature-type=event --debug
+There are two ways of running the application locally:
+
+1. Run the application locally using the `functions-framework` CLI
+
+  ```bash
+  make run_orders_function
+  ```
+
+  ```bash
+  make run_deposit_function
+  ```
+
+  ```bash
+  make run_mockoon
+  ```
+
+1. Run the application locally using docker-compose:
+
+  ```bash
+  make up
+  ```
+
+##### Run Deposit Function
+
+To execute a coinbase deposit locally, create a `test_event.json` file with deposit request. Example:
+
+```json
+{
+    "amount": 10.0,
+    "currency": "USD"
+}
 ```
-
-Then, create a `test_event.json` file with the array of orders.
 
 With the listener running, you can send a test event to the function and have it read the contents of that file:
 
 ```bash
-curl -L 'http://localhost:8080' \
+curl -L 'http://localhost:8081' \
+-H 'Content-Type: application/json' \
+-H 'ce-id: 123451234512345' \
+-H 'ce-specversion: 1.0' \
+-H 'ce-time: 2020-01-02T12:34:56.789Z' \
+-H 'ce-type: google.cloud.pubsub.topic.v1.messagePublished' \
+-H 'ce-source: //pubsub.googleapis.com/projects/MY-PROJECT/topics/MY-TOPIC' \
+-d '{
+    "message": {
+        "data": "'"$(jq -c . < test_event.json | base64)"'"
+    },
+    "subscription": "projects/MY-PROJECT/subscriptions/MY-SUB"
+}'
+```
+
+##### Run Orders Function
+
+To execute a coinbase order locally, create a `test_event.json` file with the array of orders. Example:
+
+```json
+[
+    {
+        "product_id": "BTC-USD",
+        "price": 10.0
+    }
+]
+```
+
+With the listener running, you can send a test event to the function and have it read the contents of that file:
+
+```bash
+curl -L 'http://localhost:8082' \
 -H 'Content-Type: application/json' \
 -H 'ce-id: 123451234512345' \
 -H 'ce-specversion: 1.0' \

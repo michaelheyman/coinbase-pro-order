@@ -34,7 +34,7 @@ def use_standard_logging() -> str:
     Returns:
         str: The value of the "ENABLE_STANDARD_LOG_FORMAT" environment variable, or None if it's not set.
     """
-    return os.getenv("ENABLE_STANDARD_LOG_FORMAT", False)
+    return os.getenv("ENABLE_STANDARD_LOG_FORMAT", "false")
 
 
 class CustomJsonFormatter(jsonlogger.JsonFormatter):
@@ -49,7 +49,9 @@ class CustomJsonFormatter(jsonlogger.JsonFormatter):
         message_dict (dict): The dictionary of message fields.
     """
 
-    def add_fields(self, log_record, record, message_dict):
+    def add_fields(
+        self, log_record: dict, record: logging.LogRecord, message_dict: dict
+    ) -> None:
         """
         Add custom fields to the log record.
 
@@ -70,7 +72,7 @@ class CustomJsonFormatter(jsonlogger.JsonFormatter):
             log_record["level"] = record.levelname
 
 
-def get_logger(name):
+def get_logger(name: str) -> logging.Logger:
     """
     Get a logger with the specified name.
 

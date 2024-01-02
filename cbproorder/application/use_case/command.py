@@ -1,5 +1,10 @@
+from dataclasses import dataclass
+
+from cbproorder.domain.deposit_service import DepositService
 from cbproorder.domain.notification_service import NotificationService
 from cbproorder.domain.order_service import OrderService
+from cbproorder.domain.value_object.deposit import DepositResult
+from cbproorder.domain.value_object.notification import NotificationMessage
 from cbproorder.domain.value_object.orders import (
     Order,
     OrderResult,
@@ -29,9 +34,6 @@ class SubmitMarketBuyOrderCommand:
 class SubmitMarketBuyOrderCommandUseCase:
     """
     A class to represent a use case for submitting a market buy order.
-
-    Attributes:
-        order_service (OrderService): The order service to use for submitting the order.
     """
 
     def __init__(
@@ -71,8 +73,62 @@ class SubmitMarketBuyOrderCommandUseCase:
         created_order = self.order_service.create_market_buy_order(self.order)
 
         # TODO: modify notification based on the result of creating an order
-        self.notification_service.send_notification(
+        message = NotificationMessage(
             title="Order Created",
-            message=f"Order created for {self.order.pair} at ${self.order.quote_size}",
+            contents=f"Order created for {self.order.pair} at ${self.order.quote_size}",
         )
+        self.notification_service.send_notification(message=message)
         return created_order
+
+
+@dataclass(frozen=True, slots=True)
+class SubmitDepositCommand:
+    """
+    A command to submit a deposit.
+
+    Attributes:
+        amount (float): The amount to deposit.
+        currency (str): The currency of the deposit.
+    """
+
+    amount: float
+    currency: str
+
+
+class SubmitDepositCommandUseCase:
+    """
+    A use case for submitting a deposit.
+    """
+
+    def __init__(
+        self,
+        deposit_service: DepositService,
+        notification_service: NotificationService,
+    ):
+        """
+        Initialize the SubmitDepositCommandUseCase with the given deposit and notification services.
+
+        Args:
+            deposit_service (DepositService): The service to use for depositing.
+            notification_service (NotificationService): The service to use for sending notifications.
+        """
+        self.deposit_service = deposit_service
+        self.notification_service = notification_service
+
+    def deposit_usd(self, command: SubmitDepositCommand) -> DepositResult:
+        """
+        Deposit USD using the given command.
+
+        Args:
+            command (SubmitDepositCommand): The command to use for the deposit.
+
+        Returns:
+            DepositResult: The result of the deposit operation.
+        """
+        deposit_result = self.deposit_service.deposit_usd(command.amount)
+        message = NotificationMessage(
+            title="Deposit Created",
+            contents=f"Deposited ${deposit_result.amount} {deposit_result.currency}",
+        )
+        self.notification_service.send_notification(message=message)
+        return deposit_result

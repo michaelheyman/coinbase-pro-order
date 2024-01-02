@@ -11,7 +11,7 @@ class NotificationService(ABC):
     """
 
     @abstractmethod
-    def send_notification(self, message: NotificationMessage):
+    def send_notification(self, message: NotificationMessage) -> None:
         """
         Send a notification with a given message.
 

@@ -1,0 +1,227 @@
+{
+  "uuid": "d553a541-cf08-4bf4-ba41-0524a486eb1f",
+  "lastMigration": 32,
+  "name": "Coinbase API",
+  "endpointPrefix": "",
+  "latency": 0,
+  "port": 3000,
+  "hostname": "",
+  "folders": [],
+  "routes": [
+    {
+      "uuid": "3a15942d-d9ce-4b3f-92ba-9659ca463e9e",
+      "type": "http",
+      "documentation": "https://docs.cloud.coinbase.com/advanced-trade-api/reference/retailbrokerageapi_postorder",
+      "method": "post",
+      "endpoint": "api/v3/brokerage/orders",
+      "responses": [
+        {
+          "uuid": "c5f32c98-4a9d-4d8b-ac5f-ce0ca17ec92c",
+          "body": "{\n  \"success\": true,\n  \"failure_reason\": \"UNKNOWN_FAILURE_REASON\",\n  \"order_id\": \"1f71a67f-6964-4a58-9438-411a5a6f22fc\",\n  \"success_response\": {\n    \"order_id\": \"1f71a67f-6964-4a58-9438-411a5a6f22fc\",\n    \"product_id\": \"{{body 'product_id'}}\",\n    \"side\": \"{{uppercase (body 'side')}}\",\n    \"client_order_id\": \"{{body 'client_order_id'}}\"\n  },\n  \"order_configuration\": {{ body 'order_configuration' }}\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "A successful response.",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "body",
+              "modifier": "client_order_id",
+              "value": "",
+              "invert": true,
+              "operator": "null"
+            },
+            {
+              "target": "body",
+              "modifier": "product_id",
+              "value": "",
+              "invert": true,
+              "operator": "null"
+            },
+            {
+              "target": "body",
+              "modifier": "side",
+              "value": "^(BUY|SELL)$",
+              "invert": false,
+              "operator": "regex_i"
+            },
+            {
+              "target": "body",
+              "modifier": "order_configuration",
+              "value": "",
+              "invert": true,
+              "operator": "null"
+            }
+          ],
+          "rulesOperator": "AND",
+          "disableTemplating": false,
+          "fallbackTo404": true,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
+          "uuid": "11e6585a-1d64-49df-8126-da36e9ea7fba",
+          "body": "",
+          "latency": 0,
+          "statusCode": 400,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null
+    },
+    {
+      "uuid": "1a22f727-79c3-4d9b-8948-d98141c1b0cb",
+      "type": "http",
+      "documentation": "List a current user's accounts to which the authentication method has access to.",
+      "method": "get",
+      "endpoint": "v2/accounts",
+      "responses": [
+        {
+          "uuid": "91a44186-9008-4b35-80f8-d307e918582a",
+          "body": "{\n  \"pagination\": {\n    \"ending_before\": null,\n    \"starting_after\": null,\n    \"limit\": 25,\n    \"order\": \"desc\",\n    \"previous_uri\": null,\n    \"next_uri\": null\n  },\n  \"data\": [\n    {\n      \"id\": \"58542935-67b5-56e1-a3f9-42686e07fa40\",\n      \"name\": \"My Vault\",\n      \"primary\": false,\n      \"type\": \"vault\",\n      \"currency\": \"BTC\",\n      \"balance\": {\n        \"amount\": \"4.00000000\",\n        \"currency\": \"BTC\"\n      },\n      \"created_at\": \"2015-01-31T20:49:02Z\",\n      \"updated_at\": \"2015-01-31T20:49:02Z\",\n      \"resource\": \"account\",\n      \"resource_path\": \"/v2/accounts/58542935-67b5-56e1-a3f9-42686e07fa40\",\n      \"ready\": true\n    },\n    {\n      \"id\": \"2bbf394c-193b-5b2a-9155-3b4732659ede\",\n      \"name\": \"My Wallet\",\n      \"primary\": false,\n      \"type\": \"wallet\",\n      \"currency\": \"BTC\",\n      \"balance\": {\n        \"amount\": \"39.59000000\",\n        \"currency\": \"BTC\"\n      },\n      \"created_at\": \"2015-01-31T20:49:02Z\",\n      \"updated_at\": \"2015-01-31T20:49:02Z\",\n      \"resource\": \"account\",\n      \"resource_path\": \"/v2/accounts/2bbf394c-193b-5b2a-9155-3b4732659ede\"\n    },\n    {\n      \"id\": \"fe74996f-50d0-4758-9a56-7e121fd0d6e1\",\n      \"name\": \"Cash (USD)\",\n      \"primary\": true,\n      \"type\": \"wallet\",\n      \"currency\": \"BTC\",\n      \"balance\": {\n        \"amount\": \"100.00\",\n        \"currency\": \"USD\"\n      },\n      \"created_at\": \"2015-01-31T20:49:02Z\",\n      \"updated_at\": \"2015-01-31T20:49:02Z\",\n      \"resource\": \"account\",\n      \"resource_path\": \"/v2/accounts/fe74996f-50d0-4758-9a56-7e121fd0d6e1\"\n    }\n  ]\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null
+    },
+    {
+      "uuid": "1779526f-0c00-4d0c-a77c-7e2efac09566",
+      "type": "http",
+      "documentation": "Lists the current user's payment methods. https://docs.cloud.coinbase.com/sign-in-with-coinbase/docs/api-payment-methods#list-payment-methods",
+      "method": "get",
+      "endpoint": "v2/payment-methods",
+      "responses": [
+        {
+          "uuid": "b0dceb95-bdb2-4fdd-9155-9e1579917975",
+          "body": "{\n  \"pagination\": {\n    \"ending_before\": null,\n    \"starting_after\": null,\n    \"limit\": 25,\n    \"order\": \"desc\",\n    \"previous_uri\": null,\n    \"next_uri\": null\n  },\n  \"data\": [\n    {\n      \"id\": \"127b4d76-a1a0-5de7-8185-3657d7b526ec\",\n      \"type\": \"fiat_account\",\n      \"name\": \"USD Wallet\",\n      \"currency\": \"USD\",\n      \"primary_buy\": false,\n      \"primary_sell\": false,\n      \"allow_buy\": true,\n      \"allow_sell\": true,\n      \"allow_deposit\": true,\n      \"allow_withdraw\": true,\n      \"instant_buy\": true,\n      \"instant_sell\": true,\n      \"created_at\": \"2015-02-24T14:30:30-08:00\",\n      \"updated_at\": \"2015-02-24T14:30:30-08:00\",\n      \"resource\": \"payment_method\",\n      \"resource_path\": \"/v2/payment-methods/127b4d76-a1a0-5de7-8185-3657d7b526ec\",\n      \"fiat_account\": {\n          \"id\": \"a077fff9-312b-559b-af98-146c33e27388\",\n          \"resource\": \"account\",\n          \"resource_path\": \"/v2/accounts/a077fff9-312b-559b-af98-146c33e27388\"\n      }\n    },\n    {\n      \"id\": \"83562370-3e5c-51db-87da-752af5ab9559\",\n      \"type\": \"ach_bank_account\",\n      \"name\": \"International Bank *****1111\",\n      \"currency\": \"USD\",\n      \"primary_buy\": true,\n      \"primary_sell\": true,\n      \"allow_buy\": true,\n      \"allow_sell\": true,\n      \"allow_deposit\": true,\n      \"allow_withdraw\": true,\n      \"instant_buy\": false,\n      \"instant_sell\": false,\n      \"created_at\": \"2015-01-31T20:49:02Z\",\n      \"updated_at\": \"2015-02-11T16:53:57-08:00\",\n      \"resource\": \"payment_method\",\n      \"resource_path\": \"/v2/payment-methods/83562370-3e5c-51db-87da-752af5ab9559\"\n    }\n  ]\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null
+    },
+    {
+      "uuid": "99d44ea4-6ddb-42ae-9ae1-f71d7bab5e2f",
+      "type": "http",
+      "documentation": "Deposits user-defined amount of funds to a fiat account. https://docs.cloud.coinbase.com/sign-in-with-coinbase/docs/api-deposits#deposit-funds",
+      "method": "post",
+      "endpoint": "v2/accounts/:account_id/deposits",
+      "responses": [
+        {
+          "uuid": "7269a866-502f-4853-bd17-00ca0510c7a0",
+          "body": "{\n  \"data\": {\n    \"id\": \"67e0eaec-07d7-54c4-a72c-2e92826897df\",\n    \"status\": \"created\",\n    \"payment_method\": {\n      \"id\": \"{{ body 'payment_method'}}\",\n      \"resource\": \"payment_method\",\n      \"resource_path\": \"/v2/payment-methods/{{ body 'payment_method'}}\"\n    },\n    \"transaction\": {\n      \"id\": \"441b9494-b3f0-5b98-b9b0-4d82c21c252a\",\n      \"resource\": \"transaction\",\n      \"resource_path\": \"/v2/accounts/{{urlParam 'account_id'}}/transactions/441b9494-b3f0-5b98-b9b0-4d82c21c252a\"\n    },\n    \"amount\": {\n      \"amount\": \"{{body 'amount'}}\",\n      \"currency\": \"{{body 'currency'}}\"\n    },\n    \"subtotal\": {\n      \"amount\": \"{{body 'amount'}}\",\n      \"currency\": \"{{body 'currency'}}\"\n    },\n    \"created_at\": \"2015-01-31T20:49:02Z\",\n    \"updated_at\": \"2015-02-11T16:54:02-08:00\",\n    \"resource\": \"deposit\",\n    \"resource_path\": \"/v2/accounts/{{urlParam 'account_id'}}/deposits/67e0eaec-07d7-54c4-a72c-2e92826897df\",\n    \"committed\": true,\n    \"fee\": {\n      \"amount\": \"0.00\",\n      \"currency\": \"{{body 'currency'}}\"\n    },\n    \"payout_at\": \"2015-02-18T16:54:00-08:00\"\n  }\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null
+    }
+  ],
+  "rootChildren": [
+    {
+      "type": "route",
+      "uuid": "3a15942d-d9ce-4b3f-92ba-9659ca463e9e"
+    },
+    {
+      "type": "route",
+      "uuid": "1a22f727-79c3-4d9b-8948-d98141c1b0cb"
+    },
+    {
+      "type": "route",
+      "uuid": "1779526f-0c00-4d0c-a77c-7e2efac09566"
+    },
+    {
+      "type": "route",
+      "uuid": "99d44ea4-6ddb-42ae-9ae1-f71d7bab5e2f"
+    }
+  ],
+  "proxyMode": false,
+  "proxyHost": "",
+  "proxyRemovePrefix": false,
+  "tlsOptions": {
+    "enabled": false,
+    "type": "CERT",
+    "pfxPath": "",
+    "certPath": "",
+    "keyPath": "",
+    "caPath": "",
+    "passphrase": ""
+  },
+  "cors": true,
+  "headers": [
+    {
+      "key": "Content-Type",
+      "value": "application/json"
+    }
+  ],
+  "proxyReqHeaders": [
+    {
+      "key": "",
+      "value": ""
+    }
+  ],
+  "proxyResHeaders": [
+    {
+      "key": "",
+      "value": ""
+    }
+  ],
+  "data": [],
+  "callbacks": []
+}

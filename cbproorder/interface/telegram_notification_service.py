@@ -1,5 +1,8 @@
 from cbproorder.domain.notification_service import NotificationService
 from cbproorder.domain.value_object.notification import NotificationMessage
+from cbproorder.infrastructure.logger import get_logger
+
+logger = get_logger(__name__)
 
 
 class TelegramNotificationService(NotificationService):
@@ -9,7 +12,7 @@ class TelegramNotificationService(NotificationService):
     This class sends notifications via Telegram using the provided API ID, API hash, bot name, bot token, and chat ID.
     """
 
-    def __init__(self, bot_token: str, chat_id: int):
+    def __init__(self, bot_token: str, chat_id: int) -> None:
         """
         Initialize the TelegramNotificationService.
 
@@ -22,7 +25,7 @@ class TelegramNotificationService(NotificationService):
         self.chat_id = chat_id
         self.client = TeleBot(token=bot_token)
 
-    def send_notification(self, message: NotificationMessage):
+    def send_notification(self, message: NotificationMessage) -> None:
         """
         Send a notification to the Telegram chat.
 
@@ -37,4 +40,9 @@ class TelegramNotificationService(NotificationService):
             text=message.to_html(),
             parse_mode="HTML",
             disable_notification=True,
+        )
+
+        logger.info(
+            "Sent notification message via Telegram",
+            extra={"notification_message": message},
         )
