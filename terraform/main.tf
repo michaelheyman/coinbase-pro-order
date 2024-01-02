@@ -14,6 +14,7 @@ module "orders_function" {
   pubsub_topic_name    = local.orders_pubsub_topic_name
   function_entry_point = "coinbase_orders"
   environment          = var.environment
+  region               = var.region
 }
 
 resource "google_pubsub_topic" "orders_requests" {

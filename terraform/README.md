@@ -153,8 +153,6 @@ If that is the case, then the solution may be to unset the `GOOGLE_APPLICATION_C
 ## Enhancements
 
 - [ ] Update providers to latest versions
-- [ ] Co-location of resources into the same region to reduce costs -- start
-with multi-region buckets and co-locate with cloud funBctions
 - [ ] Provision the `Secret Manager Secret Accessor` role to the
 `${var.project_id}@appspot.gserviceaccount.com` service account
 - [ ] Divest from having to use the credentials file -- define all resources
