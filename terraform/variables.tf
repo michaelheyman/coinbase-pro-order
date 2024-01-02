@@ -34,16 +34,12 @@ variable "purchase_orders" {
   }
 }
 
-variable "function_name" {
-  description = "Name of the function to be created in GCP."
-  type        = string
-  default     = "coinbase_orders"
-}
-
-variable "pubsub_topic_name" {
-  description = "Name of the pubsub topic to be created in GCP."
-  type        = string
-  default     = "purchase-requests"
+variable "deposit_request" {
+  description = "Deposit request."
+  type = object({
+    amount   = number
+    currency = string
+  })
 }
 
 # Secrets

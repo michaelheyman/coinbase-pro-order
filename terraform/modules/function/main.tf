@@ -15,13 +15,13 @@ data "archive_file" "source" {
     "terraform",
     "tests",
   ]
-  output_path = "/tmp/function-${local.timestamp}.zip"
+  output_path = "/tmp/${var.function_name}-function-${local.timestamp}.zip"
 }
 
 # Create bucket that will host the source code
 #tfsec:ignore:google-storage-enable-ubla
 resource "google_storage_bucket" "bucket" {
-  name = "${var.project_id}-function" #tfsec:ignore:google-storage-enable-ubla
+  name = "${var.project_id}-${var.function_name}-function" #tfsec:ignore:google-storage-enable-ubla
   # uniform_bucket_level_access = true
 }
 
