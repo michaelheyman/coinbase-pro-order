@@ -61,6 +61,7 @@ Create a `terraform.tfvars` file in this directory. Then, fill it with the follo
 
 - `project_id`: this value is your GCP project id
 - `credentials_file`: this is the path to the service account key credentials file created above
+- `deposit_request`: request that will be sent to Coinbase to deposit funds
 - `purchase_orders`: although the config provides a default purchase, you're encouraged to update this as well
 - `coinbase_api_key`: this is the API key for your Coinbase account
 - `coinbase_secret_key`: this is the secret key for your Coinbase account

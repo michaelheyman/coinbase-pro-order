@@ -17,8 +17,8 @@
   - [Run Application Locally](#run-application-locally)
     - [Create an Environment File](#create-an-environment-file)
     - [Run the Application](#run-the-application)
-      - [Run Orders Function](#run-orders-function)
       - [Run Deposit Function](#run-deposit-function)
+      - [Run Orders Function](#run-orders-function)
 - [Testing](#testing)
 - [Google Cloud Platform Integration and Deployment](#google-cloud-platform-integration-and-deployment)
 
@@ -167,13 +167,15 @@ There are two ways of running the application locally:
 1. Run the application locally using the `functions-framework` CLI
 
   ```bash
-  # coinbase_orders
-  functions-framework --target=coinbase_orders --signature-type=event --debug --port 8081
+  make run_orders_function
   ```
 
   ```bash
-  # coinbase_deposit
-  functions-framework --target=coinbase_deposit --signature-type=event --debug --port 8082
+  make run_deposit_function
+  ```
+
+  ```bash
+  make run_mockoon
   ```
 
 1. Run the application locally using docker-compose:
@@ -182,17 +184,15 @@ There are two ways of running the application locally:
   make up
   ```
 
-##### Run Orders Function
+##### Run Deposit Function
 
-To execute a coinbase order locally, create a `test_event.json` file with the array of orders. Example:
+To execute a coinbase deposit locally, create a `test_event.json` file with deposit request. Example:
 
 ```json
-[
-    {
-        "product_id": "BTC-USD",
-        "price": 10.0
-    }
-]
+{
+    "amount": 10.0,
+    "currency": "USD"
+}
 ```
 
 With the listener running, you can send a test event to the function and have it read the contents of that file:
@@ -213,15 +213,17 @@ curl -L 'http://localhost:8081' \
 }'
 ```
 
-##### Run Deposit Function
+##### Run Orders Function
 
-To execute a coinbase deposit locally, create a `test_event.json` file with deposit request. Example:
+To execute a coinbase order locally, create a `test_event.json` file with the array of orders. Example:
 
 ```json
-{
-    "amount": 10.0,
-    "currency": "USD"
-}
+[
+    {
+        "product_id": "BTC-USD",
+        "price": 10.0
+    }
+]
 ```
 
 With the listener running, you can send a test event to the function and have it read the contents of that file:

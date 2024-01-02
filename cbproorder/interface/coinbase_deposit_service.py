@@ -35,7 +35,7 @@ class CoinbaseDepositService(DepositService):
             self.client = Client(
                 api_key=api_key,
                 api_secret=secret_key,
-                base_url=os.getenv("COINBASE_API_BASE_URL"),
+                base_api_uri=os.getenv("COINBASE_API_BASE_URL"),
             )
             return
 
@@ -91,7 +91,7 @@ class CoinbaseDepositService(DepositService):
             return None
 
         for account in accounts["data"]:
-            # There should onlyu be one account with balance.currency of USD
+            # There should only be one account with balance.currency of USD
             if account.get("balance", {}).get("currency") == self._USD_CURRENCY:
                 return account["id"]
         return None

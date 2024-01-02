@@ -1,5 +1,13 @@
+FUNCTION_DEPOSIT_PORT=8081
+FUNCTION_ORDERS_PORT=8082
 PACKAGE_NAME=cbproorder
 READMES=README.md terraform/README.md
+
+# Load .env variables into Makefile if the file exists
+ifneq (,$(wildcard ./.env))
+    include .env
+    export
+endif
 
 .PHONY: clean
 clean: ## Clean all Python artifacts
@@ -58,6 +66,30 @@ readme/format: ## Format READMEs
 .PHONY: run
 run: ## Run the application
 	ENABLE_STANDARD_LOG_FORMAT=${ENABLE_STANDARD_LOG_FORMAT:true} python -m ${PACKAGE_NAME}
+
+.PHONY: run_deposit_function
+run_deposit_function: ## Run the deposit function
+	COINBASE_API_BASE_URL=http://localhost:3000 \
+	COINBASE_API_KEY=your_api_key \
+	COINBASE_SECRET_KEY=your_api_secret \
+	LOGGING_LEVEL=DEBUG \
+	TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN} \
+	TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID} \
+	functions-framework --target=coinbase_deposit --signature-type=event --debug --port=${FUNCTION_DEPOSIT_PORT}
+
+.PHONY: run_orders_function
+run_orders_function: ## Run the orders function
+	COINBASE_API_BASE_URL=http://localhost:3000 \
+	COINBASE_API_KEY=your_api_key \
+	COINBASE_SECRET_KEY=your_api_secret \
+	LOGGING_LEVEL=DEBUG \
+	TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN} \
+	TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID} \
+	functions-framework --target=coinbase_orders --signature-type=event --debug --port=${FUNCTION_ORDERS_PORT}
+
+.PHONY: run_mockoon
+run_mockoon: ## Run mockoon
+	mockoon-cli start --data ./mock_servers/coinbase/environment.json --port 3000 --log-transaction
 
 .PHONY: test
 test: ## Run tests

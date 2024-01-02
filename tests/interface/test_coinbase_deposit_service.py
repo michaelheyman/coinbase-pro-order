@@ -20,7 +20,7 @@ class TestCoinbaseDepositService(unittest.TestCase):
         mock_client.assert_called_once_with(
             api_key="test-api-key",
             api_secret="test-secret-key",
-            base_url="http://test-url",
+            base_api_uri="http://test-url",
         )
         self.assertEqual(service.client, mock_client.return_value)
 
