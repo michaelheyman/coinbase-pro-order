@@ -45,6 +45,18 @@ resource "google_cloud_scheduler_job" "orders_job_15th" {
   }
 }
 
+resource "google_service_account" "orders_cf_service_account" {
+  account_id   = "orders-cf-sa"
+  display_name = "Orders Cloud Function Service Account"
+  project      = var.project_id
+}
+
+resource "google_project_iam_member" "orders_secret_accessor" {
+  project = var.project_id
+  role    = "roles/secretmanager.secretAccessor"
+  member  = "serviceAccount:${google_service_account.orders_cf_service_account.email}"
+}
+
 # Deposit
 
 module "deposit_function" {
@@ -82,4 +94,16 @@ resource "google_cloud_scheduler_job" "deposit_job_15th" {
     topic_name = google_pubsub_topic.deposit_requests.id
     data       = base64encode(jsonencode(var.deposit_request))
   }
+}
+
+resource "google_service_account" "deposit_cf_service_account" {
+  account_id   = "deposit-cf-sa"
+  display_name = "Deposit Cloud Function Service Account"
+  project      = var.project_id
+}
+
+resource "google_project_iam_member" "deposit_secret_accessor" {
+  project = var.project_id
+  role    = "roles/secretmanager.secretAccessor"
+  member  = "serviceAccount:${google_service_account.deposit_cf_service_account.email}"
 }
