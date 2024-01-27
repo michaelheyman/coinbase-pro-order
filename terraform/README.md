@@ -40,6 +40,7 @@ Follow these instructions to set up Google Cloud Platform:
   - Click "Create Service Account".
   - Give it any name you like and click "Create".
   - For the Role, choose "Project -> Editor", then click "Continue".
+  - Add the "Security Account Admin" role so that it can create service accounts.
   - Skip granting additional users access, and click "Done".
 
   After you create your service account, download your service account key.
@@ -135,6 +136,7 @@ you can enable the required APIs with the following commands:
 gcloud services enable cloudfunctions.googleapis.com
 gcloud services enable cloudresourcemanager.googleapis.com
 gcloud services enable cloudscheduler.googleapis.com
+gcloud services enable iam.googleapis.com
 gcloud services enable pubsub.googleapis.co
 gcloud services enable secretmanager.googleapis.com
 ```

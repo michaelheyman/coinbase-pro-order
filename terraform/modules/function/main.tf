@@ -72,5 +72,6 @@ resource "google_cloudfunctions_function" "function" {
     GOOGLE_PROJECT_ID = var.project_id
   }
 
-  region = var.region
+  region                = var.region
+  service_account_email = var.service_account_email
 }
