@@ -133,6 +133,7 @@ If you have the `gcloud` CLI installed and set to the target project id (`gcloud
 you can enable the required APIs with the following commands:
 
 ```bash
+gcloud services enable artifactregistry.googleapis.com
 gcloud services enable cloudfunctions.googleapis.com
 gcloud services enable cloudresourcemanager.googleapis.com
 gcloud services enable cloudscheduler.googleapis.com
