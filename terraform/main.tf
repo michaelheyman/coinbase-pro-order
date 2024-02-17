@@ -8,13 +8,14 @@ locals {
 # Orders
 
 module "orders_function" {
-  source               = "./modules/function"
-  project_id           = var.project_id
-  function_name        = local.orders_function_name
-  pubsub_topic_name    = local.orders_pubsub_topic_name
-  function_entry_point = "coinbase_orders"
-  environment          = var.environment
-  region               = var.region
+  source                = "./modules/function"
+  project_id            = var.project_id
+  function_name         = local.orders_function_name
+  pubsub_topic_name     = local.orders_pubsub_topic_name
+  function_entry_point  = "coinbase_orders"
+  environment           = var.environment
+  region                = var.region
+  service_account_email = google_service_account.orders_cf_service_account.email
 }
 
 resource "google_pubsub_topic" "orders_requests" {
@@ -57,15 +58,22 @@ resource "google_project_iam_member" "orders_secret_accessor" {
   member  = "serviceAccount:${google_service_account.orders_cf_service_account.email}"
 }
 
+resource "google_project_iam_member" "orders_secret_viewer" {
+  project = var.project_id
+  role    = "roles/secretmanager.viewer"
+  member  = "serviceAccount:${google_service_account.orders_cf_service_account.email}"
+}
+
 # Deposit
 
 module "deposit_function" {
-  source               = "./modules/function"
-  project_id           = var.project_id
-  function_name        = local.deposit_function_name
-  pubsub_topic_name    = local.deposit_pubsub_topic_name
-  function_entry_point = "coinbase_deposit"
-  environment          = var.environment
+  source                = "./modules/function"
+  project_id            = var.project_id
+  function_name         = local.deposit_function_name
+  pubsub_topic_name     = local.deposit_pubsub_topic_name
+  function_entry_point  = "coinbase_deposit"
+  environment           = var.environment
+  service_account_email = google_service_account.deposit_cf_service_account.email
 }
 
 resource "google_pubsub_topic" "deposit_requests" {
@@ -105,5 +113,11 @@ resource "google_service_account" "deposit_cf_service_account" {
 resource "google_project_iam_member" "deposit_secret_accessor" {
   project = var.project_id
   role    = "roles/secretmanager.secretAccessor"
+  member  = "serviceAccount:${google_service_account.deposit_cf_service_account.email}"
+}
+
+resource "google_project_iam_member" "deposit_secret_viewer" {
+  project = var.project_id
+  role    = "roles/secretmanager.viewer"
   member  = "serviceAccount:${google_service_account.deposit_cf_service_account.email}"
 }
