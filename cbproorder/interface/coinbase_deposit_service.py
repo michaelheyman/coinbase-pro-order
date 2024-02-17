@@ -32,6 +32,10 @@ class CoinbaseDepositService(DepositService):
         from coinbase.wallet.client import Client
 
         if os.getenv("COINBASE_API_BASE_URL"):
+            logger.info(
+                "Overriding Coinbase API base URL",
+                extra={"url": os.getenv("COINBASE_API_BASE_URL")},
+            )
             self.client = Client(
                 api_key=api_key,
                 api_secret=secret_key,
@@ -67,6 +71,14 @@ class CoinbaseDepositService(DepositService):
         if ach_payment_method_id is None:
             raise DepositPaymentMethodNotFound()
 
+        logger.info(
+            "Depositing USD to Coinbase account",
+            extra={
+                "account_id": deposit_account_id,
+                "payment_method": ach_payment_method_id,
+                "amount": amount,
+            },
+        )
         deposit = self.client.deposit(
             account_id=deposit_account_id,
             payment_method=ach_payment_method_id,
@@ -108,8 +120,16 @@ class CoinbaseDepositService(DepositService):
         if not payment_methods or not payment_methods.get("data"):
             return None
 
+        logger.debug(
+            "Coinbase ACH payment methods",
+            extra={"payment_methods": payment_methods},
+        )
         for payment_method in payment_methods["data"]:
             # There should only be one primary_buy payment method
-            if payment_method["primary_buy"]:
+            if payment_method["allow_deposit"]:
+                logger.debug(
+                    "Payment method selected",
+                    extra={"payment_method": payment_method},
+                )
                 return payment_method["id"]
         return None
