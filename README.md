@@ -125,7 +125,7 @@ pyenv activate coinbase-pro-order-3.12.0
 Install the development requirements:
 
 ```bash
-pip -r install requirements-dev.txt
+pip install -r requirements-dev.txt
 ```
 
 ### Install Git Hooks
