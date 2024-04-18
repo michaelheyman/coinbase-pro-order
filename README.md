@@ -59,7 +59,7 @@ In any way, the application requires the following services:
 ### Coinbase Advanced Trade API Authentication
 
 In order to authenticate against Coinbase you will need to create and remember
-these three pieces of information:
+these pieces of information:
 
 - Key
 - Secret
@@ -94,6 +94,19 @@ More information on Coinbase Advanced Trace API can be found here:
 
 - Authentication <https://docs.cloud.coinbase.com/advanced-trade-api/docs/rest-api-auth>
 - Permissions: <https://docs.cloud.coinbase.com/advanced-trade-api/docs/rest-api-overview#advanced-trade-endpoints>
+
+:info: This project is in the process of migrating to the Coinbase Advanced
+Trade API Python SDK, available at <https://github.com/coinbase/coinbase-advanced-py>.
+The new SDK is not fully supported here yet. It also only supports the Cloud
+API Trading Keys, so at the moment you need two different sets of keys.
+
+To obtain the Cloud API Trading Keys:
+
+1. Navigate here: <https://docs.cloud.coinbase.com/advanced-trade-api/docs/auth#cloud-api-trading-keys>
+1. Follow the instructions to create a key, with "View", "Trade", and
+"Transfer" permissions. TODO: create two different keys, one for trading and
+one for depositing.
+1. Make a note of the API key name, and Private key secret. **Store these values safely**.
 
 ### Notification Configuration
 
@@ -146,14 +159,16 @@ overridden. Use with caution.
 
 Create a `.env` file in the project root, and override the following variables.
 
-| Variable                  | Type         | Description                                                            |
-| ------------------------- | ------------ | ---------------------------------------------------------------------- |
-| COINBASE_API_KEY          | **Required** | The Coinbase API key name                                              |
-| COINBASE_API_SECRET       | **Required** | The Coinbase API secret for this API key                               |
-| TELEGRAM_BOT_TOKEN        | **Required** | The Telegram bot token of the bot created earlier                      |
-| TELEGRAM_CHAT_ID          | **Required** | The Telegram chat ID for the destination user                          |
-| COINBASE_API_BASE_URL     | **Optional** | The Coinbase API base URL (defaults to <https://api.coinbase.com>)     |
-| LOGGING_LEVEL             | **Optional** | The logging level (defaults to INFO)                                   |
+| Variable                     | Type         | Description                                                            |
+| -------------------------    | ------------ | ---------------------------------------------------------------------- |
+| COINBASE_API_KEY             | **Required** | The Coinbase API key name                                              |
+| COINBASE_API_SECRET          | **Required** | The Coinbase API secret for this API key                               |
+| COINBASE_TRADING_API_KEY     | **Required** | The Coinbase Advanced Trade API key name                               |
+| COINBASE_TRADING_PRIVATE_KEY | **Required** | The Coinbase Advanced Trade API private key                            |
+| TELEGRAM_BOT_TOKEN           | **Required** | The Telegram bot token of the bot created earlier                      |
+| TELEGRAM_CHAT_ID             | **Required** | The Telegram chat ID for the destination user                          |
+| COINBASE_API_BASE_URL        | **Optional** | The Coinbase API base URL (defaults to <https://api.coinbase.com>)     |
+| LOGGING_LEVEL                | **Optional** | The logging level (defaults to INFO)                                   |
 
 The `.env` file will be automatically loaded.
 

@@ -54,6 +54,16 @@ variable "coinbase_secret_key" {
   type        = string
 }
 
+variable "coinbase_trading_api_key" {
+  description = "Coinbase Advanced Trading API key name."
+  type        = string
+}
+
+variable "coinbase_trading_private_key" {
+  description = "Coinbase Advanced Trading API private key."
+  type        = string
+}
+
 variable "telegram_bot_token" {
   description = "Telegram bot token."
   type        = string

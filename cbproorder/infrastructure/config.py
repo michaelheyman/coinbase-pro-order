@@ -40,6 +40,26 @@ class Config:
         return self.secrets_provider.get_secret("COINBASE_SECRET_KEY")
 
     @property
+    def COINBASE_TRADING_API_KEY(self) -> str:
+        """
+        Get the API key for the Coinbase Advanced Trade API.
+
+        Returns:
+            str: The API key.
+        """
+        return self.secrets_provider.get_secret("COINBASE_TRADING_API_KEY")
+
+    @property
+    def COINBASE_TRADING_PRIVATE_KEY(self) -> str:
+        """
+        Get the private key for the Coinbase Advanced Trade API.
+
+        Returns:
+            str: The private key.
+        """
+        return self.secrets_provider.get_secret("COINBASE_TRADING_PRIVATE_KEY")
+
+    @property
     def LOGGING_LEVEL(self) -> str:
         """
         Get the logging level for the application.
