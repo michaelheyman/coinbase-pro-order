@@ -4,8 +4,8 @@ services:
     build: .
     environment:
       - COINBASE_API_BASE_URL=http://mock-server:3001
-      - COINBASE_API_KEY=your_api_key
-      - COINBASE_SECRET_KEY=your_api_secret
+      - COINBASE_API_KEY=${COINBASE_API_KEY}
+      - COINBASE_SECRET_KEY=${COINBASE_SECRET_KEY}
       - LOGGING_LEVEL=DEBUG
       - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
       - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
@@ -28,8 +28,8 @@ services:
     build: .
     environment:
       - COINBASE_API_BASE_URL=http://mock-server:3001
-      - COINBASE_API_KEY=your_api_key
-      - COINBASE_SECRET_KEY=your_api_secret
+      - COINBASE_API_KEY=${COINBASE_API_KEY}
+      - COINBASE_SECRET_KEY=${COINBASE_SECRET_KEY}
       - LOGGING_LEVEL=DEBUG
       - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
       - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
