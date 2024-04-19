@@ -37,8 +37,8 @@ class TelegramNotificationService(NotificationService):
         """
         self.client.send_message(
             chat_id=self.chat_id,
-            text=message.to_html(),
-            parse_mode="HTML",
+            text=message.to_markdown(),
+            parse_mode="MarkdownV2",  # https://core.telegram.org/bots/api#markdownv2-style
             disable_notification=True,
         )
 

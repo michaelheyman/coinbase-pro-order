@@ -34,7 +34,7 @@ class TestTelegramNotificationService(unittest.TestCase):
         service.send_notification(message=message)
         mock_client.return_value.send_message.assert_called_once_with(
             chat_id=chat_id,
-            text=f"<b>{message.title}</b>\n{message.contents}",
-            parse_mode="HTML",
+            text=f"*{message.title}*\n\n{message.contents}",
+            parse_mode="MarkdownV2",
             disable_notification=True,
         )

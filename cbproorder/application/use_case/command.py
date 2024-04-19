@@ -74,8 +74,13 @@ class SubmitMarketBuyOrderCommandUseCase:
 
         # TODO: modify notification based on the result of creating an order
         message = NotificationMessage(
-            title="Order Created",
-            contents=f"Order created for {self.order.pair} at ${self.order.quote_size}",
+            title="🎉 Order Created Successfully",
+            contents=(
+                f"✅ You've successfully created an order for *${self.order.quote_size:.2f}* "
+                f"of *{self.order.pair}*.\n"
+                "\n"
+                "Keep an eye on your notifications for further details regarding this transaction."
+            ),
         )
         self.notification_service.send_notification(message=message)
         return created_order
