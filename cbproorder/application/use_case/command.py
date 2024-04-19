@@ -1,10 +1,10 @@
 from dataclasses import dataclass
 
 from cbproorder.domain.deposit_service import DepositService
+from cbproorder.domain.factories.notification_message import NotificationMessageFactory
 from cbproorder.domain.notification_service import NotificationService
 from cbproorder.domain.order_service import OrderService
 from cbproorder.domain.value_object.deposit import DepositResult
-from cbproorder.domain.value_object.notification import NotificationMessage
 from cbproorder.domain.value_object.orders import (
     Order,
     OrderResult,
@@ -72,15 +72,10 @@ class SubmitMarketBuyOrderCommandUseCase:
         )
         created_order = self.order_service.create_market_buy_order(self.order)
 
-        # TODO: modify notification based on the result of creating an order
-        message = NotificationMessage(
-            title="🎉 Order Created Successfully",
-            contents=(
-                f"✅ You've successfully created an order for *${self.order.quote_size:.2f}* "
-                f"of *{self.order.pair}*.\n"
-                "\n"
-                "Keep an eye on your notifications for further details regarding this transaction."
-            ),
+        message = NotificationMessageFactory().create_message(
+            type="order_created",
+            quote_size=self.order.quote_size,
+            pair=self.order.pair,
         )
         self.notification_service.send_notification(message=message)
         return created_order
@@ -131,9 +126,10 @@ class SubmitDepositCommandUseCase:
             DepositResult: The result of the deposit operation.
         """
         deposit_result = self.deposit_service.deposit_usd(command.amount)
-        message = NotificationMessage(
-            title="Deposit Created",
-            contents=f"Deposited ${deposit_result.amount} {deposit_result.currency}",
+        message = NotificationMessageFactory().create_message(
+            type="deposit_completed",
+            amount=deposit_result.amount,
+            currency=deposit_result.currency,
         )
         self.notification_service.send_notification(message=message)
         return deposit_result
