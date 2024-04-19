@@ -6,6 +6,8 @@ docstring-convention=google
 # D200: One-line docstring should fit on one line with quotes
 # D212: Multi-line docstring summary should start at the first line
 # E501: line too long
-ignore = D100,D104,D200,D212,E501
+# Ignore settings that are not PEP8 compliant
+# W503: line break before binary operator
+ignore = D100,D104,D200,D212,E501,W503
 per-file-ignores =
     tests/*:D100,D101,D102,D103
