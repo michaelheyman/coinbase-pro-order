@@ -14,7 +14,7 @@ class TestNotificationMessageFactory(unittest.TestCase):
         self.assertIsInstance(message, NotificationMessage)
         self.assertEqual(message.title, "🎉 Order Created Successfully")
         self.assertIn(
-            "You've successfully created an order for *$100.00* of *BTC-USD*",
+            "You've successfully created an order for $100.00 of BTC-USD",
             message.contents,
         )
 
@@ -27,7 +27,7 @@ class TestNotificationMessageFactory(unittest.TestCase):
         self.assertIsInstance(message, NotificationMessage)
         self.assertEqual(message.title, "🎉 Deposit Completed Successfully")
         self.assertIn(
-            "You've successfully deposited *$200.00* *$USD* into your account.",
+            "You've successfully deposited $200.00 $USD into your account.",
             message.contents,
         )
 

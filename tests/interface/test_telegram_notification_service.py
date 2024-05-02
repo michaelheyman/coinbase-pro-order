@@ -11,7 +11,7 @@ class TestTelegramNotificationService(unittest.TestCase):
     @patch("telebot.TeleBot")
     def test_init(self, mock_client):
         bot_token = "token"
-        chat_id = 123456789
+        chat_id = "123456789"
         service = TelegramNotificationService(
             bot_token=bot_token,
             chat_id=chat_id,
@@ -22,7 +22,7 @@ class TestTelegramNotificationService(unittest.TestCase):
     @patch("telebot.TeleBot")
     def test_send_notification(self, mock_client):
         bot_token = "token"
-        chat_id = 123456789
+        chat_id = "123456789"
         service = TelegramNotificationService(
             bot_token=bot_token,
             chat_id=chat_id,
@@ -34,7 +34,7 @@ class TestTelegramNotificationService(unittest.TestCase):
         service.send_notification(message=message)
         mock_client.return_value.send_message.assert_called_once_with(
             chat_id=chat_id,
-            text=f"*{message.title}*\n\n{message.contents}",
-            parse_mode="MarkdownV2",
+            text=f"<b>{message.title}</b>\n\n{message.contents}",
+            parse_mode="HTML",
             disable_notification=True,
         )

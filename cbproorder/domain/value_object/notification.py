@@ -18,7 +18,7 @@ class NotificationMessage:
         Returns:
             str: The notification message in HTML.
         """
-        return f"<b>{self.title}</b>\n{self.contents}"
+        return f"<b>{self.title}</b>\n\n{self.contents}"
 
     def to_markdown(self) -> str:
         """

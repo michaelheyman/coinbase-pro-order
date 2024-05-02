@@ -29,7 +29,9 @@ class TelegramNotificationService(NotificationService):
         """
         Send a notification to the Telegram chat.
 
-        This method sends a message to the Telegram chat with the given title and message. The title is bolded and the message is sent in HTML parse mode. Notifications are sent silently.
+        This method sends a message to the Telegram chat with the given title
+        and message. The title is bolded and the message is sent in HTML parse
+        mode. Notifications are sent silently.
 
         Args:
             title (str): The title of the notification.
@@ -37,8 +39,8 @@ class TelegramNotificationService(NotificationService):
         """
         self.client.send_message(
             chat_id=self.chat_id,
-            text=message.to_markdown(),
-            parse_mode="MarkdownV2",  # https://core.telegram.org/bots/api#markdownv2-style
+            text=message.to_html(),
+            parse_mode="HTML",  # https://core.telegram.org/bots/api#html-style
             disable_notification=True,
         )
 

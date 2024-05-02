@@ -25,8 +25,8 @@ class NotificationMessageFactory:
             return NotificationMessage(
                 title="🎉 Order Created Successfully",
                 contents=(
-                    f"✅ You've successfully created an order for *${kwargs['quote_size']:.2f}* "
-                    f"of *{kwargs['pair']}*.\n"
+                    f"✅ You've successfully created an order for ${kwargs['quote_size']:.2f} "
+                    f"of {kwargs['pair']}.\n"
                     "\n"
                     "Keep an eye on your notifications for further details regarding this transaction."
                 ),
@@ -35,8 +35,8 @@ class NotificationMessageFactory:
             return NotificationMessage(
                 title="🎉 Deposit Completed Successfully",
                 contents=(
-                    f"✅ You've successfully deposited *${kwargs['amount']:.2f}* "
-                    f"*${kwargs['currency']}* into your account."
+                    f"✅ You've successfully deposited ${kwargs['amount']:.2f} "
+                    f"${kwargs['currency']} into your account."
                 ),
             )
         else:
