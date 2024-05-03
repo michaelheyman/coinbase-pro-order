@@ -153,5 +153,9 @@ class CoinbaseDepositService(DepositService):
                 payment_method["type"].lower() == "ach"
                 and payment_method["allow_deposit"]
             ):
+                logger.debug(
+                    "Payment method selected",
+                    extra={"payment_method": payment_method},
+                )
                 return payment_method["id"]
         return None
