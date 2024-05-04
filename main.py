@@ -56,6 +56,7 @@ def coinbase_orders(event: dict, context: dict) -> None:
     try:
         # Decode the Pub/Sub message and load it into a dict
         orders_dict = json.loads(base64.b64decode(event["data"]).decode("utf-8"))
+        logger.info("Orders received", extra={"orders": orders_dict})
         # Convert orders dict into a list of Order objects, automatically validating the data
         orders = [Order.from_dict(order_dict) for order_dict in orders_dict]
     except ValidationError as e:
@@ -171,6 +172,8 @@ def coinbase_deposit(event: dict, context: dict) -> None:
     deposit_service = CoinbaseDepositService(
         api_key=config.COINBASE_API_KEY,
         secret_key=config.COINBASE_SECRET_KEY,
+        api_key_name=config.COINBASE_TRADING_API_KEY,
+        private_key=config.COINBASE_TRADING_PRIVATE_KEY,
     )
     notification_service = TelegramNotificationService(
         bot_token=config.TELEGRAM_BOT_TOKEN,

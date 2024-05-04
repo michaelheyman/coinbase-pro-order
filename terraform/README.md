@@ -40,6 +40,7 @@ Follow these instructions to set up Google Cloud Platform:
   - Click "Create Service Account".
   - Give it any name you like and click "Create".
   - For the Role, choose "Project -> Editor", then click "Continue".
+  - Add the "Security Account Admin" role so that it can create service accounts.
   - Skip granting additional users access, and click "Done".
 
   After you create your service account, download your service account key.
@@ -132,9 +133,11 @@ If you have the `gcloud` CLI installed and set to the target project id (`gcloud
 you can enable the required APIs with the following commands:
 
 ```bash
+gcloud services enable artifactregistry.googleapis.com
 gcloud services enable cloudfunctions.googleapis.com
 gcloud services enable cloudresourcemanager.googleapis.com
 gcloud services enable cloudscheduler.googleapis.com
+gcloud services enable iam.googleapis.com
 gcloud services enable pubsub.googleapis.co
 gcloud services enable secretmanager.googleapis.com
 ```
@@ -153,8 +156,6 @@ If that is the case, then the solution may be to unset the `GOOGLE_APPLICATION_C
 ## Enhancements
 
 - [ ] Update providers to latest versions
-- [ ] Co-location of resources into the same region to reduce costs -- start
-with multi-region buckets and co-locate with cloud funBctions
 - [ ] Provision the `Secret Manager Secret Accessor` role to the
 `${var.project_id}@appspot.gserviceaccount.com` service account
 - [ ] Divest from having to use the credentials file -- define all resources

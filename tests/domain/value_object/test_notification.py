@@ -8,7 +8,7 @@ class TestNotificationMessage(unittest.TestCase):
         # Arrange
         title = "Test Title"
         contents = "Test Contents"
-        expected_html = f"<b>{title}</b>\n{contents}"
+        expected_html = f"<b>{title}</b>\n\n{contents}"
         message = NotificationMessage(title=title, contents=contents)
 
         # Act

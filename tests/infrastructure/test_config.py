@@ -28,6 +28,22 @@ class TestConfig(unittest.TestCase):
             "COINBASE_SECRET_KEY"
         )
 
+    def test_coinbase_trading_api_key(self):
+        self.mock_secrets_provider.get_secret.return_value = "test_trading_api_key"
+        self.assertEqual(self.config.COINBASE_TRADING_API_KEY, "test_trading_api_key")
+        self.mock_secrets_provider.get_secret.assert_called_once_with(
+            "COINBASE_TRADING_API_KEY"
+        )
+
+    def test_coinbase_trading_private_key(self):
+        self.mock_secrets_provider.get_secret.return_value = "test_trading_private_key"
+        self.assertEqual(
+            self.config.COINBASE_TRADING_PRIVATE_KEY, "test_trading_private_key"
+        )
+        self.mock_secrets_provider.get_secret.assert_called_once_with(
+            "COINBASE_TRADING_PRIVATE_KEY"
+        )
+
     @patch.dict(os.environ, {"LOGGING_LEVEL": "DEBUG"}, clear=True)
     def test_logging_level(self):
         self.assertEqual(self.config.LOGGING_LEVEL, "DEBUG")

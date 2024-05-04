@@ -80,8 +80,8 @@ run_deposit_function: ## Run the deposit function
 .PHONY: run_orders_function
 run_orders_function: ## Run the orders function
 	COINBASE_API_BASE_URL=http://localhost:3000 \
-	COINBASE_API_KEY=your_api_key \
-	COINBASE_SECRET_KEY=your_api_secret \
+	COINBASE_API_KEY=${COINBASE_API_KEY} \
+	COINBASE_SECRET_KEY=${COINBASE_SECRET_KEY} \
 	LOGGING_LEVEL=DEBUG \
 	TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN} \
 	TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID} \

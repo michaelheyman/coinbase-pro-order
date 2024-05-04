@@ -25,7 +25,7 @@ def config_cached() -> Config:
 
 
 @lru_cache(maxsize=None)
-def use_standard_logging() -> str:
+def use_standard_logging() -> str | None:
     """
     Check if the application should use standard logging.
 
@@ -34,7 +34,7 @@ def use_standard_logging() -> str:
     Returns:
         str: The value of the "ENABLE_STANDARD_LOG_FORMAT" environment variable, or None if it's not set.
     """
-    return os.getenv("ENABLE_STANDARD_LOG_FORMAT", "false")
+    return os.getenv("ENABLE_STANDARD_LOG_FORMAT")
 
 
 class CustomJsonFormatter(jsonlogger.JsonFormatter):

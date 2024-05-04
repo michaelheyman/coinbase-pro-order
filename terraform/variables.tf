@@ -4,9 +4,12 @@ variable "credentials_file" {
   type        = string
 }
 
-variable "project_id" {
-  description = "Project ID of the project to deploy to. See README for details."
-  type        = string
+variable "deposit_request" {
+  description = "Deposit request."
+  type = object({
+    amount   = number
+    currency = string
+  })
 }
 
 variable "environment" {
@@ -17,6 +20,11 @@ variable "environment" {
 variable "time_zone" {
   type    = string
   default = "America/Los_Angeles"
+}
+
+variable "project_id" {
+  description = "Project ID of the project to deploy to. See README for details."
+  type        = string
 }
 
 variable "purchase_orders" {
@@ -34,12 +42,10 @@ variable "purchase_orders" {
   }
 }
 
-variable "deposit_request" {
-  description = "Deposit request."
-  type = object({
-    amount   = number
-    currency = string
-  })
+variable "region" {
+  description = "Region to deploy to."
+  type        = string
+  default     = "us-central1"
 }
 
 # Secrets
@@ -51,6 +57,16 @@ variable "coinbase_api_key" {
 
 variable "coinbase_secret_key" {
   description = "Coinbase secret key."
+  type        = string
+}
+
+variable "coinbase_trading_api_key" {
+  description = "Coinbase Advanced Trading API key name."
+  type        = string
+}
+
+variable "coinbase_trading_private_key" {
+  description = "Coinbase Advanced Trading API private key."
   type        = string
 }
 

@@ -22,3 +22,9 @@ variable "region" {
   description = "The region in which resources will be managed."
   default     = "us-central1"
 }
+
+variable "service_account_email" {
+  description = "The email of the service account to run the cloud function"
+  type        = string
+  default     = null # This means GCP will create a default service account
+}

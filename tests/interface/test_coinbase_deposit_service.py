@@ -1,5 +1,6 @@
 import os
 import unittest
+import uuid
 from unittest.mock import patch
 
 from cbproorder.domain.exception.deposit import (
@@ -10,30 +11,45 @@ from cbproorder.interface.coinbase_deposit_service import CoinbaseDepositService
 
 
 class TestCoinbaseDepositService(unittest.TestCase):
+    @patch("coinbase.rest.RESTClient")
     @patch("coinbase.wallet.client.Client")
     @patch.dict(os.environ, {"COINBASE_API_BASE_URL": "http://test-url"})
-    def test_init_with_env_var(self, mock_client):
+    def test_init_with_env_var(self, mock_client, mock_advanced_client):
         service = CoinbaseDepositService(
             api_key="test-api-key",
             secret_key="test-secret-key",
+            api_key_name="test-api-key-name",
+            private_key="test-private-key",
         )
         mock_client.assert_called_once_with(
             api_key="test-api-key",
             api_secret="test-secret-key",
             base_api_uri="http://test-url",
         )
+        mock_advanced_client.assert_called_once_with(
+            api_key="test-api-key-name",
+            api_secret="test-private-key",
+            base_api_uri="http://test-url",
+        )
         self.assertEqual(service.client, mock_client.return_value)
 
+    @patch("coinbase.rest.RESTClient")
     @patch("coinbase.wallet.client.Client")
     @patch.dict(os.environ, {}, clear=True)
-    def test_init_without_env_var(self, mock_client):
+    def test_init_without_env_var(self, mock_client, mock_advanced_client):
         service = CoinbaseDepositService(
             api_key="test-api-key",
             secret_key="test-secret-key",
+            api_key_name="test-api-key-name",
+            private_key="test-private-key",
         )
         mock_client.assert_called_once_with(
             api_key="test-api-key",
             api_secret="test-secret-key",
+        )
+        mock_advanced_client.assert_called_once_with(
+            api_key="test-api-key-name",
+            api_secret="test-private-key",
         )
         self.assertEqual(service.client, mock_client.return_value)
 
@@ -89,6 +105,8 @@ class TestCoinbaseDepositService(unittest.TestCase):
         service = CoinbaseDepositService(
             api_key="api_key",
             secret_key="secret_key",
+            api_key_name="api_key_name",
+            private_key="private_key",
         )
         service.client = client
 
@@ -122,6 +140,8 @@ class TestCoinbaseDepositService(unittest.TestCase):
         service = CoinbaseDepositService(
             api_key="api_key",
             secret_key="secret_key",
+            api_key_name="api_key_name",
+            private_key="private_key",
         )
         service.client = client
         mock_get_deposit.return_value = None
@@ -149,6 +169,8 @@ class TestCoinbaseDepositService(unittest.TestCase):
         service = CoinbaseDepositService(
             api_key="api_key",
             secret_key="secret_key",
+            api_key_name="api_key_name",
+            private_key="private_key",
         )
         service.client = client
         mock_get_deposit.return_value = "79774f73-3838-4505-8db6-d0a7421f3dc7"
@@ -159,43 +181,38 @@ class TestCoinbaseDepositService(unittest.TestCase):
             amount = 10.0
             service.deposit_usd(amount=amount)
 
-    @patch("coinbase.wallet.client.Client")
+    @patch("coinbase.rest.RESTClient")
     def test_get_deposit_account_id(self, mock_client):
         # Arrange
+        expected_deposit_account_id = str(uuid.uuid4())
         client = mock_client()
         client.get_accounts.return_value = {
-            "data": [
+            "accounts": [
                 {
-                    "allow_deposits": True,
-                    "allow_withdrawals": True,
-                    "balance": {
-                        "amount": "12.34",
-                        "currency": "USD",
-                    },
-                    "created_at": "1999-12-25T11:06:13.868957",
-                    "currency": {
-                        "asset_id": "",
-                        "code": "USD",
-                        "color": "#0066cf",
-                        "exponent": 2,
-                        "name": "United States Dollar",
-                        "rewards": None,
-                        "slug": "",
-                        "type": "fiat",
-                    },
-                    "id": "79774f73-3838-4505-8db6-d0a7421f3dc7",
+                    "uuid": expected_deposit_account_id,
                     "name": "Cash (USD)",
-                    "primary": False,
-                    "resource": "account",
-                    "resource_path": "/v2/accounts/79774f73-3838-4505-8db6-d0a7421f3dc7",
-                    "type": "fiat",
-                    "updated_at": "2014-04-01T11:25:11.959497",
+                    "currency": "USD",
+                    "available_balance": {"value": "12.34", "currency": "USD"},
+                    "default": False,
+                    "active": True,
+                    "created_at": "1999-12-25T11:06:13.868Z",
+                    "updated_at": "2014-04-01T11:25:11.959Z",
+                    "deleted_at": None,
+                    "type": "ACCOUNT_TYPE_FIAT",
+                    "ready": True,
+                    "hold": {"value": "0", "currency": "USD"},
                 },
-            ]
+            ],
+            "has_next": False,
+            "cursor": "",
+            "size": 1,
         }
+
         service = CoinbaseDepositService(
             api_key="api_key",
             secret_key="secret_key",
+            api_key_name="api_key_name",
+            private_key="private_key",
         )
         service.client = client
 
@@ -204,9 +221,9 @@ class TestCoinbaseDepositService(unittest.TestCase):
 
         # Assert
         client.get_accounts.assert_called_once()
-        self.assertEqual(deposit_account_id, "79774f73-3838-4505-8db6-d0a7421f3dc7")
+        self.assertEqual(deposit_account_id, expected_deposit_account_id)
 
-    @patch("coinbase.wallet.client.Client")
+    @patch("coinbase.rest.RESTClient")
     def test_get_deposit_account_id_empty_response_returns_none(self, mock_client):
         # Arrange
         client = mock_client()
@@ -214,6 +231,8 @@ class TestCoinbaseDepositService(unittest.TestCase):
         service = CoinbaseDepositService(
             api_key="api_key",
             secret_key="secret_key",
+            api_key_name="api_key_name",
+            private_key="private_key",
         )
         service.client = client
 
@@ -224,7 +243,7 @@ class TestCoinbaseDepositService(unittest.TestCase):
         client.get_accounts.assert_called_once()
         self.assertEqual(deposit_account_id, None)
 
-    @patch("coinbase.wallet.client.Client")
+    @patch("coinbase.rest.RESTClient")
     def test_get_deposit_account_id_empty_data_response_returns_none(self, mock_client):
         # Arrange
         client = mock_client()
@@ -232,6 +251,8 @@ class TestCoinbaseDepositService(unittest.TestCase):
         service = CoinbaseDepositService(
             api_key="api_key",
             secret_key="secret_key",
+            api_key_name="api_key_name",
+            private_key="private_key",
         )
         service.client = client
 
@@ -242,69 +263,57 @@ class TestCoinbaseDepositService(unittest.TestCase):
         client.get_accounts.assert_called_once()
         self.assertEqual(deposit_account_id, None)
 
-    @patch("coinbase.wallet.client.Client")
-    def test_get_deposit_account_id_non_usd_accounts_returns_none(self, mock_client):
+    @patch("coinbase.rest.RESTClient")
+    def test_get_deposit_account_id_non_fiat_accounts_returns_none(self, mock_client):
         # Arrange
         client = mock_client()
         client.get_accounts.return_value = {
-            "data": [
+            "accounts": [
                 {
-                    "allow_deposits": True,
-                    "allow_withdrawals": True,
-                    "balance": {
-                        "amount": "0.00000000",
+                    "uuid": str(uuid.uuid4()),
+                    "name": "ETH Wallet",
+                    "currency": "ETH",
+                    "available_balance": {
+                        "value": "0.00000000",
                         "currency": "ETH",
                     },
-                    "created_at": "1989-02-25T13:41:04.788568",
-                    "currency": {
-                        "asset_id": "31339d66-f0af-4b84-9060-96e780e765ae",
-                        "code": "ETH",
-                        "color": "#627EEA",
-                        "exponent": 8,
-                        "name": "Ethereum",
-                        "rewards": None,
-                        "slug": "ethereum",
-                        "type": "crypto",
-                    },
-                    "id": "54361caf-0e6b-4b08-9439-73eba3fcbd87",
-                    "name": "ETH Wallet",
-                    "primary": True,
-                    "resource": "account",
-                    "resource_path": "/v2/accounts/54361caf-0e6b-4b08-9439-73eba3fcbd87",
-                    "type": "wallet",
-                    "updated_at": "1973-02-13T05:23:22.690321",
+                    "default": True,
+                    "active": True,
+                    "created_at": "1989-02-25T13:41:04.788Z",
+                    "updated_at": "1973-02-13T05:23:22.690Z",
+                    "deleted_at": None,
+                    "type": "ACCOUNT_TYPE_CRYPTO",
+                    "ready": True,
+                    "hold": {"value": "0", "currency": "ETH"},
                 },
                 {
-                    "allow_deposits": True,
-                    "allow_withdrawals": True,
-                    "balance": {
-                        "amount": "0.00000000",
+                    "uuid": str(uuid.uuid4()),
+                    "name": "BTC Wallet",
+                    "currency": "BTC",
+                    "available_balance": {
+                        "value": "0.00000000",
                         "currency": "BTC",
                     },
-                    "created_at": "2013-12-16T04:11:50.900667",
-                    "currency": {
-                        "asset_id": "fd4414f2-4940-4d4a-baa2-e7b09953a6c4",
-                        "code": "BTC",
-                        "color": "#F7931A",
-                        "exponent": 8,
-                        "name": "Bitcoin",
-                        "rewards": None,
-                        "slug": "bitcoin",
-                        "type": "crypto",
-                    },
-                    "id": "339a5e75-3beb-484a-b3a5-7d09675e141f",
-                    "name": "BTC Wallet",
-                    "primary": True,
-                    "resource": "account",
-                    "resource_path": "/v2/accounts/076c5fcd-6a80-5640-b3c3-ef939db4df70",
-                    "type": "wallet",
-                    "updated_at": "1997-08-18T05:53:57.841380",
+                    "default": True,
+                    "active": True,
+                    "created_at": "2013-12-16T04:11:50.900Z",
+                    "updated_at": "1997-08-18T05:53:57.841Z",
+                    "deleted_at": None,
+                    "type": "ACCOUNT_TYPE_CRYPTO",
+                    "ready": True,
+                    "hold": {"value": "0", "currency": "BTC"},
                 },
-            ]
+            ],
+            "has_next": False,
+            "cursor": "",
+            "size": 2,
         }
+
         service = CoinbaseDepositService(
             api_key="api_key",
             secret_key="secret_key",
+            api_key_name="api_key_name",
+            private_key="private_key",
         )
         service.client = client
 
@@ -315,40 +324,34 @@ class TestCoinbaseDepositService(unittest.TestCase):
         client.get_accounts.assert_called_once()
         self.assertEqual(deposit_account_id, None)
 
-    @patch("coinbase.wallet.client.Client")
+    @patch("coinbase.rest.RESTClient")
     def test_get_ach_payment_method_id(self, mock_client):
         # Arrange
+        expected_payment_method_id = str(uuid.uuid4())
         client = mock_client()
-        client.get_payment_methods.return_value = {
-            "data": [
+        client.list_payment_methods.return_value = {
+            "payment_methods": [
                 {
-                    "allow_buy": True,
-                    "allow_deposit": True,
-                    "allow_sell": False,
-                    "allow_withdraw": True,
-                    "created_at": "1990-01-08T23:38:59.512776",
-                    "currency": "USD",
-                    "id": "738e6a58-10a1-4a89-a64b-7057d5cecf27",
-                    "instant_buy": True,
-                    "instant_sell": False,
-                    "minimum_purchase_amount": {
-                        "amount": "1.00",
-                        "currency": "USD",
-                    },
+                    "id": expected_payment_method_id,
+                    "type": "ACH",
                     "name": "International Bank *****1111",
-                    "primary_buy": True,
-                    "primary_sell": False,
-                    "resource": "payment_method",
-                    "resource_path": "/v2/payment-methods/738e6a58-10a1-4a89-a64b-7057d5cecf27",
-                    "type": "ach_bank_account",
-                    "updated_at": "2000-12-08T13:58:54.687127",
+                    "currency": "USD",
                     "verified": True,
+                    "allow_buy": True,
+                    "allow_sell": False,
+                    "allow_deposit": True,
+                    "allow_withdraw": True,
+                    "created_at": "1990-01-08T23:38:59Z",
+                    "updated_at": "2000-12-08T13:58:54Z",
                 },
             ]
         }
+
         service = CoinbaseDepositService(
             api_key="api_key",
             secret_key="secret_key",
+            api_key_name="api_key_name",
+            private_key="private_key",
         )
         service.client = client
 
@@ -356,17 +359,19 @@ class TestCoinbaseDepositService(unittest.TestCase):
         payment_method_id = service.get_ach_payment_method_id()
 
         # Assert
-        client.get_payment_methods.assert_called_once()
-        self.assertEqual(payment_method_id, "738e6a58-10a1-4a89-a64b-7057d5cecf27")
+        client.list_payment_methods.assert_called_once()
+        self.assertEqual(payment_method_id, expected_payment_method_id)
 
-    @patch("coinbase.wallet.client.Client")
+    @patch("coinbase.rest.RESTClient")
     def test_get_ach_payment_method_id_empty_response_returns_none(self, mock_client):
         # Arrange
         client = mock_client()
-        client.get_payment_methods.return_value = None
+        client.list_payment_methods.return_value = None
         service = CoinbaseDepositService(
             api_key="api_key",
             secret_key="secret_key",
+            api_key_name="api_key_name",
+            private_key="private_key",
         )
         service.client = client
 
@@ -374,19 +379,21 @@ class TestCoinbaseDepositService(unittest.TestCase):
         payment_method_id = service.get_ach_payment_method_id()
 
         # Assert
-        client.get_payment_methods.assert_called_once()
+        client.list_payment_methods.assert_called_once()
         self.assertEqual(payment_method_id, None)
 
-    @patch("coinbase.wallet.client.Client")
+    @patch("coinbase.rest.RESTClient")
     def test_get_ach_payment_method_id_empty_data_response_returns_none(
         self, mock_client
     ):
         # Arrange
         client = mock_client()
-        client.get_payment_methods.return_value = {"data": []}
+        client.list_payment_methods.return_value = {"payment_methods": []}
         service = CoinbaseDepositService(
             api_key="api_key",
             secret_key="secret_key",
+            api_key_name="api_key_name",
+            private_key="private_key",
         )
         service.client = client
 
@@ -394,71 +401,51 @@ class TestCoinbaseDepositService(unittest.TestCase):
         payment_method_id = service.get_ach_payment_method_id()
 
         # Assert
-        client.get_payment_methods.assert_called_once()
+        client.list_payment_methods.assert_called_once()
         self.assertEqual(payment_method_id, None)
 
-    @patch("coinbase.wallet.client.Client")
-    def test_get_ach_payment_method_no_primary_buy_returns_none(self, mock_client):
+    @patch("coinbase.rest.RESTClient")
+    def test_get_ach_payment_method_not_ach_payment_method_returns_none(
+        self, mock_client
+    ):
         # Arrange
         client = mock_client()
-        client.get_payment_methods.return_value = {
-            "data": [
+        client.list_payment_methods.return_value = {
+            "payment_methods": [
                 {
-                    "allow_buy": True,
-                    "allow_deposit": False,
-                    "allow_sell": True,
-                    "allow_withdraw": False,
-                    "created_at": "2003-08-02T21:24:30.443923",
-                    "currency": "USD",
-                    "fiat_account": {
-                        "id": "292a9a8f-669b-4040-97ea-752073aefeed",
-                        "resource": "account",
-                        "resource_path": "/v2/accounts/292a9a8f-669b-4040-97ea-752073aefeed",
-                    },
-                    "id": "6f28e78a-8b39-4ccc-b5d2-d76189b94e91",
-                    "instant_buy": True,
-                    "instant_sell": True,
-                    "minimum_purchase_amount": {
-                        "amount": "1.00",
-                        "currency": "USD",
-                    },
+                    "id": str(uuid.uuid4()),
+                    "type": "COINBASE_FIAT_ACCOUNT",
                     "name": "Cash (USD)",
-                    "primary_buy": False,
-                    "primary_sell": True,
-                    "resource": "payment_method",
-                    "resource_path": "/v2/payment-methods/6f28e78a-8b39-4ccc-b5d2-d76189b94e91",
-                    "type": "fiat_account",
-                    "updated_at": "2013-04-09T03:04:40.047706",
+                    "currency": "USD",
                     "verified": True,
+                    "allow_buy": True,
+                    "allow_sell": True,
+                    "allow_deposit": False,
+                    "allow_withdraw": False,
+                    "created_at": "2003-08-02T21:24:30Z",
+                    "updated_at": "2013-04-09T03:04:40Z",
                 },
                 {
-                    "allow_buy": True,
-                    "allow_deposit": False,
-                    "allow_sell": False,
-                    "allow_withdraw": False,
-                    "created_at": "2007-06-01T16:43:42.665053",
-                    "currency": "USD",
-                    "id": "c1b80a22-7833-446f-9d47-3d9d0367be77",
-                    "instant_buy": True,
-                    "instant_sell": False,
-                    "minimum_purchase_amount": {
-                        "amount": "1.00",
-                        "currency": "USD",
-                    },
+                    "id": str(uuid.uuid4()),
+                    "type": "APPLE_PAY",
                     "name": "Apple Pay",
-                    "primary_buy": False,
-                    "primary_sell": False,
-                    "resource": "payment_method",
-                    "resource_path": "/v2/payment-methods/c1b80a22-7833-446f-9d47-3d9d0367be77",
-                    "type": "apple_pay",
-                    "updated_at": "1997-03-20T17:12:05.216975",
+                    "currency": "USD",
                     "verified": True,
+                    "allow_buy": True,
+                    "allow_sell": False,
+                    "allow_deposit": False,
+                    "allow_withdraw": False,
+                    "created_at": "2007-06-01T16:43:42Z",
+                    "updated_at": "1997-03-20T17:12:05Z",
                 },
             ]
         }
+
         service = CoinbaseDepositService(
             api_key="api_key",
             secret_key="secret_key",
+            api_key_name="api_key_name",
+            private_key="private_key",
         )
         service.client = client
 
@@ -466,5 +453,42 @@ class TestCoinbaseDepositService(unittest.TestCase):
         payment_method_id = service.get_ach_payment_method_id()
 
         # Assert
-        client.get_payment_methods.assert_called_once()
+        client.list_payment_methods.assert_called_once()
+        self.assertEqual(payment_method_id, None)
+
+    @patch("coinbase.rest.RESTClient")
+    def test_get_ach_payment_deposit_not_allowed_returns_none(self, mock_client):
+        # Arrange
+        client = mock_client()
+        client.list_payment_methods.return_value = {
+            "payment_methods": [
+                {
+                    "id": str(uuid.uuid4()),
+                    "type": "ACH",
+                    "name": "International Bank *****1111",
+                    "currency": "USD",
+                    "verified": True,
+                    "allow_buy": True,
+                    "allow_sell": False,
+                    "allow_deposit": False,
+                    "allow_withdraw": True,
+                    "created_at": "1990-01-08T23:38:59Z",
+                    "updated_at": "2000-12-08T13:58:54Z",
+                },
+            ]
+        }
+
+        service = CoinbaseDepositService(
+            api_key="api_key",
+            secret_key="secret_key",
+            api_key_name="api_key_name",
+            private_key="private_key",
+        )
+        service.client = client
+
+        # Act
+        payment_method_id = service.get_ach_payment_method_id()
+
+        # Assert
+        client.list_payment_methods.assert_called_once()
         self.assertEqual(payment_method_id, None)

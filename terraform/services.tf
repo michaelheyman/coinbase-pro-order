@@ -5,6 +5,7 @@ module "project-services" {
   project_id = var.project_id
 
   activate_apis = [
+    "artifactregistry.googleapis.com",
     "cloudfunctions.googleapis.com",
     "cloudresourcemanager.googleapis.com", # This is required for the Project Factory to look up the GCP organization
     "cloudscheduler.googleapis.com",

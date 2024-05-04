@@ -23,6 +23,7 @@ data "archive_file" "source" {
 resource "google_storage_bucket" "bucket" {
   name = "${var.project_id}-${var.function_name}-function" #tfsec:ignore:google-storage-enable-ubla
   # uniform_bucket_level_access = true
+  location = var.region
 }
 
 # Add source code zip to bucket
@@ -56,7 +57,7 @@ resource "google_cloudfunctions_function" "function" {
   name    = var.function_name
   runtime = "python312"
 
-  available_memory_mb   = 128
+  available_memory_mb   = 256 # This is the default value
   source_archive_bucket = google_storage_bucket.bucket.name
   source_archive_object = google_storage_bucket_object.zip.name
 
@@ -70,4 +71,7 @@ resource "google_cloudfunctions_function" "function" {
     ENVIRONMENT       = var.environment
     GOOGLE_PROJECT_ID = var.project_id
   }
+
+  region                = var.region
+  service_account_email = var.service_account_email
 }
