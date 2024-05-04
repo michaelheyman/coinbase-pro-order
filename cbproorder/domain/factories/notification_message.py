@@ -1,3 +1,5 @@
+import typing
+
 from cbproorder.domain.value_object.notification import NotificationMessage
 
 
@@ -7,7 +9,7 @@ class NotificationMessageFactory:
     """
 
     @staticmethod
-    def create_message(type: str, **kwargs) -> NotificationMessage:
+    def create_message(type: str, **kwargs: typing.Any) -> NotificationMessage:
         """
         Create a notification message.
 
@@ -36,7 +38,7 @@ class NotificationMessageFactory:
                 title="🎉 Deposit Completed Successfully",
                 contents=(
                     f"✅ You've successfully deposited ${kwargs['amount']:.2f} "
-                    f"${kwargs['currency']} into your account."
+                    f"{kwargs['currency']} into your account."
                 ),
             )
         else:
