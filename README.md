@@ -90,7 +90,7 @@ In order to create a Coinbase API key:
 1. Click "Create"
 1. Make a note of the API key, and API secret. **Store these values safely**.
 
-More information on Coinbase Advanced Trace API can be found here:
+More information on Coinbase Advanced Trade API can be found here:
 
 - Authentication <https://docs.cloud.coinbase.com/advanced-trade-api/docs/rest-api-auth>
 - Permissions: <https://docs.cloud.coinbase.com/advanced-trade-api/docs/rest-api-overview#advanced-trade-endpoints>
@@ -102,7 +102,8 @@ API Trading Keys, so at the moment you need two different sets of keys.
 
 To obtain the Cloud API Trading Keys:
 
-1. Navigate here: <https://docs.cloud.coinbase.com/advanced-trade-api/docs/auth#cloud-api-trading-keys>
+1. Log into [Coinbase Developer Platform](https://portal.cdp.coinbase.com/) (CDP).
+1. Navigate to [Access → API keys](https://portal.cdp.coinbase.com/access/api?keyType=trade&referrer=advanced_trade).
 1. Follow the instructions to create a key, with "View", "Trade", and
 "Transfer" permissions. TODO: create two different keys, one for trading and
 one for depositing.

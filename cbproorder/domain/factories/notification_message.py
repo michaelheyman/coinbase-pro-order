@@ -28,9 +28,7 @@ class NotificationMessageFactory:
                 title="🎉 Order Created Successfully",
                 contents=(
                     f"✅ You've successfully created an order for ${kwargs['quote_size']:.2f} "
-                    f"of {kwargs['pair']}.\n"
-                    "\n"
-                    "Keep an eye on your notifications for further details regarding this transaction."
+                    f"of {kwargs['pair']}."
                 ),
             )
         elif type == "deposit_completed":
