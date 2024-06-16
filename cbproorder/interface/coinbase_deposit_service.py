@@ -1,4 +1,5 @@
 import os
+from typing import Any
 
 from cbproorder.domain.deposit_service import DepositService
 from cbproorder.domain.exception.deposit import (
@@ -103,12 +104,13 @@ class CoinbaseDepositService(DepositService):
                 "amount": amount,
             },
         )
-        deposit = self.client.deposit(
+        deposit_response = self._deposit(
             account_id=deposit_account_id,
             payment_method=ach_payment_method_id,
             amount=str(amount),
             currency=self._USD_CURRENCY,
         )
+        deposit = deposit_response["data"]
         logger.info("Deposit created", extra={"deposit": deposit})
         result = DepositResult.from_deposit_dict(deposit)
         logger.info("Deposit result", extra={"result": result})
@@ -159,3 +161,31 @@ class CoinbaseDepositService(DepositService):
                 )
                 return payment_method["id"]
         return None
+
+    def _deposit(
+        self,
+        account_id: str,
+        amount: str,
+        currency: str,
+        payment_method: str,
+        **kwargs: Any,
+    ) -> dict[str, Any]:
+        """
+        Deposits user-defined amount of funds to a fiat account.
+
+        Args:
+            account_id (str): The ID of the fiat account.
+            amount (str): Deposit amount.
+            currency (str): Currency for the amount.
+            payment_method (str): ID of payment method to be used for the deposit. List Payment Methods: GET /payment-methods
+
+        See https://docs.cdp.coinbase.com/sign-in-with-coinbase/docs/api-deposits#deposit-funds
+        """
+        endpoint = f"/v2/accounts/{account_id}/deposits"
+        data = {
+            "amount": amount,
+            "currency": currency,
+            "payment_method": payment_method,
+        }
+
+        return self.advanced_client.post(url_path=endpoint, data=data, **kwargs)
