@@ -67,8 +67,6 @@ following variables with their appropriate values:
 - `deposit_request`: request that will be sent to Coinbase to deposit funds
 - `purchase_orders`: although the config provides a default purchase, you're
 encouraged to update this as well
-- `coinbase_api_key`: this is the API key for your Coinbase account
-- `coinbase_secret_key`: this is the secret key for your Coinbase account
 - `coinbase_trading_api_key`: this is the trading API key for your Coinbase account
 - `coinbase_trading_private_key`: this is the trading private key for your
 Coinbase account
@@ -90,8 +88,6 @@ purchase_orders = [
     price      = 100.0
   }
 ]
-coinbase_api_key             = "api-key"
-coinbase_secret_key          = "secret-key"
 coinbase_trading_api_key     = "trading-api-key"
 coinbase_trading_private_key = "trading-private-key"
 telegram_bot_token           = "bot-token"

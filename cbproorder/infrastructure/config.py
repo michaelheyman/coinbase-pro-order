@@ -20,26 +20,6 @@ class Config:
         self.secrets_provider = secrets_provider
 
     @property
-    def COINBASE_API_KEY(self) -> str:
-        """
-        Get the API key for the Coinbase Advanced API.
-
-        Returns:
-            str: The API key.
-        """
-        return self.secrets_provider.get_secret("COINBASE_API_KEY")
-
-    @property
-    def COINBASE_SECRET_KEY(self) -> str:
-        """
-        Get the secret key for the Coinbase Advanced API.
-
-        Returns:
-            str: The secret key.
-        """
-        return self.secrets_provider.get_secret("COINBASE_SECRET_KEY")
-
-    @property
     def COINBASE_TRADING_API_KEY(self) -> str:
         """
         Get the API key for the Coinbase Advanced Trade API.

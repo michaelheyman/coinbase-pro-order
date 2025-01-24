@@ -22,40 +22,20 @@ class CoinbaseDepositService(DepositService):
 
     _USD_CURRENCY = "USD"
 
-    def __init__(
-        self, api_key: str, secret_key: str, api_key_name: str, private_key: str
-    ):
+    def __init__(self, api_key_name: str, private_key: str):
         """
         Constructs an instance of the CoinbaseDepositService.
 
-        This service uses both the Coinbase REST and Wallet clients to make API
-        calls. The former is the most recent official Coinbase client, and it
-        is used for retrieving the deposit account and ACH payment method IDs.
-        The latter is a 3rd party client that is used for making the deposit
-        itself, since there is no deposit support in the official client.
-
-        In other words, the REST client uses the Advanced Trade API, while the
-        Wallet client uses the v2 API, which has deprecated endpoints, but is
-        the only one that supports deposits at the moment.
-
         Args:
-            api_key (str): The API key for the Coinbase Wallet API.
-            secret_key (str): The secret key for the Coinbase Wallet API.
             api_key_name (str): The API key for the Coinbase Advanced Trade API.
             private_key (str): The secret key for the Coinbase Advanced Trade API.
         """
         from coinbase.rest import RESTClient
-        from coinbase.wallet.client import Client
 
         if os.getenv("COINBASE_API_BASE_URL"):
             logger.info(
                 "Overriding Coinbase API base URL",
                 extra={"url": os.getenv("COINBASE_API_BASE_URL")},
-            )
-            self.client = Client(
-                api_key=api_key,
-                api_secret=secret_key,
-                base_api_uri=os.getenv("COINBASE_API_BASE_URL"),
             )
             self.advanced_client = RESTClient(
                 api_key=api_key_name,
@@ -64,10 +44,6 @@ class CoinbaseDepositService(DepositService):
             )
             return
 
-        self.client = Client(
-            api_key=api_key,
-            api_secret=secret_key,
-        )
         self.advanced_client = RESTClient(
             api_key=api_key_name,
             api_secret=private_key,

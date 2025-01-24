@@ -52,18 +52,6 @@ variable "region" {
 
 # Secrets
 
-variable "coinbase_api_key" {
-  description = "Coinbase API key."
-  type        = string
-  sensitive   = true
-}
-
-variable "coinbase_secret_key" {
-  description = "Coinbase secret key."
-  type        = string
-  sensitive   = true
-}
-
 variable "coinbase_trading_api_key" {
   description = "Coinbase Advanced Trading API key name."
   type        = string
