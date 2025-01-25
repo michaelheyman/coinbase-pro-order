@@ -5,7 +5,8 @@
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [Installing Terraform](#installing-terraform)
-- [Set up Google Cloud Platform](#set-up-google-cloud-platform)
+- [Installing `gcloud`](#installing-gcloud)
+- [Set up Google Cloud Platform project](#set-up-google-cloud-platform-project)
 - [Usage](#usage)
   - [Configuring Terraform](#configuring-terraform)
   - [Running Terraform](#running-terraform)
@@ -13,7 +14,6 @@
     - [`tfsec`](#tfsec)
 - [Troubleshooting](#troubleshooting)
   - [Disabled APIs](#disabled-apis)
-  - [Attempted to load application default credentials](#attempted-to-load-application-default-credentials)
 - [Enhancements](#enhancements)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -30,26 +30,28 @@ brew install hashicorp/tap/terraform
 For more up-to-date information, visit the [Terraform docs](https://learn.hashicorp.com/tutorials/terraform/install-cli?in=terraform/gcp-get-started)
 on this subject.
 
-## Set up Google Cloud Platform
+## Installing `gcloud`
 
-Follow these instructions to set up Google Cloud Platform:
+Install the `gcloud` CLI by following the instructions
+[here](https://cloud.google.com/sdk/docs/install), or by using `brew`:
+
+```bash
+brew install --cask google-cloud-sdk
+```
+
+Then, initialize the `gcloud` CLI:
+
+```bash
+gcloud init
+```
+
+And follow the instructions to authenticate.
+
+## Set up Google Cloud Platform project
+
+Follow these instructions to set up Google Cloud Platform project:
 
 - [Create a GCP project](https://console.cloud.google.com/projectcreate)
-- [Create a service account key](https://console.cloud.google.com/apis/credentials/serviceaccountkey):
-  - Select the project you created in the previous step.
-  - Click "Create Service Account".
-  - Give it any name you like and click "Create".
-  - For the Role, choose "Project -> Editor", then click "Continue".
-  - Add the "Security Account Admin" role so that it can create service accounts.
-  - Skip granting additional users access, and click "Done".
-
-  After you create your service account, download your service account key.
-
-  - Select your service account from the list.
-  - Select the "Keys" tab.
-  - In the drop down menu, select "Create new key".
-  - Leave the "Key Type" as JSON.
-  - Click "Create" to create the key and save the key file to your system.
 
 For more up-to-date information, visit the [Terraform docs](https://learn.hashicorp.com/tutorials/terraform/google-cloud-platform-build)
 on this subject.
@@ -58,25 +60,48 @@ on this subject.
 
 ### Configuring Terraform
 
-Create a `terraform.tfvars` file in this directory. Then, fill it with the following variables with their appropriate values:
+Create a `terraform.tfvars` file in this directory. Then, fill it with the
+following variables with their appropriate values:
 
 - `project_id`: this value is your GCP project id
-- `credentials_file`: this is the path to the service account key credentials file created above
 - `deposit_request`: request that will be sent to Coinbase to deposit funds
-- `purchase_orders`: although the config provides a default purchase, you're encouraged to update this as well
+- `purchase_orders`: although the config provides a default purchase, you're
+encouraged to update this as well
 - `coinbase_api_key`: this is the API key for your Coinbase account
 - `coinbase_secret_key`: this is the secret key for your Coinbase account
+- `coinbase_trading_api_key`: this is the trading API key for your Coinbase account
+- `coinbase_trading_private_key`: this is the trading private key for your
+Coinbase account
 - `telegram_bot_token`: this is the token for your Telegram bot
 - `telegram_chat_id`: this is the chat id for your Telegram bot`
+- `environment`: set this to "production" to enable the trading
 
 Example:
 
 ```terraform
-credentials_file = "/path/to/your/credentials/file"
-project_id       = "your-unique-gcp-project-id"
+project_id = "your-unique-gcp-project-id"
+deposit_request = {
+  amount   = 100.00
+  currency = "USD"
+}
+purchase_orders = [
+  {
+    product_id = "BTC-USD"
+    price      = 100.0
+  }
+]
+coinbase_api_key             = "api-key"
+coinbase_secret_key          = "secret-key"
+coinbase_trading_api_key     = "trading-api-key"
+coinbase_trading_private_key = "trading-private-key"
+telegram_bot_token           = "bot-token"
+telegram_chat_id             = "chat-id"
+environment                  = "production"
+
 ```
 
-Visit the [variable configuration file](./variables.tf) to view other values that can be overridden.
+Visit the [variable configuration file](./variables.tf) to view other values
+that can be overridden.
 
 ### Running Terraform
 
@@ -92,13 +117,21 @@ Then, you can optionally confirm that the configuration is valid:
 terraform validate
 ```
 
-Optionally, you can also view what infrastructure changes the Terraform configuration will apply:
+Optionally, you can also view what infrastructure changes the Terraform
+configuration will apply:
 
 ```bash
 terraform plan
 ```
 
-Finally, to apply the Terraform configuration run the following:
+Any command that actually affects the infrastructure (`apply` or `destroy`) will
+require you to authenticate with your Google Cloud account first:
+
+```bash
+gcloud auth application-default login
+```
+
+To apply the Terraform configuration run the following:
 
 ```bash
 terraform apply
@@ -114,7 +147,8 @@ terraform destroy
 
 #### `tfsec`
 
-See [official docs](https://github.com/aquasecurity/tfsec#installation) for installation instructions.
+See [official docs](https://github.com/aquasecurity/tfsec#installation) for
+installation instructions.
 
 Usage:
 
@@ -126,37 +160,21 @@ tfsec . --tfvars-file variables.tf
 
 ### Disabled APIs
 
-The Terraform config attempts to enable the required APIs, but if that doesn't work follow the descriptive
-errors when attempting to plan/apply the infrastructure.
+The Terraform config attempts to enable the required APIs. It is worth
+investing in making this process automated and robust as issues arise.
 
-If you have the `gcloud` CLI installed and set to the target project id (`gcloud config set <PROJECT_ID>`),
-you can enable the required APIs with the following commands:
+If that doesn't work follow the descriptive errors when attempting to plan/apply
+the infrastructure.
+
+If you have the `gcloud` CLI installed and set to the target project id
+(`gcloud config set <PROJECT_ID>`), you can enable the required APIs with the
+following command:
 
 ```bash
-gcloud services enable artifactregistry.googleapis.com
-gcloud services enable cloudfunctions.googleapis.com
-gcloud services enable cloudresourcemanager.googleapis.com
-gcloud services enable cloudscheduler.googleapis.com
-gcloud services enable iam.googleapis.com
-gcloud services enable pubsub.googleapis.co
-gcloud services enable secretmanager.googleapis.com
+gcloud services enable <API_NAME>
 ```
-
-### Attempted to load application default credentials
-
-Full error:
-
-> Attempted to load application default credentials since neither `credentials` nor `access_token`
-> was set in the provider block
-
-This issue may happen because you have Google credentials already configured.
-
-If that is the case, then the solution may be to unset the `GOOGLE_APPLICATION_CREDENTIALS` environment variable.
 
 ## Enhancements
 
-- [ ] Update providers to latest versions
 - [ ] Provision the `Secret Manager Secret Accessor` role to the
 `${var.project_id}@appspot.gserviceaccount.com` service account
-- [ ] Divest from having to use the credentials file -- define all resources
-in Terraform

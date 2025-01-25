@@ -6,6 +6,10 @@ variable "function_name" {
   description = "The name of the Cloud Function to be created."
 }
 
+variable "function_description" {
+  description = "The description of the Cloud Function to be created."
+}
+
 variable "function_entry_point" {
   description = "The name of a method in the function source which will be called when the function is executed."
 }

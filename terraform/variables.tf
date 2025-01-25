@@ -1,11 +1,6 @@
 # Set these two variables in a sibling terraform.tfvars file
-variable "credentials_file" {
-  description = "Path to the credentials file. See README for details."
-  type        = string
-}
-
 variable "deposit_request" {
-  description = "Deposit request."
+  description = "Amount to be deposited to Coinbase by the deposit function."
   type = object({
     amount   = number
     currency = string
@@ -28,9 +23,16 @@ variable "project_id" {
 }
 
 variable "purchase_orders" {
-  description = "List of purchase order numbers to deploy to the environment."
+  description = <<-EOT
+    List of purchase order numbers to deploy to the environment. The minimum
+    price for each purchase is 10.0 USD.
+
+    To see the list of valid `product_id`s, run:
+
+    curl https://api.exchange.coinbase.com/products | jq '.[].id' | sort -u
+  EOT
   type = list(object({
-    product_id = string # The product_id must match a valid product. The products list is available via the /products endpoint here: https://docs.cloud.coinbase.com/exchange/reference/exchangerestapi_getproducts
+    product_id = string
     price      = string
   }))
 
@@ -53,29 +55,35 @@ variable "region" {
 variable "coinbase_api_key" {
   description = "Coinbase API key."
   type        = string
+  sensitive   = true
 }
 
 variable "coinbase_secret_key" {
   description = "Coinbase secret key."
   type        = string
+  sensitive   = true
 }
 
 variable "coinbase_trading_api_key" {
   description = "Coinbase Advanced Trading API key name."
   type        = string
+  sensitive   = true
 }
 
 variable "coinbase_trading_private_key" {
   description = "Coinbase Advanced Trading API private key."
   type        = string
+  sensitive   = true
 }
 
 variable "telegram_bot_token" {
   description = "Telegram bot token."
   type        = string
+  sensitive   = true
 }
 
 variable "telegram_chat_id" {
   description = "Telegram chat ID."
   type        = string
+  sensitive   = true
 }
