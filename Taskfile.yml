@@ -1,0 +1,60 @@
+version: "3"
+
+dotenv: ['.env']
+
+vars:
+  PACKAGE_NAME: cbproorder
+  FUNCTION_DEPOSIT_PORT: 8081
+  FUNCTION_ORDERS_PORT: 8082
+
+includes:
+  python:
+    taskfile: .taskfiles/python/Taskfile.yml
+    vars:
+      PACKAGE_NAME: cbproorder
+  markdown:
+    taskfile: .taskfiles/markdown/Taskfile.yml
+    aliases:
+      - md
+    vars:
+      MARKDOWN_FILES: README.md terraform/README.md
+
+tasks:
+  default:
+    silent: true
+    cmds:
+      - task --list
+
+  pre-commit:
+    desc: Run pre-commit hooks
+    cmds:
+      - pre-commit run --all-files
+
+  run-deposit-function:
+    desc: Run the deposit function
+    env:
+      COINBASE_API_BASE_URL: http://localhost:3000
+      COINBASE_TRADING_API_KEY: $COINBASE_TRADING_API_KEY
+      COINBASE_TRADING_PRIVATE_KEY: $COINBASE_TRADING_PRIVATE_KEY
+      LOGGING_LEVEL: DEBUG
+      TELEGRAM_BOT_TOKEN: $TELEGRAM_BOT_TOKEN
+      TELEGRAM_CHAT_ID: $TELEGRAM_CHAT_ID
+    cmds:
+      - functions-framework --target=coinbase_deposit --signature-type=event --debug --port={{.FUNCTION_DEPOSIT_PORT}}
+
+  run-orders-function:
+    desc: Run the orders function
+    env:
+      COINBASE_API_BASE_URL: http://localhost:3000
+      COINBASE_TRADING_API_KEY: $COINBASE_TRADING_API_KEY
+      COINBASE_TRADING_PRIVATE_KEY: $COINBASE_TRADING_PRIVATE_KEY
+      LOGGING_LEVEL: DEBUG
+      TELEGRAM_BOT_TOKEN: $TELEGRAM_BOT_TOKEN
+      TELEGRAM_CHAT_ID: $TELEGRAM_CHAT_ID
+    cmds:
+      - functions-framework --target=coinbase_orders --signature-type=event --debug --port={{.FUNCTION_ORDERS_PORT}}
+
+  run-mockoon:
+    desc: Run mockoon
+    cmds:
+      - mockoon-cli start --data ./mock_servers/coinbase/environment.json --port 3000 --log-transaction
