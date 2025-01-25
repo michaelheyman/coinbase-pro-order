@@ -1,0 +1,16 @@
+version: "3"
+
+tasks:
+  lint:
+    desc: Lint markdown files
+    cmds:
+      - npx -y markdownlint-cli2 --fix {{.MARKDOWN_FILES}}
+    requires:
+      vars: [MARKDOWN_FILES]
+
+  format:
+    desc: Format markdown files
+    cmds:
+      - npx -y doctoc --github {{.MARKDOWN_FILES}}
+    requires:
+      vars: [MARKDOWN_FILES]

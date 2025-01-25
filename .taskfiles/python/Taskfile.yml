@@ -1,0 +1,58 @@
+version: "3"
+
+tasks:
+  clean:
+    desc: Clean all Python artifacts
+    cmds:
+      - find . -type f -name "*.pyc" -delete
+      - find . -type d -name "__pycache__" -delete
+      - rm -rf .pytest_cache htmlcov .coverage .mypy_cache build dist *.egg-info
+
+  lint:
+    desc: Check style
+    cmds:
+      - task: lint:flake8
+
+  lint:flake8:
+    desc: Check style with flake8
+    cmds:
+      - flake8 {{.PACKAGE_NAME}}
+    requires:
+      vars: [PACKAGE_NAME]
+
+  format:
+    desc: Format files
+    cmds:
+      - task: format:black
+      - task: format:isort
+
+  format:black:
+    desc: Format with black
+    cmds:
+      - black {{.PACKAGE_NAME}} tests
+    requires:
+      vars: [PACKAGE_NAME]
+
+  format:isort:
+    desc: Reorder imports with isort
+    cmds:
+      - isort {{.PACKAGE_NAME}} tests
+    requires:
+      vars: [PACKAGE_NAME]
+
+  mypy:
+    desc: Run the mypy type checker
+    cmds:
+      - mypy . --ignore-missing-imports --disallow-untyped-defs --exclude '^tests/.*'
+
+  test-coverage:
+    desc: Run test coverage tool
+    cmds:
+      - python -m pytest --cov-report term-missing --cov={{.PACKAGE_NAME}} tests/
+    requires:
+      vars: [PACKAGE_NAME]
+
+  test:
+    desc: Run tests
+    cmds:
+      - python -m pytest -vv

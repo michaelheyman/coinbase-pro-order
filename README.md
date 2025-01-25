@@ -11,6 +11,7 @@
   - [Coinbase Advanced Trade API Authentication](#coinbase-advanced-trade-api-authentication)
   - [Notification Configuration](#notification-configuration)
 - [Developer Setup](#developer-setup)
+  - [Install Task](#install-task)
   - [Create Virtual Environment](#create-virtual-environment)
   - [Install Requirements](#install-requirements)
   - [Install Git Hooks](#install-git-hooks)
@@ -124,6 +125,14 @@ ID number by submitting the `/start` and then the `/getid` commands
 
 ## Developer Setup
 
+### Install Task
+
+Install the most recent version of task:
+
+```bash
+brew install go-task/tap/go-task
+```
+
 ### Create Virtual Environment
 
 Create a virtual environment with a supported Python version:
@@ -183,21 +192,21 @@ There are two ways of running the application locally:
 1. Run the application locally using the `functions-framework` CLI
 
   ```bash
-  make run_orders_function
+  task run-orders-function
   ```
 
   ```bash
-  make run_deposit_function
+  task run-deposit-function
   ```
 
   ```bash
-  make run_mockoon
+  task run-mockoon
   ```
 
 1. Run the application locally using docker-compose:
 
   ```bash
-  make up
+  docker compose up --build
   ```
 
 ##### Run Deposit Function
@@ -265,8 +274,8 @@ curl -L 'http://localhost:8082' \
 Run the unit tests and the coverage tests:
 
 ```bash
-make test
-make test-coverage
+task python:test
+task python:test-coverage
 ```
 
 ## Google Cloud Platform Integration and Deployment
