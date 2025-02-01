@@ -9,11 +9,11 @@ vars:
 
 includes:
   python:
-    taskfile: .taskfiles/python/Taskfile.yml
+    taskfile: git@github.com:michaelheyman/taskfiles.git//python/Taskfile.yml?ref=main
     vars:
       PACKAGE_NAME: cbproorder
   markdown:
-    taskfile: .taskfiles/markdown/Taskfile.yml
+    taskfile: git@github.com:michaelheyman/taskfiles.git//markdown/Taskfile.yml?ref=main
     aliases:
       - md
     vars:
