@@ -12,46 +12,31 @@ from cbproorder.interface.coinbase_deposit_service import CoinbaseDepositService
 
 class TestCoinbaseDepositService(unittest.TestCase):
     @patch("coinbase.rest.RESTClient")
-    @patch("coinbase.wallet.client.Client")
     @patch.dict(os.environ, {"COINBASE_API_BASE_URL": "http://test-url"})
-    def test_init_with_env_var(self, mock_client, mock_advanced_client):
+    def test_init_with_env_var(self, mock_advanced_client):
         service = CoinbaseDepositService(
-            api_key="test-api-key",
-            secret_key="test-secret-key",
             api_key_name="test-api-key-name",
             private_key="test-private-key",
-        )
-        mock_client.assert_called_once_with(
-            api_key="test-api-key",
-            api_secret="test-secret-key",
-            base_api_uri="http://test-url",
         )
         mock_advanced_client.assert_called_once_with(
             api_key="test-api-key-name",
             api_secret="test-private-key",
             base_api_uri="http://test-url",
         )
-        self.assertEqual(service.client, mock_client.return_value)
+        self.assertEqual(service.advanced_client, mock_advanced_client.return_value)
 
     @patch("coinbase.rest.RESTClient")
-    @patch("coinbase.wallet.client.Client")
     @patch.dict(os.environ, {}, clear=True)
-    def test_init_without_env_var(self, mock_client, mock_advanced_client):
+    def test_init_without_env_var(self, mock_advanced_client):
         service = CoinbaseDepositService(
-            api_key="test-api-key",
-            secret_key="test-secret-key",
             api_key_name="test-api-key-name",
             private_key="test-private-key",
-        )
-        mock_client.assert_called_once_with(
-            api_key="test-api-key",
-            api_secret="test-secret-key",
         )
         mock_advanced_client.assert_called_once_with(
             api_key="test-api-key-name",
             api_secret="test-private-key",
         )
-        self.assertEqual(service.client, mock_client.return_value)
+        self.assertEqual(service.advanced_client, mock_advanced_client.return_value)
 
     @patch(
         "cbproorder.interface.coinbase_deposit_service.CoinbaseDepositService.get_ach_payment_method_id"
@@ -59,7 +44,7 @@ class TestCoinbaseDepositService(unittest.TestCase):
     @patch(
         "cbproorder.interface.coinbase_deposit_service.CoinbaseDepositService.get_deposit_account_id"
     )
-    @patch("coinbaseadvanced.client.CoinbaseAdvancedTradeAPIClient")
+    @patch("coinbase.rest.RESTClient")
     def test_deposit_usd(
         self,
         mock_client,
@@ -105,8 +90,6 @@ class TestCoinbaseDepositService(unittest.TestCase):
             }
         }
         service = CoinbaseDepositService(
-            api_key="api_key",
-            secret_key="secret_key",
             api_key_name="api_key_name",
             private_key="private_key",
         )
@@ -133,21 +116,15 @@ class TestCoinbaseDepositService(unittest.TestCase):
     @patch(
         "cbproorder.interface.coinbase_deposit_service.CoinbaseDepositService.get_deposit_account_id"
     )
-    @patch("coinbase.wallet.client.Client")
     def test_deposit_usd_raises_deposit_account_not_found_exception(
         self,
-        mock_client,
         mock_get_deposit,
     ):
         # Arrange
-        client = mock_client()
         service = CoinbaseDepositService(
-            api_key="api_key",
-            secret_key="secret_key",
             api_key_name="api_key_name",
             private_key="private_key",
         )
-        service.client = client
         mock_get_deposit.return_value = None
 
         # Act & Assert
@@ -161,22 +138,16 @@ class TestCoinbaseDepositService(unittest.TestCase):
     @patch(
         "cbproorder.interface.coinbase_deposit_service.CoinbaseDepositService.get_deposit_account_id"
     )
-    @patch("coinbase.wallet.client.Client")
     def test_deposit_usd_raises_deposit_payment_method_not_found_exception(
         self,
-        mock_client,
         mock_get_deposit,
         mock_get_payment_method_id,
     ):
         # Arrange
-        client = mock_client()
         service = CoinbaseDepositService(
-            api_key="api_key",
-            secret_key="secret_key",
             api_key_name="api_key_name",
             private_key="private_key",
         )
-        service.client = client
         mock_get_deposit.return_value = "79774f73-3838-4505-8db6-d0a7421f3dc7"
         mock_get_payment_method_id.return_value = None
 
@@ -213,8 +184,6 @@ class TestCoinbaseDepositService(unittest.TestCase):
         }
 
         service = CoinbaseDepositService(
-            api_key="api_key",
-            secret_key="secret_key",
             api_key_name="api_key_name",
             private_key="private_key",
         )
@@ -233,8 +202,6 @@ class TestCoinbaseDepositService(unittest.TestCase):
         client = mock_client()
         client.get_accounts.return_value = None
         service = CoinbaseDepositService(
-            api_key="api_key",
-            secret_key="secret_key",
             api_key_name="api_key_name",
             private_key="private_key",
         )
@@ -253,8 +220,6 @@ class TestCoinbaseDepositService(unittest.TestCase):
         client = mock_client()
         client.get_accounts.return_value = {"data": []}
         service = CoinbaseDepositService(
-            api_key="api_key",
-            secret_key="secret_key",
             api_key_name="api_key_name",
             private_key="private_key",
         )
@@ -314,8 +279,6 @@ class TestCoinbaseDepositService(unittest.TestCase):
         }
 
         service = CoinbaseDepositService(
-            api_key="api_key",
-            secret_key="secret_key",
             api_key_name="api_key_name",
             private_key="private_key",
         )
@@ -352,8 +315,6 @@ class TestCoinbaseDepositService(unittest.TestCase):
         }
 
         service = CoinbaseDepositService(
-            api_key="api_key",
-            secret_key="secret_key",
             api_key_name="api_key_name",
             private_key="private_key",
         )
@@ -372,8 +333,6 @@ class TestCoinbaseDepositService(unittest.TestCase):
         client = mock_client()
         client.list_payment_methods.return_value = None
         service = CoinbaseDepositService(
-            api_key="api_key",
-            secret_key="secret_key",
             api_key_name="api_key_name",
             private_key="private_key",
         )
@@ -394,8 +353,6 @@ class TestCoinbaseDepositService(unittest.TestCase):
         client = mock_client()
         client.list_payment_methods.return_value = {"payment_methods": []}
         service = CoinbaseDepositService(
-            api_key="api_key",
-            secret_key="secret_key",
             api_key_name="api_key_name",
             private_key="private_key",
         )
@@ -446,8 +403,6 @@ class TestCoinbaseDepositService(unittest.TestCase):
         }
 
         service = CoinbaseDepositService(
-            api_key="api_key",
-            secret_key="secret_key",
             api_key_name="api_key_name",
             private_key="private_key",
         )
@@ -483,8 +438,6 @@ class TestCoinbaseDepositService(unittest.TestCase):
         }
 
         service = CoinbaseDepositService(
-            api_key="api_key",
-            secret_key="secret_key",
             api_key_name="api_key_name",
             private_key="private_key",
         )

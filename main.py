@@ -170,8 +170,6 @@ def coinbase_deposit(event: dict, context: dict) -> None:
 
     config = Config(secrets_provider=secrets_provider)
     deposit_service = CoinbaseDepositService(
-        api_key=config.COINBASE_API_KEY,
-        secret_key=config.COINBASE_SECRET_KEY,
         api_key_name=config.COINBASE_TRADING_API_KEY,
         private_key=config.COINBASE_TRADING_PRIVATE_KEY,
     )

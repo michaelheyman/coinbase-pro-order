@@ -21,9 +21,9 @@ data "archive_file" "source" {
 # Create bucket that will host the source code
 #tfsec:ignore:google-storage-enable-ubla
 resource "google_storage_bucket" "bucket" {
-  name = "${var.project_id}-${var.function_name}-function" #tfsec:ignore:google-storage-enable-ubla
-  # uniform_bucket_level_access = true
-  location = var.region
+  name                        = "${var.project_id}-${var.function_name}-function" #tfsec:ignore:google-storage-enable-ubla
+  location                    = var.region
+  uniform_bucket_level_access = true
 }
 
 # Add source code zip to bucket
@@ -34,44 +34,37 @@ resource "google_storage_bucket_object" "zip" {
   source = data.archive_file.source.output_path
 }
 
-# Enable Cloud Functions API
-resource "google_project_service" "cf" {
-  project = var.project_id
-  service = "cloudfunctions.googleapis.com"
-
-  disable_dependent_services = true
-  disable_on_destroy         = false
-}
-
-# Enable Cloud Build API
-resource "google_project_service" "cb" {
-  project = var.project_id
-  service = "cloudbuild.googleapis.com"
-
-  disable_dependent_services = true
-  disable_on_destroy         = false
-}
 
 # Create Cloud Function
-resource "google_cloudfunctions_function" "function" {
-  name    = var.function_name
-  runtime = "python312"
+resource "google_cloudfunctions2_function" "function" {
+  name        = var.function_name
+  location    = var.region
+  description = var.function_description
 
-  available_memory_mb   = 256 # This is the default value
-  source_archive_bucket = google_storage_bucket.bucket.name
-  source_archive_object = google_storage_bucket_object.zip.name
+  build_config {
+    runtime     = "python312"
+    entry_point = var.function_entry_point
+    source {
+      storage_source {
+        bucket = google_storage_bucket.bucket.name
+        object = google_storage_bucket_object.zip.name
+      }
+    }
+  }
+
+  service_config {
+    environment_variables = {
+      ENVIRONMENT       = var.environment
+      GOOGLE_PROJECT_ID = var.project_id
+    }
+    ingress_settings      = "ALLOW_INTERNAL_ONLY"
+    service_account_email = var.service_account_email
+  }
 
   event_trigger {
-    event_type = "google.pubsub.topic.publish"
-    resource   = "projects/${var.project_id}/topics/${var.pubsub_topic_name}"
+    trigger_region = var.region
+    event_type     = "google.cloud.pubsub.topic.v1.messagePublished"
+    pubsub_topic   = "projects/${var.project_id}/topics/${var.pubsub_topic_name}" # TODO: pass topic id here instead
+    retry_policy   = "RETRY_POLICY_DO_NOT_RETRY"
   }
-  entry_point = var.function_entry_point
-
-  environment_variables = {
-    ENVIRONMENT       = var.environment
-    GOOGLE_PROJECT_ID = var.project_id
-  }
-
-  region                = var.region
-  service_account_email = var.service_account_email
 }

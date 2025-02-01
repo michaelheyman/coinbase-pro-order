@@ -171,8 +171,6 @@ Create a `.env` file in the project root, and override the following variables.
 
 | Variable                     | Type         | Description                                                            |
 | -------------------------    | ------------ | ---------------------------------------------------------------------- |
-| COINBASE_API_KEY             | **Required** | The Coinbase API key name                                              |
-| COINBASE_API_SECRET          | **Required** | The Coinbase API secret for this API key                               |
 | COINBASE_TRADING_API_KEY     | **Required** | The Coinbase Advanced Trade API key name                               |
 | COINBASE_TRADING_PRIVATE_KEY | **Required** | The Coinbase Advanced Trade API private key                            |
 | TELEGRAM_BOT_TOKEN           | **Required** | The Telegram bot token of the bot created earlier                      |

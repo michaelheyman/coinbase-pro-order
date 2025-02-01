@@ -14,20 +14,6 @@ class TestConfig(unittest.TestCase):
         self.mock_secrets_provider = MagicMock()
         self.config = Config(self.mock_secrets_provider)
 
-    def test_coinbase_api_key(self):
-        self.mock_secrets_provider.get_secret.return_value = "test_api_key"
-        self.assertEqual(self.config.COINBASE_API_KEY, "test_api_key")
-        self.mock_secrets_provider.get_secret.assert_called_once_with(
-            "COINBASE_API_KEY"
-        )
-
-    def test_coinbase_secret_key(self):
-        self.mock_secrets_provider.get_secret.return_value = "test_secret_key"
-        self.assertEqual(self.config.COINBASE_SECRET_KEY, "test_secret_key")
-        self.mock_secrets_provider.get_secret.assert_called_once_with(
-            "COINBASE_SECRET_KEY"
-        )
-
     def test_coinbase_trading_api_key(self):
         self.mock_secrets_provider.get_secret.return_value = "test_trading_api_key"
         self.assertEqual(self.config.COINBASE_TRADING_API_KEY, "test_trading_api_key")

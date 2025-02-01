@@ -1,17 +1,3 @@
-module "coinbase_api_key_secret" {
-  source      = "./modules/secret"
-  environment = var.environment
-  secret_id   = "coinbase_api_key"
-  secret_data = var.coinbase_api_key
-}
-
-module "coinbase_secret_key_secret" {
-  source      = "./modules/secret"
-  environment = var.environment
-  secret_id   = "coinbase_secret_key"
-  secret_data = var.coinbase_secret_key
-}
-
 module "coinbase_trading_api_key_secret" {
   source      = "./modules/secret"
   environment = var.environment

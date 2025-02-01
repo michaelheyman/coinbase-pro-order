@@ -28,7 +28,10 @@ class TestCoinbaseClient(unittest.TestCase):
     @patch("coinbase.rest.RESTClient")
     @patch.dict(os.environ, {}, clear=True)
     def test_init_without_env_var(self, mock_client):
-        service = CoinbaseAdvancedService("test-api-key-name", "test-private-key")
+        service = CoinbaseAdvancedService(
+            api_key_name="test-api-key-name",
+            private_key="test-private-key",
+        )
         mock_client.assert_called_once_with(
             api_key="test-api-key-name",
             api_secret="test-private-key",
@@ -58,7 +61,10 @@ class TestCoinbaseClient(unittest.TestCase):
                 },
             },
         }
-        coinbase = CoinbaseAdvancedService("api_key", "secret_key")
+        coinbase = CoinbaseAdvancedService(
+            api_key_name="api_key",
+            private_key="secret_key",
+        )
         coinbase.client = client
         order = Order(
             pair=Pair(base_currency="BTC", quote_currency="USD"),
@@ -89,7 +95,7 @@ class TestCoinbaseClient(unittest.TestCase):
             actual_order_result,
         )
 
-    @patch("coinbaseadvanced.client.CoinbaseAdvancedTradeAPIClient")
+    @patch("coinbase.rest.RESTClient")
     @patch("uuid.uuid4")
     def test_create_buy_order_failure(self, mock_uuid, mock_client):
         # Arrange
@@ -112,7 +118,10 @@ class TestCoinbaseClient(unittest.TestCase):
                 },
             },
         }
-        coinbase = CoinbaseAdvancedService("api_key", "secret_key")
+        coinbase = CoinbaseAdvancedService(
+            api_key_name="api_key",
+            private_key="secret_key",
+        )
         coinbase.client = client
         order = Order(
             pair=Pair(base_currency="BTC", quote_currency="USD"),
@@ -142,7 +151,7 @@ class TestCoinbaseClient(unittest.TestCase):
             ),
         )
 
-    @patch("coinbaseadvanced.client.CoinbaseAdvancedTradeAPIClient")
+    @patch("coinbase.rest.RESTClient")
     def test_create_buy_order_unsupported_limit_order_type_raises_unsupported_order_type_exception(
         self,
         mock_client,
@@ -150,7 +159,10 @@ class TestCoinbaseClient(unittest.TestCase):
         # Arrange
         client = mock_client()
         client.create_buy_market_order.return_value = "order_id"
-        coinbase = CoinbaseAdvancedService("api_key", "secret_key")
+        coinbase = CoinbaseAdvancedService(
+            api_key_name="api_key",
+            private_key="secret_key",
+        )
         coinbase.client = client
         order = Order(
             pair=Pair(base_currency="BTC", quote_currency="USD"),
@@ -163,7 +175,7 @@ class TestCoinbaseClient(unittest.TestCase):
         with self.assertRaises(UnsupportedOrderType):
             coinbase.create_market_buy_order(order=order),
 
-    @patch("coinbaseadvanced.client.CoinbaseAdvancedTradeAPIClient")
+    @patch("coinbase.rest.RESTClient")
     def test_create_buy_order_unsupported_stop_order_type_raises_unsupported_order_type_exception(
         self,
         mock_client,
@@ -171,7 +183,10 @@ class TestCoinbaseClient(unittest.TestCase):
         # Arrange
         client = mock_client()
         client.create_buy_market_order.return_value = "order_id"
-        coinbase = CoinbaseAdvancedService("api_key", "secret_key")
+        coinbase = CoinbaseAdvancedService(
+            api_key_name="api_key",
+            private_key="secret_key",
+        )
         coinbase.client = client
         order = Order(
             pair=Pair(base_currency="BTC", quote_currency="USD"),
