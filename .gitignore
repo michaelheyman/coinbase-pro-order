@@ -142,3 +142,6 @@ cython_debug/
 
 # Application files
 test_event.json
+
+# Task
+.task/
