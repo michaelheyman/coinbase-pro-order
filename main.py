@@ -1,5 +1,7 @@
 import os
 
+import functions_framework
+from cloudevents.http.event import CloudEvent
 from pydantic import ValidationError
 
 from cbproorder.application.use_case.command import (
@@ -28,7 +30,9 @@ from cbproorder.interface.telegram_notification_service import (
 logger = get_logger(__name__)
 
 
-def coinbase_orders(event: dict, context: dict) -> None:
+@functions_framework.cloud_event
+# def coinbase_orders(event: dict, context: dict) -> None:
+def coinbase_orders(cloud_event: CloudEvent) -> None:
     """Background Cloud Function to be triggered by Pub/Sub.
 
     Docstrings taken from: https://cloud.google.com/functions/docs/calling/pubsub
@@ -51,11 +55,11 @@ def coinbase_orders(event: dict, context: dict) -> None:
     import base64
     import json
 
-    logger.info("Cloud event triggered", extra={"event": event, "context": context})
+    logger.info("Cloud event triggered", extra={"cloud_event": cloud_event})
 
     try:
         # Decode the Pub/Sub message and load it into a dict
-        orders_dict = json.loads(base64.b64decode(event["data"]).decode("utf-8"))
+        orders_dict = json.loads(base64.b64decode(cloud_event.data).decode("utf-8"))
         logger.info("Orders received", extra={"orders": orders_dict})
         # Convert orders dict into a list of Order objects, automatically validating the data
         orders = [Order.from_dict(order_dict) for order_dict in orders_dict]
@@ -115,7 +119,9 @@ def coinbase_orders(event: dict, context: dict) -> None:
             continue
 
 
-def coinbase_deposit(event: dict, context: dict) -> None:
+@functions_framework.cloud_event
+# def coinbase_deposit(event: dict, context: dict) -> None:
+def coinbase_deposit(cloud_event: CloudEvent) -> None:
     """Background Cloud Function to be triggered by Pub/Sub.
 
     Docstrings taken from: https://cloud.google.com/functions/docs/calling/pubsub
@@ -138,11 +144,11 @@ def coinbase_deposit(event: dict, context: dict) -> None:
     import base64
     import json
 
-    logger.info("Cloud event triggered", extra={"event": event, "context": context})
+    logger.info("Cloud event triggered", extra={"cloud_event": cloud_event})
 
     try:
         # Decode the Pub/Sub message and load it into a dict
-        deposit_dict = json.loads(base64.b64decode(event["data"]).decode("utf-8"))
+        deposit_dict = json.loads(base64.b64decode(cloud_event.data).decode("utf-8"))
         # Convert orders dict into a list of Order objects, automatically validating the data
         deposit = Deposit.from_dict(deposit_dict)
     except ValidationError as e:
