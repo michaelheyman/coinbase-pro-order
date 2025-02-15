@@ -59,7 +59,8 @@ def coinbase_orders(cloud_event: CloudEvent) -> None:
 
     try:
         # Decode the Pub/Sub message and load it into a dict
-        orders_dict = json.loads(base64.b64decode(cloud_event.data).decode("utf-8"))
+        message_data = cloud_event.data["message"]["data"]
+        orders_dict = json.loads(base64.b64decode(message_data).decode("utf-8"))
         logger.info("Orders received", extra={"orders": orders_dict})
         # Convert orders dict into a list of Order objects, automatically validating the data
         orders = [Order.from_dict(order_dict) for order_dict in orders_dict]
@@ -148,7 +149,8 @@ def coinbase_deposit(cloud_event: CloudEvent) -> None:
 
     try:
         # Decode the Pub/Sub message and load it into a dict
-        deposit_dict = json.loads(base64.b64decode(cloud_event.data).decode("utf-8"))
+        message_data = cloud_event.data["message"]["data"]
+        deposit_dict = json.loads(base64.b64decode(message_data).decode("utf-8"))
         # Convert orders dict into a list of Order objects, automatically validating the data
         deposit = Deposit.from_dict(deposit_dict)
     except ValidationError as e:
