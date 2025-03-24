@@ -86,7 +86,7 @@ class CoinbaseDepositService(DepositService):
             amount=str(amount),
             currency=self._USD_CURRENCY,
         )
-        deposit = deposit_response["data"]
+        deposit = deposit_response["transfer"]
         logger.info("Deposit created", extra={"deposit": deposit})
         result = DepositResult.from_deposit_dict(deposit)
         logger.info("Deposit result", extra={"result": result})
@@ -162,6 +162,7 @@ class CoinbaseDepositService(DepositService):
             "amount": amount,
             "currency": currency,
             "payment_method": payment_method,
+            "commit": True,
         }
 
         return self.advanced_client.post(url_path=endpoint, data=data, **kwargs)

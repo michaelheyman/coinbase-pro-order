@@ -56,7 +56,7 @@ class TestCoinbaseDepositService(unittest.TestCase):
         mock_get_deposit.return_value = "79774f73-3838-4505-8db6-d0a7421f3dc7"
         mock_get_payment_method_id.return_value = "738e6a58-10a1-4a89-a64b-7057d5cecf27"
         client.post.return_value = {
-            "data": {
+            "transfer": {
                 "id": "67e0eaec-07d7-54c4-a72c-2e92826897df",
                 "status": "created",
                 "payment_method": {
@@ -106,6 +106,7 @@ class TestCoinbaseDepositService(unittest.TestCase):
                 "amount": str(amount),
                 "currency": service._USD_CURRENCY,
                 "payment_method": "738e6a58-10a1-4a89-a64b-7057d5cecf27",
+                "commit": True,
             },
         )
         self.assertEqual(deposit.status, "created")
